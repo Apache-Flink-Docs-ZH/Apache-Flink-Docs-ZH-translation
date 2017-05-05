@@ -16,7 +16,7 @@ Apache Flink官网：[http://flink.apache.org](http://flink.apache.org/index.htm
 - [Apache Flink Documentation](https://ci.apache.org/projects/flink/flink-docs-release-1.2/)：以1.2.0版本作为翻译蓝本，在Docs目录：
 
 ```
- ├─concepts
+ 	├─concepts
 	├─dev
 	│  ├─batch
 	│  ├─connectors
