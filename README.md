@@ -13,7 +13,26 @@ Apache Flink官网：[http://flink.apache.org](http://flink.apache.org/index.htm
 - [Introduction to Flink](http://flink.apache.org/introduction.html)
 - [Flink Use Cases](http://flink.apache.org/usecases.html)
 - [Ecosystem](http://flink.apache.org/ecosystem.html)
-- [Apache Flink Documentation](https://ci.apache.org/projects/flink/flink-docs-release-1.2/)：以1.2.0版本作为翻译蓝本
+- [Apache Flink Documentation](https://ci.apache.org/projects/flink/flink-docs-release-1.2/)：以1.2.0版本作为翻译蓝本，在Docs目录：
+
+```
+ ├─concepts
+	├─dev
+	│  ├─batch
+	│  ├─connectors
+	│  ├─libs
+	│  │  ├─gelly
+	│  │  └─ml
+	│  └─stream
+	├─examples
+	├─internals
+	├─monitoring
+	├─ops
+	├─quickstart
+	├─setup
+```
+
+Docs目录下的其他文件，均为文档生成工具，不用翻译。
 
 ## 参与翻译及校对
 
