@@ -44,11 +44,15 @@ Docs目录下的其他文件，均为文档生成工具，不用翻译。
 
 凡参与本项目翻译、审校的同学，请自行将个人信息填写到下面。
 
-*翻译*
- - [tuhaihe](https://github.com/tuahihe) (Demo)
+*翻译* [认领](https://github.com/Apache-Flink-Docs-ZH/Apache-Flink-Docs-ZH-translation/wiki)
+ - [tuhaihe](https://github.com/tuahihe)
 
-*审校*
- - [tuhaihe](https://github.com/tuahihe) (Demo)
+*审校* [点我认领](https://github.com/Apache-Flink-Docs-ZH/Apache-Flink-Docs-ZH-translation/wiki)
+ - [tuhaihe](https://github.com/tuahihe) 
+ 
+ *项目经理* [认领](https://github.com/Apache-Flink-Docs-ZH/Apache-Flink-Docs-ZH-translation/issues/1)
+ 
+ 
 
 
 ## 支持社区
