@@ -46,12 +46,19 @@ Docs目录下的其他文件，均为文档生成工具，不用翻译。
 
 *翻译* [认领](https://github.com/Apache-Flink-Docs-ZH/Apache-Flink-Docs-ZH-translation/wiki)
  - [tuhaihe](https://github.com/tuahihe)
+ - XXX
+
+---
 
 *审校* [点我认领](https://github.com/Apache-Flink-Docs-ZH/Apache-Flink-Docs-ZH-translation/wiki)
  - [tuhaihe](https://github.com/tuahihe) 
+ - XXX
+ 
+ 
+ ---
  
  *项目经理* [认领](https://github.com/Apache-Flink-Docs-ZH/Apache-Flink-Docs-ZH-translation/issues/1)
- 
+ - XXX
  
 
 
