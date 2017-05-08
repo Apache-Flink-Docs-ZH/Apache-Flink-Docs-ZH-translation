@@ -51,6 +51,8 @@ Docs目录下的其他文件，均为文档生成工具，不用翻译。
  - [tuhaihe](https://github.com/tuahihe) (Demo)
 
 
+## 支持社区
 
+感谢下面技术社区对本翻译项目的支持：
 
-
+<a href="https://yq.aliyun.com/" target="_blank"><img src="https://img.alicdn.com/tfs/TB1BgFARXXXXXXHXpXXXXXXXXXX-236-158.png" width="150"></a><a href="https://juejin.im/" target="_blank"><img src="https://img.alicdn.com/tfs/TB1pUs9QVXXXXcQXVXXXXXXXXXX-351-172.png" width="200"></a><a href="http://www.csdn.net/" target="_blank"><img src="https://img.alicdn.com/tfs/TB1UZFARXXXXXcPXXXXXXXXXXXX-240-90.png" width="200"></a>
