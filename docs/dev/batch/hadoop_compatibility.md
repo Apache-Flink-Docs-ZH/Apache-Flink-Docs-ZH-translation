@@ -69,10 +69,9 @@ package.
 </dependency>
 ~~~
 
-### Using Hadoop Data Types
+### Using Hadoop Data Types 使用Hadoop数据类型
 
-Flink supports all Hadoop `Writable` and `WritableComparable` data types
-out-of-the-box. You do not need to include the Hadoop Compatibility dependency,
+Flink支持所有的Hadoop `Writable` 和 `WritableComparable` 数据类型。 You do not need to include the Hadoop Compatibility dependency,
 if you only want to use your Hadoop data types. See the
 [Programming Guide](index.html#data-types) for more details.
 
