@@ -19,4 +19,4 @@ Flink用户案例
 
 4. 数据体量大：为支持这样的数据规模，应用需要被部署到上千个节点多的分布式环境中。Flink能跑在大型集群上，和跑在小规模集群上一样顺滑。
 
-想查看更多用户案例，我们推荐年度Flink用户大会[Flink Forward 2016](http://flink-forward.org/program/sessions/)上的主题演讲。
+如果想查看更多用户案例，我们推荐年度Flink用户大会[Flink Forward 2016](http://flink-forward.org/program/sessions/)上的主题演讲。
