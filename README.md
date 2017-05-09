@@ -66,4 +66,4 @@ Docs目录下的其他文件，均为文档生成工具，不用翻译。
 
 感谢下面技术社区对本翻译项目的支持（排名不分先后）：
 
-<a href="https://yq.aliyun.com/" target="_blank"><img src="https://img.alicdn.com/tfs/TB1BgFARXXXXXXHXpXXXXXXXXXX-236-158.png" width="150"></a><a href="https://juejin.im/" target="_blank"><img src="https://img.alicdn.com/tfs/TB1pUs9QVXXXXcQXVXXXXXXXXXX-351-172.png" width="200"></a><a href="http://www.csdn.net/" target="_blank"><img src="https://img.alicdn.com/tfs/TB1UZFARXXXXXcPXXXXXXXXXXXX-240-90.png" width="200"></a>
+<a href="https://yq.aliyun.com/" target="_blank"><img src="https://img.alicdn.com/tfs/TB1BgFARXXXXXXHXpXXXXXXXXXX-236-158.png" width="150"></a><a href="https://juejin.im/" target="_blank"><img src="https://img.alicdn.com/tfs/TB1pUs9QVXXXXcQXVXXXXXXXXXX-351-172.png" width="200"></a><a href="http://www.csdn.net/" target="_blank"><img src="https://img.alicdn.com/tfs/TB1UZFARXXXXXcPXXXXXXXXXXXX-240-90.png" width="200"></a><a href="http://www.zhongshengdai.com" target="_blank"><img src="https://img.alicdn.com/tfs/TB12dg8QVXXXXclaXXXXXXXXXXX-300-83.png" width="260"></a>
