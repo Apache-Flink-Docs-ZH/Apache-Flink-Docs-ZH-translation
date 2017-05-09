@@ -25,27 +25,28 @@ under the License.
 * ToC
 {:toc}
 
+Stateful函数与操作符可以在处理单个元素/事件的时候存储数据，使“state"成为任何类型的复杂操作的的关键组成部分。例如：
 Stateful functions and operators store data across the processing of individual elements/events, making state a critical building block for
 any type of more elaborate operation. For example:
 
-  - When an application searches for certain event patterns, the state will store the sequence of events encountered so far.
-  - When aggregating events per minute, the state holds the pending aggregates.
-  - When training a machine learning model over a stream of data points, the state holds the current version of the model parameters.
+  - 当我们需要建立一个搜索固定事件模式(events patterns)的应用时，state将可以存储至今为止所有事件的序列。When an application searches for certain event patterns, the state will store the sequence of events encountered so far.
+  - 当需要每分钟聚合一次事件（events）的时候，state将会hold住那些未被处理的聚合。When aggregating events per minute, the state holds the pending aggregates.
+  - 当为数据流训练一个机器学习模型的时候，state会存储当前时刻模型的参数。When training a machine learning model over a stream of data points, the state holds the current version of the model parameters.
 
-In order to make state fault tolerant, Flink needs to be aware of the state and [checkpoint](checkpointing.html) it.
-In many cases, Flink can also *manage* the state for the application, meaning Flink deals with the memory management (possibly spilling to disk
+为了使state具有容错性，Flink需要知道state的状态并对他做[检查点(checkpoint)](checkpointing.html).In order to make state fault tolerant, Flink needs to be aware of the state and [checkpoint](checkpointing.html) it.
+在许多情况下，Flink还支持在应用中*管理*state,这就意味着Flink需要用到内存管理（或者内存不够时写入磁盘）来存储特别大的state。In many cases, Flink can also *manage* the state for the application, meaning Flink deals with the memory management (possibly spilling to disk
 if necessary) to allow applications to hold very large state.
 
-This document explains how to use Flink's state abstractions when developing an application.
+这篇文档解释了如何在应用中使用Flink的state抽象。This document explains how to use Flink's state abstractions when developing an application.
 
 
 ## Keyed State and Operator State
 
-There are two basic kinds of state in Flink: `Keyed State` and `Operator State`.
+Flink中共有两类state:`Keyed State` 和 `Operator State`。 There are two basic kinds of state in Flink: `Keyed State` and `Operator State`.
 
 ### Keyed State
 
-*Keyed State* is always relative to keys and can only be used in functions and operators on a `KeyedStream`.
+*Keyed State*总是和键（keys）有关并且只能用在`KeyedStream`的函数和操作符中。*Keyed State* is always relative to keys and can only be used in functions and operators on a `KeyedStream`.
 
 You can think of Keyed State as Operator State that has been partitioned,
 or sharded, with exactly one state-partition per key.
