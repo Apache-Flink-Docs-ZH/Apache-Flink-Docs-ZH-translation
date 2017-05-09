@@ -26,7 +26,9 @@ under the License.
 Flink is compatible with Apache Hadoop MapReduce interfaces and therefore allows
 reusing code that was implemented for Hadoop MapReduce.
 
-You can:
+Flink兼容Apache Hadoop MapReduce的接口，因此可以使用面向MapReduce的代码。
+
+你可以:
 
 - use Hadoop's `Writable` [data types](index.html#data-types) in Flink programs.
 - use any Hadoop `InputFormat` as a [DataSource](index.html#data-sources).
@@ -34,13 +36,13 @@ You can:
 - use a Hadoop `Mapper` as [FlatMapFunction](dataset_transformations.html#flatmap).
 - use a Hadoop `Reducer` as [GroupReduceFunction](dataset_transformations.html#groupreduce-on-grouped-dataset).
 
-This document shows how to use existing Hadoop MapReduce code with Flink. Please refer to the
-[Connecting to other systems]({{ site.baseurl }}/dev/batch/connectors.html) guide for reading from Hadoop supported file systems.
+这篇文档展示如何在Flink中使用现存的Hadoop MapReduce代码。可以参考
+[Connecting to other systems]({{ site.baseurl }}/dev/batch/connectors.html) 来了解如何从hadoop支持的文件系统中读取数据。
 
 * This will be replaced by the TOC
 {:toc}
 
-### Project Configuration
+### Project Configuration 项目配置
 
 Support for Haddop input/output formats is part of the `flink-java` and
 `flink-scala` Maven modules that are always required when writing Flink jobs.
@@ -48,13 +50,16 @@ The code is located in `org.apache.flink.api.java.hadoop` and
 `org.apache.flink.api.scala.hadoop` in an additional sub-package for the
 `mapred` and `mapreduce` API.
 
+支持Hadoop的input／output格式是`flink-java`和`flink-scala`的maven模块的一部分，这两部分是在编写Flink任务时经常需要用到的。 `mapred`和`mapreduce` 的api代码分别在`org.apache.flink.api.java.hadoop`和`org.apache.flink.api.scala.hadoop`以及一个额外的子package中。
+
 Support for Hadoop Mappers and Reducers is contained in the `flink-hadoop-compatibility`
 Maven module.
 This code resides in the `org.apache.flink.hadoopcompatibility`
 package.
 
-Add the following dependency to your `pom.xml` if you want to reuse Mappers
-and Reducers.
+对Hadoop MapReduce的支持是在`flink-hadoop-compatibility`的maven模块中。代码具体在`org.apache.flink.hadoopcompatibility`包中。
+
+如果想要重复使用`Mappers and Reducers`， 需要在maven中添加下面依赖：
 
 ~~~xml
 <dependency>
