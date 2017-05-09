@@ -2,7 +2,7 @@ Flink用户案例
 
 为了展示如何使用Flink处理无限数据集（unbounded dataset），下面列举了一些真实场景中的Flink用户，以及他们正在使用Flink解决的问题。
 
-更多示例，请参考Powered by Flink（http://flink.apache.org/poweredby.html）页面。
+更多示例，请参考[Powered by Flink](http://flink.apache.org/poweredby.html)页面。
 
 - 实时优化电商系统中的搜索结果：Alibaba搜索基础设施团队使用Flink实时更新商品详情页和库存信息，提高用户的相关性。
 - 为数据科学团队提供流式处理服务：King（糖果粉碎传奇游戏的作者）通过Flink支撑的内部平台，为它的数据科学家们实现了实时分析服务，极大缩短了理解游戏数据的时间。
@@ -19,4 +19,4 @@ Flink用户案例
 
 4. 数据体量大：为支持这样的数据规模，应用需要被部署到上千个节点多的分布式环境中。Flink能跑在大型集群上，和跑在小规模集群上一样顺滑。
 
-想查看更多用户案例，我们推荐年度Flink用户大会Flink Forward 2016（http://flink-forward.org/program/sessions/）上的主题演讲。
+想查看更多用户案例，我们推荐年度Flink用户大会[Flink Forward 2016](http://flink-forward.org/program/sessions/)上的主题演讲。
