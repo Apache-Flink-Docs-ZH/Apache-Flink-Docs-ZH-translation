@@ -32,7 +32,12 @@ Apache Flink官网：[http://flink.apache.org](http://flink.apache.org/index.htm
 	├─setup
 ```
 
-Docs目录下的其他文件，均为文档生成工具，不用翻译。
+*提示*
+- Docs目录下的其他文件，均为文档生成工具，不用翻译；
+- 大家在翻译时，可参考Flink 1.1版本部分文档翻译，参见[http://doc.flink-china.org/](http://doc.flink-china.org/)，可作为翻译蓝本，需要经过对比，部分文档内容已经变更；在此感谢原文档翻译志愿者的贡献；
+- 同时也感谢 并发编程网 组织的Flink部分章节内容。
+
+
 
 ## 参与翻译及校对
 
