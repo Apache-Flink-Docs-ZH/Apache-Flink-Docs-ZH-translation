@@ -48,6 +48,11 @@ Flink中共有两类state:`Keyed State` 和 `Operator State`。 There are two ba
 
 *Keyed State*总是和键（keys）有关并且只能用在`KeyedStream`的函数和操作符中。*Keyed State* is always relative to keys and can only be used in functions and operators on a `KeyedStream`.
 
+你可以认为带有键值的State(Keyed State)像操作符State(Operator State)一样已经被
+分区或者分片过了，每一个键值有唯一的一个state划分。每一个Keyed-state逻辑上与
+唯一的一对<并行的操作符实例，键值>(<parallel-operator-instance,key>)相连接，
+并且由于每一个键又属于唯一的一个并行的keyed operator的实例，我们可以简单的
+认为Keyed-state逻辑上与唯一的一对<操作符，键值>相连。
 You can think of Keyed State as Operator State that has been partitioned,
 or sharded, with exactly one state-partition per key.
 Each keyed-state is logically bound to a unique
@@ -55,7 +60,10 @@ composite of <parallel-operator-instance, key>, and since each key
 "belongs" to exactly one parallel instance of a keyed operator, we can
 think of this simply as <operator, key>.
 
-Keyed State is further organized into so-called *Key Groups*. Key Groups are the
+Keyed State接着被放在*键组(Key Groups)*中进行管理。键组是Flink用来
+重新分布Keyed State的原子单元；并行化被设为了多少，就实际上有多少个键值组。
+在执行过程中每一个并行的带有键值的操作符实例对应一个或多个键值组中的键值。
+.Keyed State is further organized into so-called *Key Groups*. Key Groups are the
 atomic unit by which Flink can redistribute Keyed State;
 there are exactly as many Key Groups as the defined maximum parallelism.
 During execution each parallel instance of a keyed operator works with the keys
@@ -63,26 +71,36 @@ for one or more Key Groups.
 
 ### Operator State
 
+用*操作符State*(或者叫做*Operator State*)的时候，每一个操作符state对
+应一个并行的操作符实例。
 With *Operator State* (or *non-keyed state*), each operator state is
 bound to one parallel operator instance.
-The [Kafka Connector](../connectors/kafka.html) is a good motivating example for the use of Operator State
+
+Kafka 连接器[Kafka Connector](../connectors/kafka.html) 是在Flink中使用操作符State的一个很好的
+实例。每一个并行的Kafka消费组(Kafka consumer)里存储着那些主题分片的map和偏移量来作为操作符state.
+ is a good motivating example for the use of Operator State
 in Flink. Each parallel instance of the Kafka consumer maintains a map
 of topic partitions and offsets as its Operator State.
 
+操作符state接口支持在并行化情况改变的时候对并行操作符实例重分布state。做这样的重分布有很多中方案。
 The Operator State interfaces support redistributing state among
 parallel operator instances when the parallelism is changed. There can be different schemes for doing this redistribution.
 
 ## Raw and Managed State
 
+*键值 State(Keyed State)* 和 *操作符state(Operator State)* 存在两种形式： *管理的（managed)* and *原生的(raw)*.
 *Keyed State* and *Operator State* exist in two forms: *managed* and *raw*.
 
-*Managed State* is represented in data structures controlled by the Flink runtime, such as internal hash tables, or RocksDB.
+在数据结构中存在的*管理的 State*(managed state)是由Flink内部运行来控制的，例如内部的哈希表，或者 RocksDB。像"ValueState"和"Liststate"等等都属于这种类型。 Flink 内部运行对这些State进行编码，然后把它们写到检查点中。
+ is represented in data structures controlled by the Flink runtime, such as internal hash tables, or RocksDB.
 Examples are "ValueState", "ListState", etc. Flink's runtime encodes
 the states and writes them into the checkpoints.
 
-*Raw State* is state that operators keep in their own data structures. When checkpointed, they only write a sequence of bytes into
+*原生的 State (Raw state)* 指的是那些保存着它们自己的数据结构的操作符(算子)。当被写成检查点的时候，它们只写入一些比特序列串，Flink对这些State的内部数据结构一无所知，只能看到那些原生的比特序列。
+is state that operators keep in their own data structures. When checkpointed, they only write a sequence of bytes into
 the checkpoint. Flink knows nothing about the state's data structures and sees only the raw bytes.
 
+Flink提供的所有的数据流函数都可以运用管理的state(managed state)，但是原生的state(raw state)接口只能在实现操作符的时候使用。比起原生的state(raw state)，我们更加推荐使用管理的state(managed state)，因为在并行化的情况改变的时候，Flink可以自动的重新分布管理的state(managed state)，并且也能够更好的做到内存管理。
 All datastream functions can use managed state, but the raw state interfaces can only be used when implementing operators.
 Using managed state (rather than raw state) is recommended, since with
 managed state Flink is able to automatically redistribute state when the parallelism is
