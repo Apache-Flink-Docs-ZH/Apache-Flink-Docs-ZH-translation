@@ -359,23 +359,22 @@ data1.join(data2).
 
 
 
-For more information on the semantics of each method, please refer to the
-[DataSet]({{ site.baseurl }}/dev/batch/index.html) and [DataStream]({{ site.baseurl }}/dev/datastream_api.html) API documentation.
+获取更多方法的语法信息，请参考
+[DataSet]({{ site.baseurl }}/dev/batch/index.html) 和 [DataStream]({{ site.baseurl }}/dev/datastream_api.html) 的API 帮助文档.
 
-To use this extension exclusively, you can add the following `import`:
+仅仅使用这一个扩展，你可以添加以下导入:
 
 {% highlight scala %}
 import org.apache.flink.api.scala.extensions.acceptPartialFunctions
 {% endhighlight %}
 
-for the DataSet extensions and
+对数据集扩展导入
 
 {% highlight scala %}
 import org.apache.flink.streaming.api.scala.extensions.acceptPartialFunctions
 {% endhighlight %}
 
-The following snippet shows a minimal example of how to use these extension
-methods together (with the DataSet API):
+下面片段展示了如何用数据集API使用这些扩展方法的小例子:
 
 {% highlight scala %}
 object Main {
