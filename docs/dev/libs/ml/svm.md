@@ -169,7 +169,7 @@ svm.fit(trainingDS)
 // 读取测试数据集
 val testingDS: DataSet[Vector] = env.readLibSVM(pathToTestingFile).map(_.vector)
 
-// 对测试数据及进行预测
+// 对测试数据集进行预测
 val predictionDS: DataSet[(Vector, Double)] = svm.predict(testingDS)
 
 {% endhighlight %}
