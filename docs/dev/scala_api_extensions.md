@@ -56,7 +56,7 @@ data.map {
 
 这个扩展介绍了在数据集和数据流Scala 的扩展API 中有一对一关系的新的方法。这些授权方法不支持匿名形式的匹配函数。
 
-#### DataSet API
+#### 数据集 API
 
 <table class="table table-bordered">
   <thead>
@@ -203,7 +203,7 @@ data1.coGroup(data2).
   </tbody>
 </table>
 
-#### DataStream API
+#### 数据流 API
 
 <table class="table table-bordered">
   <thead>
