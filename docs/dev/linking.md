@@ -1,6 +1,6 @@
 ---
-nav-title: "Linking with Optional Modules"
-title: "Linking with modules not contained in the binary distribution"
+nav-title: "关联可选模块"
+title: "关联不包含于发行版的模块"
 nav-parent_id: start
 nav-pos: 10
 ---
@@ -23,31 +23,28 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-The binary distribution contains jar packages in the `lib` folder that are automatically
-provided to the classpath of your distributed programs. Almost all of Flink classes are
-located there with a few exceptions, for example the streaming connectors and some freshly
-added modules. To run code depending on these modules you need to make them accessible
-during runtime, for which we suggest two options:
+二进制发行版的jar包包含于`lib`文件夹中，这些jar包会自行加入你的
+分布式程序的classpath中。除了少数例外，几乎所有Flink的类都可以在那里找到，
+例如流式连接器和一些新加入的模块。
+为了运行依赖这些模块的代码，你需要确保模块在运行时是可访问的，为此我们有两点建议：
 
-1. Either copy the required jar files to the `lib` folder onto all of your TaskManagers.
-Note that you have to restart your TaskManagers after this.
-2. Or package them with your code.
+1. 复制必需的jar文件到`lib`文件夹，以提供给你所有的TaskManagers。注意，复制之后需要重启你的TaskManagers。
+2. 或者将这些包打包进你的代码。
 
-The latter version is recommended as it respects the classloader management in Flink.
+推荐使用较新的版本，因为它遵循了FLink中的类加载管理器
 
-### Packaging dependencies with your usercode with Maven
+### 使用Maven打包你的用户代码的依赖包
 
-To provide these dependencies not included by Flink we suggest two options with Maven.
+在使用maven时，如果想要打包的依赖不在Flink包中，建议使用以下两种方法:
 
-1. The maven assembly plugin builds a so-called uber-jar (executable jar) containing all your dependencies.
-The assembly configuration is straight-forward, but the resulting jar might become bulky.
-See [maven-assembly-plugin](http://maven.apache.org/plugins/maven-assembly-plugin/usage.html) for further information.
-2. The maven unpack plugin unpacks the relevant parts of the dependencies and
-then packages it with your code.
+1. maven的assembly装配插件构建了一个所谓的高级jar包（可执行jar包），可以包含你的所有依赖项。
+assembly的配置方法很明了，但是得到的jar包可能会变得笨重。
+了解更多信息，请查看[maven-assembly-plugin](http://maven.apache.org/plugins/maven-assembly-plugin/usage.html) 。
 
-Using the latter approach in order to bundle the Kafka connector, `flink-connector-kafka`
-you would need to add the classes from both the connector and the Kafka API itself. Add
-the following to your plugins section.
+2. 使用maven的unpack解包插件把相关依赖解包出来，然后打包进你的代码。
+
+使用较新的方法来捆绑Kafka连接器`flink-connector-kafka`,为此
+你需要同时从连接器和Kafka API本身来添加加类。在你的插件配置中添加如下代码。
 
 ~~~xml
 <plugin>
@@ -91,4 +88,4 @@ the following to your plugins section.
 </plugin>
 ~~~
 
-Now when running `mvn clean package` the produced jar includes the required dependencies.
+现在,如果执行`mvn clean package`，产生的jar包将包含所需的依赖。
