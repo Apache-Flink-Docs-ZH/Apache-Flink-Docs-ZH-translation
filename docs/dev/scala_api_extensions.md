@@ -22,47 +22,39 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-In order to keep a fair amount of consistency between the Scala and Java APIs, some
-of the features that allow a high-level of expressiveness in Scala have been left
-out from the standard APIs for both batch and streaming.
+为了保持Scala和Java API的一致性，对于批处理和流处理从标准的API中忽视了一些在Scala中允许的高级表达方式。
 
-If you want to _enjoy the full Scala experience_ you can choose to opt-in to
-extensions that enhance the Scala API via implicit conversions.
 
-To use all the available extensions, you can just add a simple `import` for the
-DataSet API
+如果你想体验全部的Scala表达你可以选择通过使用Scala的加强API隐式转化。
+
+你可以通过简单的导入数据集 API 来使用所有可用的扩展
 
 {% highlight scala %}
 import org.apache.flink.api.scala.extensions._
 {% endhighlight %}
 
-or the DataStream API
+或者导入数据流 API。
 
 {% highlight scala %}
 import org.apache.flink.streaming.api.scala.extensions._
 {% endhighlight %}
 
-Alternatively, you can import individual extensions _a-là-carte_ to only use those
-you prefer.
+作为选择，你也可以导入私有扩展a-là-carte 来使用那些你更喜欢的。
 
-## Accept partial functions
+## 局部函数
 
-Normally, both the DataSet and DataStream APIs don't accept anonymous pattern
-matching functions to deconstruct tuples, case classes or collections, like the
-following:
+通常，数据集和数据流API不接受匿名形式的函数去解构元组，例如类或集合，像下面这样：
 
 {% highlight scala %}
 val data: DataSet[(Int, String, Double)] = // [...]
 data.map {
   case (id, name, temperature) => // [...]
-  // The previous line causes the following compilation error:
-  // "The argument types of an anonymous function must be fully known. (SLS 8.5)"
+  // 上面一行会引起下面的编译错误:
+  // "匿名函数的参数类型必须完全可知. (SLS 8.5)"
 }
 {% endhighlight %}
 
-This extension introduces new methods in both the DataSet and DataStream Scala API
-that have a one-to-one correspondance in the extended API. These delegating methods
-do support anonymous pattern matching functions.
+这个扩展介绍了在数据集和数据流Scala 的扩展API 中有一对一关系的新的方法。这些授权方法不支持匿名形式的匹配函数。
 
 #### DataSet API
 
