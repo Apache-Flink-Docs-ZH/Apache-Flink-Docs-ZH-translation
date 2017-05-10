@@ -22,10 +22,10 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-为了保持Scala和Java API的一致性，对于批处理和流处理从标准的API中忽视了一些在Scala中允许的高级表达方式。
+为了保持 Scala 和 Java API 的一致性，对于批处理和流处理从标准的API中忽视了一些在 Scala 中允许的高级表达方式。
 
 
-如果你想体验全部的Scala表达你可以选择通过使用Scala的加强API隐式转化。
+如果你想体验全部的 Scala 表达你可以选择通过使用 Scala 的加强 API 隐式转化。
 
 你可以通过简单的导入数据集 API 来使用所有可用的扩展
 
@@ -41,9 +41,9 @@ import org.apache.flink.streaming.api.scala.extensions._
 
 作为选择，你也可以导入私有扩展a-là-carte 来使用那些你更喜欢的。
 
-## 局部函数
+## 偏函数
 
-通常，数据集和数据流API不接受匿名形式的函数去解构元组，例如类或集合，像下面这样：
+通常，数据集和数据流 API 不接受匿名形式的函数去解构元组，例如类或集合，像下面这样：
 
 {% highlight scala %}
 val data: DataSet[(Int, String, Double)] = // [...]
@@ -360,7 +360,7 @@ data1.join(data2).
 
 
 获取更多方法的语法信息，请参考
-[DataSet]({{ site.baseurl }}/dev/batch/index.html) 和 [DataStream]({{ site.baseurl }}/dev/datastream_api.html) 的API 帮助文档.
+[DataSet]({{ site.baseurl }}/dev/batch/index.html) 和 [DataStream]({{ site.baseurl }}/dev/datastream_api.html) 的 API 帮助文档.
 
 仅仅使用这一个扩展，你可以添加以下导入:
 
@@ -374,7 +374,7 @@ import org.apache.flink.api.scala.extensions.acceptPartialFunctions
 import org.apache.flink.streaming.api.scala.extensions.acceptPartialFunctions
 {% endhighlight %}
 
-下面片段展示了如何用数据集API使用这些扩展方法的小例子:
+下面片段展示了如何用数据集 API 使用这些扩展方法的小例子:
 
 {% highlight scala %}
 object Main {
