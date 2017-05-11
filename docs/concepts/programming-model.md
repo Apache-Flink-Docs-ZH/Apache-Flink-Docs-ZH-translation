@@ -27,179 +27,115 @@ under the License.
 * This will be replaced by the TOC
 {:toc}
 
-## Levels of Abstraction
+## 抽象级别
 
-Flink offers different levels of abstraction to develop streaming/batch applications.
+Flink提供了不同的抽象级别以开发流式或批处理应用。
 
 <img src="../fig/levels_of_abstraction.svg" alt="Programming levels of abstraction" class="offset" width="80%" />
 
-  - The lowest level abstraction simply offers **stateful streaming**. It is embedded into the [DataStream API](../dev/datastream_api.html)
-    via the [Process Function](../dev/stream/process_function.html). It allows users freely process events from one or more streams,
-    and use consistent fault tolerant *state*. In addition, users can register event time and processing time callbacks,
-    allowing programs to realize sophisticated computations.
+  - 最底层级的抽象仅仅提供了**有状态流**。它将通过[过程函数（Process Function）](../dev/stream/process_function.html)嵌入到[DataStream API](../dev/datastream_api.html)中。它允许用户可以自由地处理来自一个或多个流数据的事件，并使用一致、容错的状态。除此之外，用户可以注册事件时间和处理事件回调，从而使程序可以实现复杂的计算。
 
-  - In practice, most applications would not need the above described low level abstraction, but would instead program against the
-    **Core APIs** like the [DataStream API](../dev/datastream_api.html) (bounded/unbounded streams) and the [DataSet API](../dev/batch/index.html)
-    (bounded data sets). These fluent APIs offer the common building blocks for data processing, like various forms of user-specified
-    transformations, joins, aggregations, windows, state, etc. Data types processed in these APIs are represented as classes
-    in the respective programming languages.
+  - 实际上，大多数应用并不需要上述的低层级抽象，而是针对 **核心API（Core APIs）** 进行编程，比如[DataStream API](../dev/datastream_api.html)（有界或无界流数据）以及[DataSet API](../dev/batch/index.html)（有界数据集）。这些流畅的API为数据处理提供了通用的构建模块，比如由用户定义的多种形式的转换（transformations），连接（joins），聚合（aggregations），窗口操作（windows），状态（state）等等。这些API处理的数据类型以类（classes）的形式由各自的编程语言所表示。
 
-    The low level *Process Function* integrates with the *DataStream API*, making it possible to go the lower level abstraction 
-    for certain operations only. The *DataSet API* offers additional primitives on bounded data sets, like loops/iterations.
+  低层级的 *过程函数* 与 *DataStream API* 相集成，使其可以对某些特定的操作进行低层级的抽象。*DataSet API* 为有界数据集提供了额外的原语，例如循环与迭代。
 
-  - The **Table API** is a declarative DSL centered around *tables*, which may be dynamically changing tables (when representing streams).
-    The Table API follows the (extended) relational model: Tables have a schema attached (similar to tables in relational databases)
-    and the API offers comparable operations, such as select, project, join, group-by, aggregate, etc.
-    Table API programs declaratively define *what logical operation should be done* rather than specifying exactly
-   *how the code for the operation looks*. Though the Table API is extensible by various types of user-defined
-    functions, it is less expressive than the *Core APIs*, but more concise to use (less code to write).
-    In addition, Table API programs also go through an optimizer that applies optimization rules before execution.
+  - **Table API** 是以 *表* 为中心的声明式DSL，其中表可能会动态变化（在表达流数据时）。Table API遵循（扩展的）关系模型：表具有附加的模式（类似于关系数据库中的表），同时API提供可比较的操作，例如select、project、join、group-by、aggregate等。Table API程序声明式地定义了 *什么逻辑操作应该执行* 而不是准确地确定 *这些操作代码的看上去如何* 。 尽管Table API可以通过多种类型的用户定义的函数进行扩展，其仍不如 *核心API* 更具表达能力，但是使用起来却更加简洁（代码量更少）。除此之外，Table API程序还可以在执行之前通过应用优化规则的优化器。
 
-    One can seamlessly convert between tables and *DataStream*/*DataSet*, allowing programs to mix *Table API* and with the *DataStream*
-    and *DataSet* APIs.
+  你可以在表与 *DataStream*/*DataSet* 之间无缝切换，以允许程序将 *Table API* 与 *DataStream* 以及 *DataSet* 混合使用。
 
-  - The highest level abstraction offered by Flink is **SQL**. This abstraction is similar to the *Table API* both in semantics and
-    expressiveness, but represents programs as SQL query expressions.
-    The SQL abstraction closely interacts with the Table API, and SQL queries can be executed over tables defined in the *Table API*.
+  - Flink提供的最高层级的抽象是 **SQL** 。这一层抽象在语法与表达能力上与 *Table API* 类似，但是是以SQL查询表达式的形式表现程序。SQL抽象与Table API交互密切，同时SQL查询可以直接在Table API定义的表上执行。
 
 
-## Programs and Dataflows
+## 程序与数据流
 
-The basic building blocks of Flink programs are **streams** and **transformations**. (Note that the
-DataSets used in Flink's DataSet API are also streams internally -- more about that
-later.) Conceptually a *stream* is a (potentially never-ending) flow of data records, and a *transformation* is an
-operation that takes one or more streams as input, and produces one or more output streams as a
-result.
+Flink程序的基础构建模块是 **流（streams）** 与 **转换（transformations）**。（需要注意的是，Flink的DataSet API所使用的DataSets其内部也是流——更多内容将在之后讨论。）概念上来讲，*流* 是（可能永无止境的）数据记录流，而 *转换* 是一种操作，它取一个或多个流作为输入，并生产出一个或多个输出流作为结果。
 
-When executed, Flink programs are mapped to **streaming dataflows**, consisting of **streams** and transformation **operators**.
-Each dataflow starts with one or more **sources** and ends in one or more **sinks**. The dataflows resemble
-arbitrary **directed acyclic graphs** *(DAGs)*. Although special forms of cycles are permitted via
-*iteration* constructs, for the most part we will gloss over this for simplicity.
+执行时，Flink程序映射到 **流数据流（streaming dataflows）** ，由 **流** 以及转换 **算符** 构成。每一个数据流起始于一个或多个 **source**，并终止于一个或多个 **sink**。数据流类似于任意的 **有向无环图** *（DAG）* 。虽然通过 *迭代* 构造允许特定形式的环，但是大多数情况下，简单起见，我们都不考虑这一点。
 
 <img src="../fig/program_dataflow.svg" alt="A DataStream program, and its dataflow." class="offset" width="80%" />
 
-Often there is a one-to-one correspondence between the transformations in the programs and the operators
-in the dataflow. Sometimes, however, one transformation may consist of multiple transformation operators.
+通常，程序中的转换与数据流中的操作之间是一对一的关系。有时，然而，一个转换可能由多个转换操作构成。
 
 {% top %}
 
-## Parallel Dataflows
+## 并行数据流
 
-Programs in Flink are inherently parallel and distributed. During execution, a *stream* has one or more **stream partitions**,
-and each *operator* has one or **operator subtasks**. The operator subtasks are independent of one another, and execute in different threads
-and possibly on different machines or containers.
+Flink程序本质上是并行分布的。在执行过程中，一个 *流* 包含一个或多个 **流分区** ，而每一个 *算符* 包含一个或多个 **算符子任务** 。操作子任务间彼此独立，以不同的线程执行，甚至有可能运行在不同的机器或容器上。
 
-The number of operator subtasks is the **parallelism** of that particular operator. The parallelism of a stream
-is always that of its producing operator. Different operators of the same program may have different
-levels of parallelism.
+算符子任务的数量即这一特定算符的 **并行度** 。一个流的并行度即其生产算符的并行度。相同程序中的不同的算符可能有不同级别的并行度。
 
 <img src="../fig/parallel_dataflow.svg" alt="A parallel dataflow" class="offset" width="80%" />
 
-Streams can transport data between two operators in a *one-to-one* (or *forwarding*) pattern, or in a *redistributing* pattern:
+流在两个算符之间传输数据，可以通过 *一对一* （或称 *forwarding* ）模式，或者通过 *redistributing* 模式：
 
-  - **One-to-one** streams (for example between the *Source* and the *map()* operators in the figure
-    above) preserve the partitioning and ordering of the
-    elements. That means that subtask[1] of the *map()* operator will see the same elements in the same order as they
-    were produced by subtask[1] of the *Source* operator.
+  - **一对一** 流（例如上图中 *Source* 与 *map()* 算符之间）保持了元素的分区与排序。那意味着 *map()* 算符的子任务[1]将以与 *Source* 的子任务[1]生成顺序相同的顺序查看到相同的元素。
 
-  - **Redistributing** streams (as between *map()* and *keyBy/window* above, as well as between
-    *keyBy/window* and *Sink*) change the partitioning of streams. Each *operator subtask* sends
-    data to different target subtasks, depending on the selected transformation. Examples are
-    *keyBy()* (which re-partitions by hashing the key), *broadcast()*, or *rebalance()* (which
-    re-partitions randomly). In a *redistributing* exchange the ordering among the elements is
-    only preserved within each pair of sending and receiving subtasks (for example, subtask[1]
-    of *map()* and subtask[2] of *keyBy/window*). So in this example, the ordering within each key
-    is preserved, but the parallelism does introduce non-determinism regarding the order in
-    which the aggregated results for different keys arrive at the sink.
+  - **Redistributing** 流（如上图中 *map()* 与 *keyBy/window* 之间，以及 *keyBy/window* 与 *Sink* 之间）则改变了流的分区。每一个 *算符子任务* 根据所选择的转换，向不同的目标子任务发送数据。比如 *keyBy()* （根据key的哈希值重新分区）， *broadcast()* ，或者 *rebalance()* （随机重分区）。在一次 *redistributing* 交换中，元素间的排序只保留在每对发送与接受子任务中（比如， *map()* 的子任务[1]与 *keyBy/window* 的子任务[2]）。因此在这个例子中，每个键的顺序被保留下来，但是并行确实引入了对于不同键的聚合结果到达sink的顺序的不确定性。
 
 {% top %}
 
-## Windows
+## 窗口
 
-Aggregating events (e.g., counts, sums) works differently on streams than in batch processing.
-For example, it is impossible to count all elements in a stream,
-because streams are in general infinite (unbounded). Instead, aggregates on streams (counts, sums, etc),
-are scoped by **windows**, such as *"count over the last 5 minutes"*, or *"sum of the last 100 elements"*.
+聚合事件（比如计数、求和）在流上的工作方式与批处理不同。比如，对流中的所有元素进行计数是不可能的，因为通常流是无限的（无界的）。相反，流上的聚合需要由 **窗口** 来划定范围，比如 *“计算过去的5分钟”* ，或者 *“最后100个元素的和”* 。
 
-Windows can be *time driven* (example: every 30 seconds) or *data driven* (example: every 100 elements).
-One typically distinguishes different types of windows, such as *tumbling windows* (no overlap),
-*sliding windows* (with overlap), and *session windows* (punctuated by a gap of inactivity).
+窗口可以是 *事件驱动的* （比如：每30秒）或者 *数据驱动的* （比如：每100个元素）。窗口通常被区分为不同的类型，比如 *滚动窗口* （没有重叠）， *滑动窗口* （有重叠），以及 *会话窗口* （由不活动的间隙所打断）
 
 <img src="../fig/windows.svg" alt="Time- and Count Windows" class="offset" width="80%" />
 
-More window examples can be found in this [blog post](https://flink.apache.org/news/2015/12/04/Introducing-windows.html).
+更多窗口的案例可以查看[这个博客](https://flink.apache.org/news/2015/12/04/Introducing-windows.html)。
 
 {% top %}
 
-## Time
+## 时间
 
-When referring to time in a streaming program (for example to define windows), one can refer to different notions
-of time:
+当提到流程序（例如定义窗口）中的时间时，你可以参考不同的时间概念：
 
-  - **Event Time** is the time when an event was created. It is usually described by a timestamp in the events,
-    for example attached by the producing sensor, or the producing service. Flink accesses event timestamps
-    via [timestamp assigners]({{ site.baseurl }}/dev/event_timestamps_watermarks.html).
+  - **事件时间** 是事件创建的时间。它通常由事件中的时间戳描述，例如附接在生产传感器，或者生产服务。Flink通过[时间戳分配器]({{ site.baseurl }}/dev/event_timestamps_watermarks.html)访问事件时间戳。
 
-  - **Ingestion time** is the time when an event enters the Flink dataflow at the source operator.
+  - **摄入时间** 是事件进入Flink数据流源算符的时间。
 
-  - **Processing Time** is the local time at each operator that performs a time-based operation.
+  - **处理事件** 是每一个执行时间操作的算符的本地时间。
 
 <img src="../fig/event_ingestion_processing_time.svg" alt="Event Time, Ingestion Time, and Processing Time" class="offset" width="80%" />
 
-More details on how to handle time are in the [event time docs]({{ site.baseurl }}/dev/event_time.html).
+更多关于如何处理时间的细节可以查看[事件时间文档]({{ site.baseurl }}/dev/event_time.html).
 
 {% top %}
 
-## Stateful Operations
+## 有状态操作
 
-While many operations in a dataflow simply look at one individual *event at a time* (for example an event parser),
-some operations remember information across multiple events (for example window operators).
-These operations are called **stateful**.
+尽管数据流中的很多操作一次只查看一个独立的事件（比如事件解析器），有些操作却会记录多个事件间的信息（比如窗口算符）。
+这些操作被称为 **有状态的** 。
 
-The state of stateful operations is maintained in what can be thought of as an embedded key/value store.
-The state is partitioned and distributed strictly together with the streams that are read by the
-stateful operators. Hence, access to the key/value state is only possible on *keyed streams*, after a *keyBy()* function,
-and is restricted to the values associated with the current event's key. Aligning the keys of streams and state
-makes sure that all state updates are local operations, guaranteeing consistency without transaction overhead.
-This alignment also allows Flink to redistribute the state and adjust the stream partitioning transparently.
+有状态操作的状态保存在一个可被视作嵌入式键/值存储的部分中。状态与由有状态算符读取的流一起被严格地分区与分布。因此，只能访问一个 *keyBy()* 函数之后的 *keyed streams* 的键/值状态，并且仅限于与当前事件键相关联的值。对齐流和状态的键确保了所有状态更新都是本地操作，以在没有事务开销的情况下确保一致性。这种对齐还使得Flink可以透明地重新分配状态与调整流的分区。
 
 <img src="../fig/state_partitioning.svg" alt="State and Partitioning" class="offset" width="50%" />
 
 {% top %}
 
-## Checkpoints for Fault Tolerance
+## 容错检查点
 
-Flink implements fault tolerance using a combination of **stream replay** and **checkpointing**. A
-checkpoint is related to a specific point in each of the input streams along with the corresponding state for each
-of the operators. A streaming dataflow can be resumed from a checkpoint while maintaining consistency *(exactly-once
-processing semantics)* by restoring the state of the operators and replaying the events from the
-point of the checkpoint.
+Flink使用 **流重放** 与 **检查点** 的结合实现了容错。检查点与每一个输入流及其相关的每一个算符的状态的特定点相关联。一个流数据流可以可以从一个检查点恢复出来，其中通过恢复算符状态并从检查点重放事件以保持一致性 *（一次处理语义）*
 
-The checkpoint interval is a means of trading off the overhead of fault tolerance during execution with the recovery time (the number
-of events that need to be replayed).
+检查点间隔是以恢复时间（需要重放的事件数量）来消除执行过程中容错的开销的一种手段。
 
-More details on checkpoints and fault tolerance are in the [fault tolerance docs]({{ site.baseurl }}/internals/stream_checkpointing.html).
+更多关于检查点与容错的细节可以查看[容错文档]({{ site.baseurl }}/internals/stream_checkpointing.html)。
 
 {% top %}
 
-## Batch on Streaming
+## 流上的批处理
 
-Flink executes batch programs as a special case of streaming programs, where the streams are bounded (finite number of elements).
-A *DataSet* is treated internally as a stream of data. The concepts above thus apply to batch programs in the
-same way as well as they apply to streaming programs, with minor exceptions:
+Flink将批处理程序作为流处理程序的特殊情况来执行，只是流是有界的（有限个元素）。
+*DataSet* 内部被视为数据流。上述适用于流处理程序的概念同样适用于批处理程序，除了一些例外：
 
-  - Programs in the DataSet API do not use checkpoints. Recovery happens by fully replaying the streams.
-    That is possible, because inputs are bounded. This pushes the cost more towards the recovery,
-    but makes the regular processing cheaper, because it avoids checkpoints.
+  - DataSet API中的程序不使用检查点。而通过完全地重放流来恢复。因为输入是有界的，因此这是可行的。这种方法使得恢复的成本增加，但是由于避免了检查点，因而使得正常处理的开销更小。
 
-  - Stateful operations in the DataSet API use simplified in-memory/out-of-core data structures, rather than
-    key/value indexes.
+  - DataSet API中的有状态操作使用简化的im-memory/out-of-core数据结构，而不是键/值索引。
 
-  - The DataSet API introduces special synchronized (superstep-based) iterations, which are only possible on
-    bounded streams. For details, check out the [iteration docs]({{ site.baseurl }}/dev/batch/iterations.html).
+  - DataSet API引入了特殊的同步（基于superstep的）迭代，而这种迭代仅仅能在有界流上执行。细节可以查看[迭代文档]({{ site.baseurl }}/dev/batch/iterations.html)。
 
 {% top %}
 
-## Next Steps
+## 下一步
 
-Continue with the basic concepts in Flink's [Distributed Runtime](runtime.html).
+继续阅读Flink的[分布式运行时](runtime.html)的基本概念。
