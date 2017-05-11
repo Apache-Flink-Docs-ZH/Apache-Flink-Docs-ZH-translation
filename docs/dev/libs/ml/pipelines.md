@@ -28,7 +28,7 @@ under the License.
 
 ## 简介
 
-能把 transformer 和 predictor 链接起来对任何机器学习库都是一个非常重要的特性。在 FlinkML 中我们希望在提供一个直观的API的同时，能够充分利用 Scala 语言的能力来为我们的 pipelines 提供类型安全的实现。我们希望能够实现的是让API的使用变得简单轻松，让使用者在编译时（在工作发起之前）避免类型错误，并且消除在需要长期运行的工作提交后由于数据转换操作错误引起的失败情形，而这类错误在机器学习 pipeline 中是经常发生的。
+能把 transformer 和 predictor 链接起来对任何机器学习库都是一个非常重要的特性。在 FlinkML 中我们希望在提供一个直观的API的同时，能够充分利用 Scala 语言的能力来为我们的 pipelines 提供类型安全的实现。我们希望能够实现的是让API的使用变得简单轻松，让使用者在编译时（在工作开始运行之前）避免类型错误，并且消除在需要长期运行的工作提交后由于数据转换操作错误引起的失败情形，而这类错误在机器学习 pipeline 中是经常发生的。
 
 在本指南中，我们将会描述在 FlinkML 中实现可链接的 transformers 和 predictors 时所采用的选择，并且为开发人员提供关于如何充分使用 pipeline 特性来创建自己的算法的指导。
 
@@ -38,10 +38,7 @@ under the License.
 
 机器学习中 pipeline 的目的是创建一个可以管理由操作链引起的复杂问题的框架。Pipeline 应让开发人员能简易地定义使用在训练数据上的转换操作链，这样才能创建训练学习模型时所需的终端特性 (end features)，并且对没有标签的（测试）数据简易地执行相同的转换操作集。Pipelines 也应简化在这些操作链上进行的交叉验证的模型选择.
 
-Finally, by ensuring that the consecutive links in the pipeline chain "fit together" we also
-avoid costly type errors. Since each step in a pipeline can be a computationally-heavy operation,
-we want to avoid running a pipelined job, unless we are sure that all the input/output pairs in a
-pipeline "fit".
+最后，pipeline 中的链是连贯的，我们通过确保这些连贯链能"一起拟合"来避免高代价的类型错误。因为 pipline 中的每一步都可能是计算量繁重的操作，所以我们只有在确定 pipeline 中所有的输入/输出对都能"拟合"时，才会运行一个 pipeline 工作。
 
 ## FlinkML 中的 Pipelines
 
