@@ -36,23 +36,15 @@ under the License.
 
 机器学习中的 pipeline 是什么？在讨论机器学习时，pipeline 可以认为是一系列操作的链接，这些操作以某些数据作为输入，再对这些输入数据进行转换操作，最后输出转换之后的数据，这些转换后的数据既可以被用作 predictor 函数，比如一个学习模型，的输入（特征），也可以仅仅作为被某些其它任务所使用的输出。终端 learner 当然也可以作为 pipeline 的一部分。机器学习中的 pipeline 通常是复杂的操作集合([深入解释](http://research.google.com/pubs/pub43146.html))，并且可以作为终端对终端学习系统的错误源。 
 
-机器学习中 pipeline 的目的是创建一个可以管理由操作链引起的复杂问题的框架。Pipeline 应让开发人员能简易地定义使用在训练数据上的转换操作链，这样才能创建训练学习模型时所需的终端特性 (end features)，并且对没有标签的（测试）数据简易地执行相同的转换操作集。Pipelines 也应简化在这些操作链上进行的交叉验证的模型选择.
+机器学习中 pipeline 的目的是创建一个可以管理由操作链引起的复杂问题的框架。Pipeline 应让开发人员能简易地定义使用在训练数据上的转换操作链，这样才能创建训练学习模型时所需的终端特性 (end features)，并且对没有标签的（测试）数据简易地执行相同的转换操作集。Pipelines 也应简化在这些操作链上进行的交叉验证的模型选择。
 
-最后，pipeline 中的链是连贯的，我们通过确保这些连贯链能"前后匹配"来避免高代价的类型错误。因为 pipline 中的每一步都可能是计算量繁重的操作，所以我们只有在确定 pipeline 中所有的输入/输出对都能"匹配"时，才会运行一个 pipeline 工作。
+最后，pipeline 中的链是连贯相扣的，我们通过确保这些连贯的链能"前后匹配"来避免高代价的类型错误。因为 pipline 中的每一步都可能是计算量繁重的操作，所以我们只有在确定 pipeline 中所有的输入/输出对都能"匹配"时，才会运行一个 pipeline 工作。
 
 ## FlinkML 中的 Pipelines
 
-FlinkML 中的 pipeline 构建模块请参阅 `ml.pipeline` 包。FlinkML 的 API 受 [sklearn](http://scikit-learn.org) 启发，这意味着我们有 `Estimator`, `Transformer` 和 `Predictor` 三个接口。想要更加深入地了解 sklearn API 是如何设计的读者，请参阅 [此](http://arxiv.org/abs/1309.0238) 论文。简单来说，`Estimator` 是基类，被`Transformer` 和 `Predictor`继承。`Estimator` 中定义了一个 `fit` 方法，`Transformer` 中定了一个 `transform` 方法，而 `Predictor` 中定义了一个`predict` 方法。
+FlinkML 中的 pipeline 构建模块请参阅 `ml.pipeline` 包。FlinkML 的 API 受 [sklearn](http://scikit-learn.org) 启发，这意味着我们有 `Estimator`, `Transformer` 和 `Predictor` 三个接口。想要更加深入地了解 sklearn API 是如何设计的读者，请参阅 [此](http://arxiv.org/abs/1309.0238) 论文。简单地说，`Estimator` 作为基类被`Transformer` 和 `Predictor`继承。`Estimator` 中定义了一个 `fit` 方法，`Transformer` 中定了一个 `transform` 方法，而 `Predictor` 中定义了一个`predict` 方法。
 
-The `fit` method of the `Estimator` performs the actual training of the model, for example
-finding the correct weights in a linear regression task, or the mean and standard deviation of
-the data in a feature scaler.
-As evident by the naming, classes that implement
-`Transformer` are transform operations like [scaling the input](standard_scaler.html) and
-`Predictor` implementations are learning algorithms such as [Multiple Linear Regression]({{site.baseurl}}/dev/libs/ml/multiple_linear_regression.html).
-Pipelines can be created by chaining together a number of Transformers, and the final link in a pipeline can be a Predictor or another Transformer.
-Pipelines that end with Predictor cannot be chained any further.
-Below is an example of how a pipeline can be formed:
+`Estimator` 中的 `fit` 方法对模型进行实质上的训练，比如在一个线性回归任务中找到合适的权重，或者在特征缩放中找到正确的平均值和标准差。对于 `Transformer`, 正如其名所示，任何实现了 `Transformer` 的类都可以实行转换操作，比如 [复线性回归]({{site.baseurl}}/dev/libs/ml/multiple_linear_regression.html)。`Predictor` 的实现类可以学习算法，比如 [复线性回归]({{site.baseurl}}/dev/libs/ml/multiple_linear_regression.html)。Pipeline 可以通过链接若干个 Transformers 创建，pipeline 中的最后一环可以是一个 Predictor 或者是 Transformer，以 Predictor 结束的 pipeline 无法进行下一步链接。下面的例子展示如何构建一个 pipeline:
 
 {% highlight scala %}
 // Training data
