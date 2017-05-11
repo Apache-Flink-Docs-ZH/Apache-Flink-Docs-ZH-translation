@@ -37,8 +37,8 @@ under the License.
 <table class="table table-bordered">
     <thead>
       <tr>
-        <th class="text-left" style="width: 20%">Metric</th>
-        <th class="text-center">Description</th>
+        <th class="text-left" style="width: 20%">度量标准</th>
+        <th class="text-center">描述</th>
       </tr>
     </thead>
 
