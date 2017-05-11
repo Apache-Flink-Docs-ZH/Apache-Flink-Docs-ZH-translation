@@ -44,35 +44,33 @@ under the License.
 
 FlinkML 中的 pipeline 构建模块请参阅 `ml.pipeline` 包。FlinkML 的 API 受 [sklearn](http://scikit-learn.org) 启发，这意味着我们有 `Estimator`, `Transformer` 和 `Predictor` 三个接口。想要更加深入地了解 sklearn API 是如何设计的读者，请参阅 [此](http://arxiv.org/abs/1309.0238) 论文。简单地说，`Estimator` 作为基类被`Transformer` 和 `Predictor`继承。`Estimator` 中定义了一个 `fit` 方法，`Transformer` 中定了一个 `transform` 方法，而 `Predictor` 中定义了一个`predict` 方法。
 
-`Estimator` 中的 `fit` 方法对模型进行实质上的训练，比如在一个线性回归任务中找到合适的权重，或者在特征缩放中找到正确的平均值和标准差。对于 `Transformer`, 正如其名所示，任何实现了 `Transformer` 的类都可以实行转换操作，比如 [复线性回归]({{site.baseurl}}/dev/libs/ml/multiple_linear_regression.html)。`Predictor` 的实现类可以学习算法，比如 [复线性回归]({{site.baseurl}}/dev/libs/ml/multiple_linear_regression.html)。Pipeline 可以通过链接若干个 Transformers 创建，pipeline 中的最后一环可以是一个 Predictor 或者是 Transformer，以 Predictor 结束的 pipeline 无法进行下一步链接。下面的例子展示如何构建一个 pipeline:
+`Estimator` 中的 `fit` 方法对模型进行实质上的训练，比如在一个线性回归任务中找到合适的权重，或者在特征缩放中找到正确的平均值和标准差。对于 `Transformer`, 正如其名所示，任何实现了 `Transformer` 的类都可以实行转换操作，比如 [复线性回归]({{site.baseurl}}/dev/libs/ml/multiple_linear_regression.html)。`Predictor` 的实现类可以学习算法，比如 [复线性回归]({{site.baseurl}}/dev/libs/ml/multiple_linear_regression.html)。Pipeline 可以通过链接若干个 Transformers 创建，pipeline 中的最后一环可以是一个 Predictor 或者是 Transformer，如果一个 pipeline 以 Predictor 结束, 则无法进行下一步链接。下面的例子展示如何构建一个 pipeline:
 
 {% highlight scala %}
-// Training data
+// 训练数据
 val input: DataSet[LabeledVector] = ...
-// Test data
+// 测试数据
 val unlabeled: DataSet[Vector] = ...
 
 val scaler = StandardScaler()
 val polyFeatures = PolynomialFeatures()
 val mlr = MultipleLinearRegression()
 
-// Construct the pipeline
+// 构建 pipeline
 val pipeline = scaler
   .chainTransformer(polyFeatures)
   .chainPredictor(mlr)
 
-// Train the pipeline (scaler and multiple linear regression)
+// 训练 pipeline (StandardScaler 和 MultipleLinearRegression)
 pipeline.fit(input)
 
-// Calculate predictions for the testing data
+// 计算测试集上的预测结果
 val predictions: DataSet[LabeledVector] = pipeline.predict(unlabeled)
 
 {% endhighlight %}
 
-As we mentioned, FlinkML pipelines are type-safe.
-If we tried to chain a transformer with output of type `A` to another with input of type `B` we
-would get an error at pre-flight time if `A` != `B`. FlinkML achieves this kind of type-safety
-through the use of Scala's implicits.
+正如我们提到的，FlinkML 的 pipeline 是类型安全的。
+如果我们尝试把输出类型为 `A` 的 transformer 链接到另一个输入类型为 `B` 的 transformer，若 `A` != `B` 我们会在编译时得到一个错误警报。FlinkML 中这种类型安全是通过 Scala 语言的隐式特性实现的。
 
 ### Scala 的隐式
 
