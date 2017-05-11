@@ -28,13 +28,13 @@ under the License.
 
 ## 简介
 
-能把 transformer 和 predictor 链起来对任何机器学习库都是一个非常重要的特性。在 FlinkML 中我们希望在提供一个直观的API的同时，能够充分利用 Scala 语言的能力来为我们的 pipelines 提供类型安全的实现。我们希望能够实现的是让API的使用变得简单轻松，让使用者在编译时（在工作发起之前）避免类型错误，并且消除在需要长期运行的工作提交后由于数据转换错误引起的失败情形，而这类错误在机器学习 pipeline 中是经常发生的。
+能把 transformer 和 predictor 链接起来对任何机器学习库都是一个非常重要的特性。在 FlinkML 中我们希望在提供一个直观的API的同时，能够充分利用 Scala 语言的能力来为我们的 pipelines 提供类型安全的实现。我们希望能够实现的是让API的使用变得简单轻松，让使用者在编译时（在工作发起之前）避免类型错误，并且消除在需要长期运行的工作提交后由于数据转换错误引起的失败情形，而这类错误在机器学习 pipeline 中是经常发生的。
 
 In this guide then we will describe the choices we made during the implementation of chainable
 transformers and predictors in FlinkML, and provide guidelines on how developers can create their
 own algorithms that make use of these capabilities.
 
-## The what and the why
+## "是什么" 和 "为什么"
 
 So what do we mean by "ML pipelines"? Pipelines in the ML context can be thought of as chains of
 operations that have some data as input, perform a number of transformations to that data,
@@ -59,7 +59,7 @@ avoid costly type errors. Since each step in a pipeline can be a computationally
 we want to avoid running a pipelined job, unless we are sure that all the input/output pairs in a
 pipeline "fit".
 
-## Pipelines in FlinkML
+## FlinkML 中的 Pipelines
 
 The building blocks for pipelines in FlinkML can be found in the `ml.pipeline` package.
 FlinkML follows an API inspired by [sklearn](http://scikit-learn.org) which means that we have
@@ -107,7 +107,7 @@ If we tried to chain a transformer with output of type `A` to another with input
 would get an error at pre-flight time if `A` != `B`. FlinkML achieves this kind of type-safety
 through the use of Scala's implicits.
 
-### Scala implicits
+### Scala 的隐式
 
 If you are not familiar with Scala's implicits we can recommend [this excerpt](https://www.artima.com/pins1ed/implicit-conversions-and-parameters.html)
 from Martin Odersky's "Programming in Scala". In short, implicit conversions allow for ad-hoc
@@ -116,7 +116,7 @@ provide the compiler with default values that can be supplied to function calls 
 The combination of implicit conversions and implicit parameters is what allows us to chain transform
 and predict operations together in a type-safe manner.
 
-### Operations
+### 操作
 
 As we mentioned, the trait (abstract class) `Estimator` defines a `fit` method. The method has two
 parameter lists
@@ -174,7 +174,7 @@ override their respective `fit` and `transform` methods, which are then called b
 `transform` methods of `Estimator` and `Transformer`.  Similarly, a class that implements
 `Predictor` should define an implicit `PredictOperation` object inside its companion object.
 
-#### Types and type safety
+#### 类型和类型安全
 
 Apart from the `fit` and `transform` operations that we listed above, the `StandardScaler` also
 provides `fit` and `transform` operations for input of type `LabeledVector`.
@@ -188,7 +188,7 @@ While it would be possible to catch these kinds of errors at compile time as wel
 messages that we are able to provide the user would be much less informative, which is why we chose
 to throw runtime exceptions instead.
 
-### Chaining
+### 链接
 
 Chaining is achieved by calling `chainTransformer` or `chainPredictor` on an object
 of a class that implements `Transformer`. These methods return a `ChainedTransformer` or
@@ -202,7 +202,7 @@ operation that can be further chained with more transformers or a predictor.
 It is important to note that developers and users do not need to worry about chaining when
 implementing their algorithms, all this is handled automatically by FlinkML.
 
-### How to Implement a Pipeline Operator
+### 如何实现一个 Pipeline 操作
 
 In order to support FlinkML's pipelining, algorithms have to adhere to a certain design pattern, which we will describe in this section.
 Let's assume that we want to implement a pipeline operator which changes the mean of your data.
