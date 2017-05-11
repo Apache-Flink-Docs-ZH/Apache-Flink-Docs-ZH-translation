@@ -25,14 +25,17 @@ under the License.
 * This will be replaced by the TOC
 {:toc}
 
-## Description
+## 描述
 
+对于不同类型的分析，采用不同类型的距离度量标准是很方便的。Flink ML 为许多标准的距离度量标准提供了内置的实现。
+你能通过实现 `DistanceMetric` 特质来创造自定义的距离度量标准
 Different metrics of distance are convenient for different types of analysis. Flink ML provides
 built-in implementations for many standard distance metrics. You can create custom
 distance metrics by implementing the `DistanceMetric` trait.
 
-## Built-in Implementations
+## 内置实现
 
+目前， FlinkML 支持以下度量标准：
 Currently, FlinkML supports the following metrics:
 
 <table class="table table-bordered">
