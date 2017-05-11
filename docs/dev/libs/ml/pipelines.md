@@ -64,7 +64,7 @@ val pipeline = scaler
 // 训练 pipeline (StandardScaler 和 MultipleLinearRegression)
 pipeline.fit(input)
 
-// 计算测试集上的预测结果
+// 对测试集进行预测
 val predictions: DataSet[LabeledVector] = pipeline.predict(unlabeled)
 
 {% endhighlight %}
@@ -74,12 +74,7 @@ val predictions: DataSet[LabeledVector] = pipeline.predict(unlabeled)
 
 ### Scala 的隐式
 
-If you are not familiar with Scala's implicits we can recommend [this excerpt](https://www.artima.com/pins1ed/implicit-conversions-and-parameters.html)
-from Martin Odersky's "Programming in Scala". In short, implicit conversions allow for ad-hoc
-polymorphism in Scala by providing conversions from one type to another, and implicit values
-provide the compiler with default values that can be supplied to function calls through implicit parameters.
-The combination of implicit conversions and implicit parameters is what allows us to chain transform
-and predict operations together in a type-safe manner.
+如果你对 Scala 语言的隐式特性不熟悉，我们推荐 [这篇摘录](https://www.artima.com/pins1ed/implicit-conversions-and-parameters.html)，此摘录取自 Martin Odersky 的 "Programming in Scala"。 简单地说，Scala 中的隐式转换通过一个类型到另一个类型的转换来允许特定的多态，而隐式值则通过隐式参数为编译器提供默认值，这些值可在函数调用时被使用。隐式转换和隐式参数的组合让 transform 和 predict 操作能用类型安全的方式得以实现。
 
 ### 操作
 
