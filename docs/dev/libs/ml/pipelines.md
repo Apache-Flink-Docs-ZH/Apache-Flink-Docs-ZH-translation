@@ -78,21 +78,9 @@ val predictions: DataSet[LabeledVector] = pipeline.predict(unlabeled)
 
 ### 操作
 
-As we mentioned, the trait (abstract class) `Estimator` defines a `fit` method. The method has two
-parameter lists
-(i.e. is a [curried function](http://docs.scala-lang.org/tutorials/tour/currying.html)). The
-first parameter list
-takes the input (training) `DataSet` and the parameters for the estimator. The second parameter
-list takes one `implicit` parameter, of type `FitOperation`. `FitOperation` is a class that also
-defines a `fit` method, and this is where the actual logic of training the concrete Estimators
-should be implemented. The `fit` method of `Estimator` is essentially a wrapper around the  fit
-method of `FitOperation`. The `predict` method of `Predictor` and the `transform` method of
-`Transform` are designed in a similar manner, with a respective operation class.
+正如我们提到的，`Estimator` 特质（抽象类）定义了一个 `fit` 方法。该方法有两个参数列表 (i.e. 是一个[柯里化函数](http://docs.scala-lang.org/tutorials/tour/currying.html))。第一个参数列表接收输入（训练）集 `DataSet` 和提供给 estimator 的参数。第二个参数列表接收一个 `implicit`（隐式）参数，该参数的类型是 `FitOperation`。`FitOperation` 也是一个定义了 `fit` 方法的类，该方法应实现具体的 estimator 训练的实际逻辑。`Estimator` 中的 `fit` 方法本质上是一个 `FitOperation` 中的 `fit` 方法的包装。同理，`Predictor` 的 `predict` 方法和 `transform` 的 `Transform` 方法也通过各自的操作类(operation class)，用相似的方法设计。
 
-In these methods the operation object is provided as an implicit parameter.
-Scala will [look for implicits](http://docs.scala-lang.org/tutorials/FAQ/finding-implicits.html)
-in the companion object of a type, so classes that implement these interfaces should provide these
-objects as implicit objects inside the companion object.
+这些方法中的操作对象(operation object)均由隐式参数提供。Scala 会在一个类型的伴生对象中[寻找该隐式](http://docs.scala-lang.org/tutorials/FAQ/finding-implicits.html)，因此所有实现了这些接口的类应在其伴生对象中，以隐式对象的形式提供这些对象。
 
 As an example we can look at the `StandardScaler` class. `StandardScaler` extends `Transformer`, so it has access to its `fit` and `transform` functions.
 These two functions expect objects of `FitOperation` and `TransformOperation` as implicit parameters,
