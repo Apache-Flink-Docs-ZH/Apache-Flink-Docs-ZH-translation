@@ -28,22 +28,13 @@ under the License.
 
 ## 简介
 
-能把 transformer 和 predictor 链接起来对任何机器学习库都是一个非常重要的特性。在 FlinkML 中我们希望在提供一个直观的API的同时，能够充分利用 Scala 语言的能力来为我们的 pipelines 提供类型安全的实现。我们希望能够实现的是让API的使用变得简单轻松，让使用者在编译时（在工作发起之前）避免类型错误，并且消除在需要长期运行的工作提交后由于数据转换错误引起的失败情形，而这类错误在机器学习 pipeline 中是经常发生的。
+能把 transformer 和 predictor 链接起来对任何机器学习库都是一个非常重要的特性。在 FlinkML 中我们希望在提供一个直观的API的同时，能够充分利用 Scala 语言的能力来为我们的 pipelines 提供类型安全的实现。我们希望能够实现的是让API的使用变得简单轻松，让使用者在编译时（在工作发起之前）避免类型错误，并且消除在需要长期运行的工作提交后由于数据转换操作错误引起的失败情形，而这类错误在机器学习 pipeline 中是经常发生的。
 
-In this guide then we will describe the choices we made during the implementation of chainable
-transformers and predictors in FlinkML, and provide guidelines on how developers can create their
-own algorithms that make use of these capabilities.
+在本指南中，我们将会描述在 FlinkML 中实现可链接的 transformers 和 predictors 时所采用的选择，并且为开发人员提供关于如何充分使用 pipeline 特性来创建自己的算法的指导。
 
 ## "是什么" 和 "为什么"
 
-So what do we mean by "ML pipelines"? Pipelines in the ML context can be thought of as chains of
-operations that have some data as input, perform a number of transformations to that data,
-and
-then output the transformed data, either to be used as the input (features) of a predictor
-function, such as a learning model, or just output the transformed data themselves, to be used in
-some other task. The end learner can of course be a part of the pipeline as well.
-ML pipelines can often be complicated sets of operations ([in-depth explanation](http://research.google.com/pubs/pub43146.html)) and
-can become sources of errors for end-to-end learning systems.
+机器学习中的 pipeline 是什么？在讨论机器学习时，pipeline 可以认为是一系列操作的链接，这些操作以某些数据作为输入，再对这些输入数据进行转换操作，最后输出转换之后的数据，这些转换后的数据既可以被用作 predictor 函数，比如一个学习模型，的输入（特征），也可以仅仅作为被某些其它任务所使用的输出。终端 learner 当然也可以作为 pipeline 的一部分。机器学习中的 pipeline 通常是复杂的操作集合([深入解释](http://research.google.com/pubs/pub43146.html))，并且可以作为终端对终端学习系统的错误源。 
 
 The purpose of ML pipelines is then to create a
 framework that can be used to manage the complexity introduced by these chains of operations.
