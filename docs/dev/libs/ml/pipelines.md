@@ -36,14 +36,7 @@ under the License.
 
 机器学习中的 pipeline 是什么？在讨论机器学习时，pipeline 可以认为是一系列操作的链接，这些操作以某些数据作为输入，再对这些输入数据进行转换操作，最后输出转换之后的数据，这些转换后的数据既可以被用作 predictor 函数，比如一个学习模型，的输入（特征），也可以仅仅作为被某些其它任务所使用的输出。终端 learner 当然也可以作为 pipeline 的一部分。机器学习中的 pipeline 通常是复杂的操作集合([深入解释](http://research.google.com/pubs/pub43146.html))，并且可以作为终端对终端学习系统的错误源。 
 
-The purpose of ML pipelines is then to create a
-framework that can be used to manage the complexity introduced by these chains of operations.
-Pipelines should make it easy for developers to define chained transformations that can be
-applied to the
-training data, in order to create the end features that will be used to train a
-learning model, and then perform the same set of transformations just as easily to unlabeled
-(test) data. Pipelines should also simplify cross-validation and model selection on
-these chains of operations.
+机器学习中 pipeline 的目的是创建一个可以管理由操作链引起的复杂问题的框架。Pipeline 应让开发人员能简易地定义使用在训练数据上的转换操作链，这样才能创建训练学习模型时所需的终端特性 (end features)，并且对没有标签的（测试）数据简易地执行相同的转换操作集。Pipelines 也应简化在这些操作链上进行的交叉验证的模型选择.
 
 Finally, by ensuring that the consecutive links in the pipeline chain "fit together" we also
 avoid costly type errors. Since each step in a pipeline can be a computationally-heavy operation,
