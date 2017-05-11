@@ -26,17 +26,9 @@ under the License.
 * This will be replaced by the TOC
 {:toc}
 
-## Introduction
+## 简介
 
-The ability to chain together different transformers and predictors is an important feature for
-any Machine Learning (ML) library. In FlinkML we wanted to provide an intuitive API,
-and at the same
-time utilize the capabilities of the Scala language to provide
-type-safe implementations of our pipelines. What we hope to achieve then is an easy to use API,
-that protects users from type errors at pre-flight (before the job is launched) time, thereby
-eliminating cases where long
-running jobs are submitted to the cluster only to see them fail due to some
-error in the series of data transformations that commonly happen in an ML pipeline.
+能把 transformer 和 predictor 链起来对任何机器学习库都是一个非常重要的特性。在 FlinkML 中我们希望在提供一个直观的API的同时，能够充分利用 Scala 语言的能力来为我们的 pipelines 提供类型安全的实现。我们希望能够实现的是让API的使用变得简单轻松，让使用者在编译时（在工作发起之前）避免类型错误，并且消除在需要长期运行的工作提交后由于数据转换错误引起的失败情形，而这类错误在机器学习 pipeline 中是经常发生的。
 
 In this guide then we will describe the choices we made during the implementation of chainable
 transformers and predictors in FlinkML, and provide guidelines on how developers can create their
