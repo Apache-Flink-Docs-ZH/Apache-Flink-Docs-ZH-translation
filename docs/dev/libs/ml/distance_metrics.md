@@ -28,15 +28,11 @@ under the License.
 ## 描述
 
 对于不同类型的分析，采用不同类型的距离度量标准是很方便的。Flink ML 为许多标准的距离度量标准提供了内置的实现。
-你能通过实现 `DistanceMetric` 特质来创造自定义的距离度量标准
-Different metrics of distance are convenient for different types of analysis. Flink ML provides
-built-in implementations for many standard distance metrics. You can create custom
-distance metrics by implementing the `DistanceMetric` trait.
+你能通过实现 `DistanceMetric` 特质来创造自定义的距离度量标准。
 
 ## 内置实现
 
-目前， FlinkML 支持以下度量标准：
-Currently, FlinkML supports the following metrics:
+目前, FlinkML 支持以下度量标准：
 
 <table class="table table-bordered">
     <thead>
@@ -48,43 +44,43 @@ Currently, FlinkML supports the following metrics:
 
     <tbody>
       <tr>
-        <td><strong>Euclidean Distance</strong></td>
+        <td><strong>欧式距离</strong></td>
         <td>
           $$d(\x, \y) = \sqrt{\sum_{i=1}^n \left(x_i - y_i \right)^2}$$
         </td>
       </tr>
       <tr>
-        <td><strong>Squared Euclidean Distance</strong></td>
+        <td><strong>平方欧式距离</strong></td>
         <td>
           $$d(\x, \y) = \sum_{i=1}^n \left(x_i - y_i \right)^2$$
         </td>
       </tr>
       <tr>
-        <td><strong>Cosine Similarity</strong></td>
+        <td><strong>余弦相似度</strong></td>
         <td>
           $$d(\x, \y) = 1 - \frac{\x^T \y}{\Vert \x \Vert \Vert \y \Vert}$$
         </td>
       </tr>
       <tr>
-        <td><strong>Chebyshev Distance</strong></td>
+        <td><strong>切比雪夫距离</strong></td>
         <td>
           $$d(\x, \y) = \max_{i}\left(\left \vert x_i - y_i \right\vert \right)$$
         </td>
       </tr>
       <tr>
-        <td><strong>Manhattan Distance</strong></td>
+        <td><strong>曼哈顿距离</strong></td>
         <td>
           $$d(\x, \y) = \sum_{i=1}^n \left\vert x_i - y_i \right\vert$$
         </td>
       </tr>
       <tr>
-        <td><strong>Minkowski Distance</strong></td>
+        <td><strong>闵式距离</strong></td>
         <td>
           $$d(\x, \y) = \left( \sum_{i=1}^{n} \left( x_i - y_i \right)^p \right)^{\rfrac{1}{p}}$$
         </td>
       </tr>
       <tr>
-        <td><strong>Tanimoto Distance</strong></td>
+        <td><strong>谷本距离</strong></td>
         <td>
           $$d(\x, \y) = 1 - \frac{\x^T\y}{\Vert \x \Vert^2 + \Vert \y \Vert^2 - \x^T\y}$$
           with $\x$ and $\y$ being bit-vectors
@@ -93,9 +89,9 @@ Currently, FlinkML supports the following metrics:
     </tbody>
   </table>
 
-## Custom Implementation
+## 自定义实现
 
-You can create your own distance metric by implementing the `DistanceMetric` trait.
+你能通过实现 `DistanceMetric` 特质来创造你自己的距离度量标准。
 
 {% highlight scala %}
 class MyDistance extends DistanceMetric {
