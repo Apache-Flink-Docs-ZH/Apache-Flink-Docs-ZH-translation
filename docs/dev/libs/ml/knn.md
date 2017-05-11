@@ -128,7 +128,7 @@ val knn = KNN()
   .setUseQuadTree(false)
   .setSizeHint(CrossHint.SECOND_IS_SMALL)
 
-// 跑 knn join
+// 运行 knn join
 knn.fit(trainingSet)
 val result = knn.predict(testingSet).collect()
 {% endhighlight %}
