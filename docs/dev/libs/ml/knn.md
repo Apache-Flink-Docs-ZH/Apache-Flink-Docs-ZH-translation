@@ -49,8 +49,8 @@ KNN 通过一个给定的 `Vector` 集来训练:
 
 KNN 为所有的FlinkML的 `Vector` 的子类预测对应的类别标签：
 
-* `predict[T <: Vector]: DataSet[T] => DataSet[(T, Array[Vector])]`, where the `(T, Array[Vector])` tuple
-  corresponds to (test point, K-nearest training points)
+* `predict[T <: Vector]: DataSet[T] => DataSet[(T, Array[Vector])]`, 这里 `(T, Array[Vector])` 元组
+  对应 (test point, K-nearest training points)
 
 ## Parameters
 
@@ -77,7 +77,7 @@ KNN的实现可以由以下参数控制：
         <td><strong>DistanceMetric</strong></td>
         <td>
           <p>
-            设置我们用来计算两点之间距离的度量标准。如果没有指定度量标准，则[[org.apache.flink.ml.metrics.distances.EuclideanDistanceMetric]] 被使用.(默认值: <strong>EuclideanDistanceMetric</strong>)
+            设置用来计算两点之间距离的度量标准。如果没有指定度量标准，则[[org.apache.flink.ml.metrics.distances.EuclideanDistanceMetric]] 被使用.(默认值: <strong>EuclideanDistanceMetric</strong>)
           </p>
         </td>
       </tr>
