@@ -67,32 +67,28 @@ KNN的实现可以由以下参数控制：
       <tr>
         <td><strong>K</strong></td>
         <td>
-          <p>
-            定义要搜索的最近邻居数量。也就是说，对于每一个测试点，该算法会从训练集中找到K个最近邻居.(默认值: <strong>5</strong>)
+          <p>定义要搜索的最近邻居数量。也就是说，对于每一个测试点，该算法会从训练集中找到K个最近邻居.(默认值: <strong>5</strong>)
           </p>
         </td>
       </tr>
       <tr>
         <td><strong>DistanceMetric</strong></td>
         <td>
-          <p>
-            设置用来计算两点之间距离的度量标准。如果没有指定度量标准，则[[org.apache.flink.ml.metrics.distances.EuclideanDistanceMetric]] 被使用.(默认值: <strong>EuclideanDistanceMetric</strong>)
+          <p>设置用来计算两点之间距离的度量标准。如果没有指定度量标准，则[[org.apache.flink.ml.metrics.distances.EuclideanDistanceMetric]] 被使用.(默认值: <strong>EuclideanDistanceMetric</strong>)
           </p>
         </td>
       </tr>
       <tr>
         <td><strong>Blocks</strong></td>
         <td>
-          <p>
-            设置输入数据将会被切分的块数。该数目至少应该被设置成与并行度相等。如果没有指定块数，则使用作为输入的 [[DataSet]] 的平行度作为块数.(默认值: <strong>None</strong>)
+          <p>设置输入数据将会被切分的块数。该数目至少应该被设置成与并行度相等。如果没有指定块数，则使用作为输入的 [[DataSet]] 的平行度作为块数.(默认值: <strong>None</strong>)
           </p>
         </td>
       </tr>
       <tr>
         <td><strong>UseQuadTree</strong></td>
         <td>
-          <p>
-            一个布尔参数，该参数用来指定是否使用能够对训练集进行分区，并且有可能简化平滑KNN搜索的四叉树。如果该值没有指定，则代码会自动决定是否使用一个四叉树。四叉树的使用在训练点和测试点的数量上有很好的扩展性，但在维度上的扩展性表现不佳.(默认值: <strong>None</strong>)
+          <p>一个布尔参数，该参数用来指定是否使用能够对训练集进行分区，并且有可能简化平滑KNN搜索的四叉树。如果该值没有指定，则代码会自动决定是否使用一个四叉树。四叉树的使用在训练点和测试点的数量上有很好的扩展性，但在维度上的扩展性表现不佳.(默认值: <strong>None</strong>)
           </p>
         </td>
       </tr>
