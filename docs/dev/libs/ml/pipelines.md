@@ -42,13 +42,7 @@ under the License.
 
 ## FlinkML 中的 Pipelines
 
-The building blocks for pipelines in FlinkML can be found in the `ml.pipeline` package.
-FlinkML follows an API inspired by [sklearn](http://scikit-learn.org) which means that we have
-`Estimator`, `Transformer` and `Predictor` interfaces. For an in-depth look at the design of the
-sklearn API the interested reader is referred to [this](http://arxiv.org/abs/1309.0238) paper.
-In short, the `Estimator` is the base class from which `Transformer` and `Predictor` inherit.
-`Estimator` defines a `fit` method, and `Transformer` also defines a `transform` method and
-`Predictor` defines a `predict` method.
+FlinkML 中的 pipeline 构建模块请参阅 `ml.pipeline` 包。FlinkML 的 API 受 [sklearn](http://scikit-learn.org) 启发，这意味着我们有 `Estimator`, `Transformer` 和 `Predictor` 三个接口。想要更加深入地了解 sklearn API 是如何设计的读者，请参阅 [此](http://arxiv.org/abs/1309.0238) 论文。简单来说，`Estimator` 是基类，被`Transformer` 和 `Predictor`继承。`Estimator` 中定义了一个 `fit` 方法，`Transformer` 中定了一个 `transform` 方法，而 `Predictor` 中定义了一个`predict` 方法。
 
 The `fit` method of the `Estimator` performs the actual training of the model, for example
 finding the correct weights in a linear regression task, or the mean and standard deviation of
