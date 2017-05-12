@@ -59,7 +59,7 @@ SVM 会对 FlinkML `Vector` 的所有子类预测其对应的分类标签：
 
 * `predict[T <: Vector]: DataSet[T] => DataSet[(T, Double)]`，其中 `(T, Double)` 对应（原始特征值，预测的分类）
 
-如果想要对模型的预测结果进行评估，可以对已正确分类的样本集做预测。传入 `DataSet[(Vector, Double)]`f返回 `DataSet[(Double, Double)]`。返回结构的首元素为传入参数提供的真值，第二个元素为预测值，可以使用这个`(真值, 预测值)`集合来评估算法的准确率和执行情况：
+如果想要对模型的预测结果进行评估，可以对已正确分类的样本集做预测。传入 `DataSet[(Vector, Double)]` 返回 `DataSet[(Double, Double)]`。返回结构的首元素为传入参数提供的真值，第二个元素为预测值，可以使用这个`(真值, 预测值)`集合来评估算法的准确率和执行情况：
 
 * `predict: DataSet[(Vector, Double)] => DataSet[(Double, Double)]`
 
