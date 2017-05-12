@@ -123,17 +123,9 @@ object StandardScaler {
 
 ### 链接
 
-Chaining is achieved by calling `chainTransformer` or `chainPredictor` on an object
-of a class that implements `Transformer`. These methods return a `ChainedTransformer` or
-`ChainedPredictor` object respectively. As we mentioned, `ChainedTransformer` objects can be
-chained further, while `ChainedPredictor` objects cannot. These classes take care of applying
-fit, transform, and predict operations for a pair of successive transformers or
-a transformer and a predictor. They also act recursively if the length of the
-chain is larger than two, since every `ChainedTransformer` defines a `transform` and `fit`
-operation that can be further chained with more transformers or a predictor.
+链接是通过调用实现了 `Transformer` 的类的对象中的 `chainTransformer` 或 `chainPredictor`来实现。这些方法分别返回一个 `ChainedTransformer` 或 `ChainedPredictor` 对象。正如我们提到的，`ChainedTransformer` 对象能够进行进一步的链接，而 `ChainedPredictor` 对象则不可以。这些类对由一连窜或一个 transformer 和 一个 predictor 组成的搭配进行拟合 (fit)，转换 (transform) 和预测 (predict) 操作。如果连接的长度大于二，他们会递归地运行，因为每个 `ChainedTransformer` 都定义了一个可以与更多 transformer  或一个 predictor 进行链接的`transform` 和 `fit` 方法。
 
-It is important to note that developers and users do not need to worry about chaining when
-implementing their algorithms, all this is handled automatically by FlinkML.
+重要的一点是，开发人员和使用者在实现他们的算法时不需要考虑链接问题，所有的链接问题都会被 FlinkML 自动处理。
 
 ### 如何实现一个 Pipeline 操作
 
