@@ -39,9 +39,8 @@ FlinkML 旨在从您的数据中学习一个简单的过程，抽象出来通常
 
 ## 连接 FlinkML
 
-In order to use FlinkML in your project, first you have to
-[set up a Flink program]({{ site.baseurl }}/dev/linking_with_flink.html).
-Next, you have to add the FlinkML dependency to the `pom.xml` of your project:
+为了在你的项目中使用 FlinkML ，首先你必须建立一个 Flink 程序({{ site.baseurl }}/dev/linking_with_flink.html)。 .
+接下来，您必须将 FlinkML 的依赖添加到项目的 `pom.xml` 中：
 
 {% highlight xml %}
 <dependency>
