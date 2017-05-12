@@ -130,7 +130,7 @@ object StandardScaler {
 ### 如何实现一个 Pipeline 操作
 
 为了支持 FlinkML 中的管道操作 (pipelining)，算法必须遵循一个设计模式，我们会在这一章节描述该设计模式。
-假设我们希望想要实现一个 pipeline 操作，该操作能改变你的数据的平均值。由于居中数据 (centering data) 在许多 pipeline 分析中是一个常用的预处理步骤，我们将以一个 `Transformer` 的形式实现它。因此我们首先创建一个 `MeanTransformer` 类，该类继承 `Transformer`。
+假设我们希望想要实现一个 pipeline 操作，该操作能改变你所提供的数据的平均值。由于居中数据 (centering data) 在许多 pipeline 分析中是一个常用的预处理步骤，我们将以一个 `Transformer` 的形式实现它。因此我们首先创建一个 `MeanTransformer` 类，该类继承 `Transformer`。
 
 {% highlight scala %}
 class MeanTransformer extends Transformer[MeanTransformer] {}
@@ -155,22 +155,18 @@ object MeanTransformer {
 }
 {% endhighlight %}
 
-参数被定义在 transformer 类的伴生对象中，并且继承了 `Parameter` 类。因为对于参数映射，参数实例应作为不可变的键，因此它以 `case objects` (样本对象) 的形式实现。如果用户没有设置其它的值，默认值就会被使用。如果默认值没有致命，意味着 `defaultValue = None`， 该算法需要根据情况进行处理。
-Parameters are defined in the companion object of the transformer class and extend the `Parameter` class.
-Since the parameter instances are supposed to act as immutable keys for a parameter map, they should be implemented as `case objects`.
-The default value will be used if no other value has been set by the user of this component.
-If no default value has been specified, meaning that `defaultValue = None`, then the algorithm has to handle this situation accordingly.
+参数被定义在 transformer 类的伴生对象中，并且继承了 `Parameter` 类。因为对于参数映射，参数实例应作为不可变的键，因此它以 `case objects` (样本对象) 的形式实现。如果用户没有设置其它的值，默认值就会被使用。如果默认值没有指明，意味着 `defaultValue = None`， 该算法需要根据情况进行处理。
 
-We can now instantiate a `MeanTransformer` object and set the mean value of t。rmed data.
-But we still have to implement how the transformation works.
-The workflow can be separated into two phases.
-Within the first phase, the transformer learns the mean of the given training data.
-This knowledge can then be used in the second phase to transform the provided data with respect to the configured resulting mean value.
+我们现在实例化一个 `MeanTransformer` 对象，并且设置平均值为 t。rmed data。
+但是我们仍然需要实现 transformation 是如何工作的。
+该工作流可以被分成两个阶段。
+在第一个阶段里，transformer 学习给定的训练数据的平均值。
+这个知识可以在第二个阶段中被用来转换被提供的且与被配置作为结果的平均值有关的数据。
 
-The learning of the mean can be implemented within the `fit` operation of our `Transformer`, which it inherited from `Estimator`.
-Within the `fit` operation, a pipeline component is trained with respect to the given training data.
-The algorithm is, however, **not** implemented by overriding the `fit` method but by providing an implementation of a corresponding `FitOperation` for the correct type.
-Taking a look at the definition of the `fit` method in `Estimator`, which is the parent class of `Transformer`, reveals what why this is the case.
+平均值的学习能够通过我们 `Transformer` 中，从 `Estimator` 继承而来的 `fit` 操作实现。
+在 `fit` 操作中，一个与给定的训练数据有关的 pipeline 组件被训练。
+然而，该算法**不是**通过覆写 `fit` 方法实现，而是通过提供一个与正确类型对应的一个 `FitOperation` 来实现。
+通过查看 `Transformer` 的父类 `Estimator` 的 `fit` 方法的定义，了解为什么是这种情况。
 
 {% highlight scala %}
 trait Estimator[Self] extends WithParameters with Serializable {
