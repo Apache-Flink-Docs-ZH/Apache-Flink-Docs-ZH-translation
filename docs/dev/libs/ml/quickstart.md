@@ -54,6 +54,7 @@ FlinkML 旨在从您的数据中学习一个简单的过程，抽象出来通常
 
 要加载与 FlinkML 一起使用的数据，我们可以使用 Flink 的 ETL 功能，或者使用诸如 LibSVM 格式的格式化数据的专门方法。 对于监督学习问题，通常使用 `LabeledVector` 类来表示 `（标记，特征）` 样例。 `LabeledVector` 对象将具有表示样例特征的 FlinkML `Vector` 成员，以及表示标记的 `Double` 成员，该标记可能是分类问题中的类，也可以是回归问题的因变量。
 
+例如，我们可以使用Haberman's Survival 数据集，您可以[从UCI 机器学习数据库下载这个数据集](http://archive.ics.uci.edu/ml/machine-learning-databases/haberman/haberman.data)。 该数据集*“包含了对乳腺癌手术患者的存活进行研究的病例”*。 数据来自逗号分隔的文件，前3列是特征，最后一列是类，第4列表示患者是否存活5年以上（标记1），或者5年内死亡（标记2）。 您可以查看UCI页面了解有关数据的更多信息。
 As an example, we can use Haberman's Survival Data Set , which you can
 [download from the UCI ML repository](http://archive.ics.uci.edu/ml/machine-learning-databases/haberman/haberman.data).
 This dataset *"contains cases from a study conducted on the survival of patients who had undergone
