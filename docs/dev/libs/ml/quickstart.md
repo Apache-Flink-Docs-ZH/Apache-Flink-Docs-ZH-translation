@@ -27,13 +27,9 @@ under the License.
 * This will be replaced by the TOC
 {:toc}
 
-## Introduction
+## 介绍
 
-FlinkML is designed to make learning from your data a straight-forward process, abstracting away
-the complexities that usually come with big data learning tasks. In this
-quick-start guide we will show just how easy it is to solve a simple supervised learning problem
-using FlinkML. But first some basics, feel free to skip the next few lines if you're already
-familiar with Machine Learning (ML).
+    FlinkML旨在从您的数据中学习一个简单的过程，抽象出来通常带有大数据学习任务的复杂性。 在这个快速入门指南，我们将展示使用FlinkML解决简单监督学习问题是多么的简单。 但是首先是一些基础知识，如果你已经熟悉机器学习（ML），请随时跳过接下来的几行。
 
 As defined by Murphy [[1]](#murphy) ML deals with detecting patterns in data, and using those
 learned patterns to make predictions about the future. We can categorize most ML algorithms into
