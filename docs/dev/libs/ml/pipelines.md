@@ -28,7 +28,7 @@ under the License.
 
 ## 简介
 
-能把 transformer 和 predictor 链接起来对任何机器学习库都是一个非常重要的特性。在 FlinkML 中我们希望在提供一个直观的API的同时，能够充分利用 Scala 语言的能力来为我们的 pipelines 提供类型安全的实现。我们希望能够实现的是让API的使用变得简单轻松，让使用者在编译时（在工作开始运行之前）避免类型错误，并且消除在需要长期运行的工作提交后由于数据转换操作错误引起的失败情形，而这类错误在机器学习 pipeline 中是经常发生的。
+把 transformer 和 predictor 链接起来的能力对任何机器学习库都是一个非常重要的特性。在 FlinkML 中，我们希望在提供一个直观的API的同时，能够充分利用 Scala 语言的能力来为我们的 pipelines 提供类型安全的实现。我们希望能够实现的是让API的使用变得简单轻松，让使用者在工作开始运行之前避免类型错误，并且消除在需要长期运行的工作提交后由于数据转换操作错误引起的失败情形，而这类错误在机器学习 pipeline 中是经常发生的。
 
 在本指南中，我们将会描述在 FlinkML 中实现可链接的 transformers 和 predictors 时所采用的选择，并且为开发人员提供关于如何充分使用 pipeline 特性来创建自己的算法的指导。
 
@@ -206,17 +206,17 @@ val denseVectorMeanFitOperation = new FitOperation[MeanTransformer, DenseVector]
 }
 {% endhighlight %}
 
-A `FitOperation[T, I]` has a `fit` method which is called with an instance of type `T`, a parameter map and an input `DataSet[I]`.
-In our case `T=MeanTransformer` and `I=DenseVector`.
-The parameter map is necessary if our fit step depends on some parameter values which were not given directly at creation time of the `Transformer`.
-The `FitOperation` of the `MeanTransformer` sums the `DenseVector` instances of the given input data set up and divides the result by the total number of vectors.
-That way, we obtain a `DataSet[DenseVector]` with a single element which is the mean value.
+`FitOperation[T, I]` 有一个 `fit` 方法，该方法在调用时需要一个 `T` 类型的实例，一个参数映射和一个输入 `DataSet[I]`。
+在我们的例子中，`T=MeanTransformer` 且 `I=DenseVector`。
+如果我们的拟合步骤所需的参数在 `Transformer` 创建时没有给定，则需要参数映射。
+`MeanTransformer` 的 `FitOperation` 对给定的输入数据集 `DenseVector` instances 求和，并将结果除以向量的总数。
+这样的话，我们获得一个含有平均值的 `DataSet[DenseVector]`。
 
-But if we look closely at the implementation, we see that the result of the mean computation is never stored anywhere.
-If we want to use this knowledge in a later step to adjust the mean of some other input, we have to keep it around.
-And here is where the parameter of type `MeanTransformer` which is given to the `fit` method comes into play.
-We can use this instance to store state, which is used by a subsequent `transform` operation which works on the same object.
-But first we have to extend `MeanTransformer` by a member field and then adjust the `FitOperation` implementation.
+如果我们再仔细了解这个实现，可以发现平均值计算的结果并没有在任何代码中被储存。
+我们想要在后面的步骤中使用这个结果或“知识”来调整我们输入的平均值，我们需要保存它。
+而这就是提供给 `fit` 方法的 `MeanTransformer` 类型参数发挥作用的时候。
+我们能够使用这个实例来存储状态，该状态能够被接下来工作在同一个对象上的 `transform` 操作所使用。
+但是首先，我们必须通过一个成员字段继承 `MeanTransformer` ，并调整 `FitOperation` 的实现。
 
 {% highlight scala %}
 class MeanTransformer extends Transformer[Centering] {
@@ -242,8 +242,8 @@ val denseVectorMeanFitOperation = new FitOperation[MeanTransformer, DenseVector]
 }
 {% endhighlight %}
 
-If we look at the `transform` method in `Transformer`, we will see that we also need an implementation of `TransformOperation`.
-A possible mean transforming implementation could look like the following.
+如果我们观察 `Transformer` 中的 `transform` 方法，可以发现我们还需要 `TransformOperation` 的实现。
+以下是平均值转换实现的其中一种方式。
 
 {% highlight scala %}
 
@@ -283,8 +283,8 @@ class MeanTransformMapper(resultingMean: Double) extends RichMapFunction[DenseVe
 }
 {% endhighlight %}
 
-Now we have everything implemented to fit our `MeanTransformer` to a training data set of `DenseVector` instances and to transform them.
-However, when we execute the `fit` operation
+现在我们所需的都实现了，可以对一个 `DenseVector` 实例训练数据集拟合我们的 `MeanTransformer` 并 转换他们。
+然而，当我们执行 `fit` 操作
 
 {% highlight scala %}
 val trainingData: DataSet[DenseVector] = ...
@@ -293,10 +293,10 @@ val meanTransformer = MeanTransformer()
 meanTransformer.fit(trainingData)
 {% endhighlight %}
 
-we receive the following error at runtime: `"There is no FitOperation defined for class MeanTransformer which trains on a DataSet[org.apache.flink.ml.math.DenseVector]"`.
-The reason is that the Scala compiler could not find a fitting `FitOperation` value with the right type parameters for the implicit parameter of the `fit` method.
-Therefore, it chose a fallback implicit value which gives you this error message at runtime.
-In order to make the compiler aware of our implementation, we have to define it as an implicit value and put it in the scope of the `MeanTransformer's` companion object.
+我们在运行时收到以下错误信息: `"There is no FitOperation defined for class MeanTransformer which trains on a DataSet[org.apache.flink.ml.math.DenseVector]"`.
+原因是 Scala 编译器不能为 `fit` 方法的隐式参数找到一个符合 `FitOperation` 正确类型的值。
+因此，它选择了最原先的隐式值，而该值在运行时引发了这个错误信息。
+为了使编译器能理解我们的实现，我们必须讲它作为一个隐式值定义，并将之放在在 `MeanTransformer` 的伴生对象中。
 
 {% highlight scala %}
 object MeanTransformer{
