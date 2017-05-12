@@ -182,14 +182,14 @@ trait Estimator[Self] extends WithParameters with Serializable {
 }
 {% endhighlight %}
 
-We see that the `fit` method is called with an input data set of type `Training`, an optional parameter list and in the second parameter list with an implicit parameter of type `FitOperation`.
-Within the body of the function, first some machine learning types are registered and then the `fit` method of the `FitOperation` parameter is called.
-The instance gives itself, the parameter map and the training data set as a parameters to the method.
-Thus, all the program logic takes place within the `FitOperation`.
+我们发现 `fit` 方法调用时需要一个 `Training` 类型的输入集，一个可选参数列表，和第二个带一个 `FitOperation` 类隐式参数的参数列表
+在方法体中，首先某个机器学习类型被注册，接着 `FitOperation` 参数的 `fit` 方法被调用。
+该实例把自身，参数映射和训练数据集作为一个参数提供给方法。
+因此，所有的程序逻辑发生在 `FitOperation`。
 
-The `FitOperation` has two type parameters.
-The first defines the pipeline operator type for which this `FitOperation` shall work and the second type parameter defines the type of the data set elements.
-If we first wanted to implement the `MeanTransformer` to work on `DenseVector`, we would, thus, have to provide an implementation for `FitOperation[MeanTransformer, DenseVector]`.
+`FitOperation` 有两类参数。
+第一个定义了需要 `FitOperation` 为之工作的 pipeline 操作类型，而第二个类型参数定义了数据集元素的类型。
+如果我们希望先实现 `MeanTransformer`， 使之能工作在 `DenseVector` 上，我们则需要为 `FitOperation[MeanTransformer, DenseVector]` 提供一个实现。
 
 {% highlight scala %}
 val denseVectorMeanFitOperation = new FitOperation[MeanTransformer, DenseVector] {
