@@ -296,7 +296,7 @@ meanTransformer.fit(trainingData)
 我们在运行程序时收到以下错误信息: `"There is no FitOperation defined for class MeanTransformer which trains on a DataSet[org.apache.flink.ml.math.DenseVector]"`.
 原因是 Scala 编译器不能为 `fit` 方法的隐式参数找到一个符合 `FitOperation` 正确类型的值。
 因此，它选择了最原先的隐式值，而该值在运行时引发了这个错误信息。
-为了使编译器能理解我们的实现，我们必须讲它作为一个隐式值定义，并将之放在在 `MeanTransformer` 的伴生对象中。
+为了使编译器能理解我们的实现，我们必须讲它作为一个隐式值定义，并将之放在 `MeanTransformer` 的伴生对象中。
 
 {% highlight scala %}
 object MeanTransformer{
