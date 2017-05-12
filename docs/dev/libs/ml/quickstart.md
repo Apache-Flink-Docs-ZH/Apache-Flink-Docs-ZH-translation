@@ -133,16 +133,9 @@ val evaluationPairs: DataSet[(Double, Double)] = svm.evaluate(astroTest)
 
 接下来，我们将看到我们如何预处理我们的数据，并使用 FlinkML 的机器学习管道功能。
 
-## Data pre-processing and pipelines
+## 数据预处理和管道
 
-A pre-processing step that is often encouraged [[3]](#hsu) when using SVM classification is scaling
-the input features to the [0, 1] range, in order to avoid features with extreme values
-dominating the rest.
-FlinkML has a number of `Transformers` such as `MinMaxScaler` that are used to pre-process data,
-and a key feature is the ability to chain `Transformers` and `Predictors` together. This allows
-us to run the same pipeline of transformations and make predictions on the train and test data in
-a straight-forward and type-safe manner. You can read more on the pipeline system of FlinkML
-[in the pipelines documentation](pipelines.html).
+在使用 SVM 分类时，经常鼓励的预处理步骤是将输入特征缩放到 [0,1] 范围，以避免极值特征的影响。 FlinkML 有一些`转换器`，如 `MinMaxScaler` ，用于预处理数据，一个关键特征是将转换器 `转换器` 和`指示器` 链接在一起的能力。 这样我们可以运行相同的转换流程，并且以直接的和类型安全的方式对训练和测试数据进行预测。 您可以在[管道文档](pipelines.html)中阅读更多关于FlinkML管道系统的信息。
 
 Let us first create a normalizing transformer for the features in our dataset, and chain it to a
 new SVM classifier.
