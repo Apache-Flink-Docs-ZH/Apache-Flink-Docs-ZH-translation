@@ -28,7 +28,7 @@ under the License.
 
 ## 简介
 
-把 transformer 和 predictor 链接起来的能力对任何机器学习库都是一个非常重要的特性。在 FlinkML 中，我们希望在提供一个直观的API的同时，能够充分利用 Scala 语言的能力来为我们的 pipelines 提供类型安全的实现。我们希望能够实现的是让API的使用变得简单轻松，让使用者准备 (pre-flight) 时 (工作开始运行之前) 避免类型错误，并且消除在需要长期运行的工作提交后由于数据转换操作错误引起的失败情形，而这类错误在机器学习 pipeline 中是经常发生的。
+把 transformer 和 predictor 链接起来的能力对任何机器学习库都是一个非常重要的特性。在 FlinkML 中，我们希望在提供一个直观的API的同时，能够充分利用 Scala 语言的能力来为我们的 pipelines 提供类型安全的实现。我们希望能够实现的是让API的使用变得简单轻松，让使用者在工作开始运行之前避免类型错误，并且消除在需要长期运行的工作提交后由于数据转换操作错误引起的失败情形，而这类错误在机器学习 pipeline 中是经常发生的。
 
 在本指南中，我们将会描述在 FlinkML 中实现可链接的 transformers 和 predictors 时所采用的选择，并且为开发人员提供关于如何充分使用 pipeline 特性来创建自己的算法的指导。
 
@@ -335,7 +335,7 @@ mean.fit(trainingData)
 {% endhighlight %}
 
 跟之前相同，在运行程序时抛出了以下异常信息: `"There is no FitOperation defined for class MeanTransformer which trains on a DataSet[org.apache.flink.ml.common.LabeledVector]"`.
-值得留意的是，这个异常在准备阶段就被抛出，意味着此时工作还没被提交到运行系统。
+值得留意的是，这个异常在准备阶段 (pre-flight phase) 就被抛出，意味着此时工作还没被提交到运行系统。
 这有一个很大的好处：你不会看到一个工作在跑了若干天之后由于 pipeline 组件的不兼容而失败。
 因此，类型的兼容性在整个工作的早期就被检查。
 
@@ -350,5 +350,5 @@ object MeanTransformer {
 }
 {% endhighlight %}
 
-If we wanted to implement a `Predictor` instead of a `Transformer`, then we would have to provide a `FitOperation`, too.
-Moreover, a `Predictor` requires a `PredictOperation` which implements how predictions are calculated from testing data.  
+如果我们希望实现一个 `Predictor` 而不是 `Transformer`， 我们也需要提供一个 `FitOperation`。
+此外，一个 `Predictor` 需要一个实现如何在测试集上计算预测值的 `PredictOperation`。  
