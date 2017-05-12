@@ -129,16 +129,14 @@ object StandardScaler {
 
 ### 如何实现一个 Pipeline 操作
 
-In order to support FlinkML's pipelining, algorithms have to adhere to a certain design pattern, which we will describe in this section.
-Let's assume that we want to implement a pipeline operator which changes the mean of your data.
-Since centering data is a common pre-processing step in many analysis pipelines, we will implement it as a `Transformer`.
-Therefore, we first create a `MeanTransformer` class which inherits from `Transformer`
+为了支持 FlinkML 中的管道操作 (pipelining)，算法必须遵循一个设计模式，我们会在这一章节描述该设计模式。
+假设我们希望想要实现一个 pipeline 操作，该操作能改变你的数据的平均值。由于居中数据 (centering data) 在许多 pipeline 分析中是一个常用的预处理步骤，我们将以一个 `Transformer` 的形式实现它。因此我们首先创建一个 `MeanTransformer` 类，该类继承 `Transformer`。
 
 {% highlight scala %}
 class MeanTransformer extends Transformer[MeanTransformer] {}
 {% endhighlight %}
 
-Since we want to be able to configure the mean of the resulting data, we have to add a configuration parameter.
+因为我们希望能配置作为结果的数据的平均值，所以我们必须加一个配置参数。
 
 {% highlight scala %}
 class MeanTransformer extends Transformer[MeanTransformer] {
@@ -157,12 +155,13 @@ object MeanTransformer {
 }
 {% endhighlight %}
 
+参数被定义在 transformer 类的伴生对象中，并且继承了 `Parameter` 类。因为对于参数映射，参数实例应作为不可变的键，因此它以 `case objects` (样本对象) 的形式实现。如果用户没有设置其它的值，默认值就会被使用。如果默认值没有致命，意味着 `defaultValue = None`， 该算法需要根据情况进行处理。
 Parameters are defined in the companion object of the transformer class and extend the `Parameter` class.
 Since the parameter instances are supposed to act as immutable keys for a parameter map, they should be implemented as `case objects`.
 The default value will be used if no other value has been set by the user of this component.
 If no default value has been specified, meaning that `defaultValue = None`, then the algorithm has to handle this situation accordingly.
 
-We can now instantiate a `MeanTransformer` object and set the mean value of the transformed data.
+We can now instantiate a `MeanTransformer` object and set the mean value of t。rmed data.
 But we still have to implement how the transformation works.
 The workflow can be separated into two phases.
 Within the first phase, the transformer learns the mean of the given training data.
