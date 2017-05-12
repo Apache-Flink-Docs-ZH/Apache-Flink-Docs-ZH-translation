@@ -82,10 +82,7 @@ val predictions: DataSet[LabeledVector] = pipeline.predict(unlabeled)
 
 这些方法中的操作对象(operation object)均由隐式参数提供。Scala 会在一个类型的伴生对象中[寻找该隐式](http://docs.scala-lang.org/tutorials/FAQ/finding-implicits.html)，因此所有实现了这些接口的类应在其伴生对象中，以隐式对象的形式提供这些对象。
 
-As an example we can look at the `StandardScaler` class. `StandardScaler` extends `Transformer`, so it has access to its `fit` and `transform` functions.
-These two functions expect objects of `FitOperation` and `TransformOperation` as implicit parameters,
-for the `fit` and `transform` methods respectively, which `StandardScaler` provides in its companion
-object, through `transformVectors` and `fitVectorStandardScaler`:
+举个例子，我们可以查看 `StandardScaler` 类。`StandardScaler` 继承了 `Transformer`，所以它能调用 `fit` 和 `transform` 方法，这两个方法需要 `FitOperation` 和 `TransformOperation` 作为隐式参数，分别给 `fit` 和 `transform` 方法。 这两个隐式参数在 `StandardScaler` 的伴生对象中通过 `transformVectors` and `fitVectorStandardScaler` 提供：
 
 {% highlight scala %}
 class StandardScaler extends Transformer[StandardScaler] {
@@ -116,11 +113,7 @@ object StandardScaler {
 
 {% endhighlight %}
 
-Note that `StandardScaler` does **not** override the `fit` method of `Estimator` or the `transform`
-method of `Transformer`. Rather, its implementations of `FitOperation` and `TransformOperation`
-override their respective `fit` and `transform` methods, which are then called by the `fit` and
-`transform` methods of `Estimator` and `Transformer`.  Similarly, a class that implements
-`Predictor` should define an implicit `PredictOperation` object inside its companion object.
+注意到 `StandardScaler` 并**不会**覆写 `Estimator` 中的 `fit` 方法或 `transform` 中的 `Transformer` 方法。 而它对 `FitOperation` 和 `TransformOperation` 的实现复写他们各自的 `fit` 和 `transform` 方法, 这两个方法分别被 `Estimator` 的 `fit` and `Transformer` 的 `transform` 方法调用。 相似地, 一个实现了 `Predictor` 的类应在它的伴生对象内定义一个隐式 `PredictOperation` 对象。
 
 #### 类型和类型安全
 
