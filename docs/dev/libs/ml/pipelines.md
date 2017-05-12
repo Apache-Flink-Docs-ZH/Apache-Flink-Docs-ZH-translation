@@ -70,7 +70,7 @@ val predictions: DataSet[LabeledVector] = pipeline.predict(unlabeled)
 {% endhighlight %}
 
 正如我们提到的，FlinkML 的 pipeline 是类型安全的。
-如果我们尝试把输出类型为 `A` 的 transformer 链接到另一个输入类型为 `B` 的 transformer，若 `A` != `B` 我们会在编译时得到一个错误警报。FlinkML 中这种类型安全是通过 Scala 语言的隐式特性实现的。
+如果我们尝试把输出类型为 `A` 的 transformer 链接到另一个输入类型为 `B` 的 transformer，若 `A` != `B` 我们会在编译时得到一个错误。FlinkML 中这种类型安全是通过 Scala 语言的隐式特性实现的。
 
 ### Scala 的隐式
 
@@ -117,17 +117,9 @@ object StandardScaler {
 
 #### 类型和类型安全
 
-Apart from the `fit` and `transform` operations that we listed above, the `StandardScaler` also
-provides `fit` and `transform` operations for input of type `LabeledVector`.
-This allows us to use the  algorithm for input that is labeled or unlabeled, and this happens
-automatically, depending on  the type of the input that we give to the fit and transform
-operations. The correct implicit operation is chosen by the compiler, depending on the input type.
+除了我们上面所列出的 `fit` 和 `transform` 操作，`StandardScaler` 还为 `LabeledVector` 类的输入提供了 `fit` 和 `transform` 操作。这允许我们在输入是有标签或没标签时都能使用该算法，并且会根据我们所给的输入的类型，无论要进行拟合操作还是转换操作，自动使用。编译器会根据输入的类型选择正确的隐式操作。
 
-If we try to call the `fit` or `transform` methods with types that are not supported we will get a
-runtime error before the job is launched.
-While it would be possible to catch these kinds of errors at compile time as well, the error
-messages that we are able to provide the user would be much less informative, which is why we chose
-to throw runtime exceptions instead.
+如果我们尝试在调用 `fit` 或 `transform` 方法时使用不支持的类型，我们会在工作开始前获得一个运行时错误。尽管这些错误也有可能在编译时就被捕获，但是我们能够提供给使用者的错误信息所含的信息量就少得多，因此我们选择在运行时抛出异常。
 
 ### 链接
 
