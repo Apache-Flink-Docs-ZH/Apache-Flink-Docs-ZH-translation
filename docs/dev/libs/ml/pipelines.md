@@ -293,7 +293,7 @@ val meanTransformer = MeanTransformer()
 meanTransformer.fit(trainingData)
 {% endhighlight %}
 
-我们在运行时收到以下错误信息: `"There is no FitOperation defined for class MeanTransformer which trains on a DataSet[org.apache.flink.ml.math.DenseVector]"`.
+我们在运行程序时收到以下错误信息: `"There is no FitOperation defined for class MeanTransformer which trains on a DataSet[org.apache.flink.ml.math.DenseVector]"`.
 原因是 Scala 编译器不能为 `fit` 方法的隐式参数找到一个符合 `FitOperation` 正确类型的值。
 因此，它选择了最原先的隐式值，而该值在运行时引发了这个错误信息。
 为了使编译器能理解我们的实现，我们必须讲它作为一个隐式值定义，并将之放在在 `MeanTransformer` 的伴生对象中。
@@ -324,7 +324,8 @@ pipeline.fit(trainingData)
 该系统会自动使用每个部件的操作来自动构建 pipeline 逻辑。
 
 到目前为止，用 `DenseVector` 作为输入一切顺利。
-But what happens, if we call our transformer with `LabeledVector` instead?
+但如果我们使用 `LabeledVector` 来调 transformer，会发生什么情况？
+
 {% highlight scala %}
 val trainingData: DataSet[LabeledVector] = ...
 
@@ -333,10 +334,10 @@ val mean = MeanTransformer()
 mean.fit(trainingData)
 {% endhighlight %}
 
-As before we see the following exception upon execution of the program: `"There is no FitOperation defined for class MeanTransformer which trains on a DataSet[org.apache.flink.ml.common.LabeledVector]"`.
-It is noteworthy, that this exception is thrown in the pre-flight phase, which means that the job has not been submitted to the runtime system.
-This has the advantage that you won't see a job which runs for a couple of days and then fails because of an incompatible pipeline component.
-Type compatibility is, thus, checked at the very beginning for the complete job.
+跟之前相同，在运行程序时抛出了以下异常信息: `"There is no FitOperation defined for class MeanTransformer which trains on a DataSet[org.apache.flink.ml.common.LabeledVector]"`.
+值得留意的是，这个异常在准备阶段就被抛出，意味着此时工作还没被提交到运行系统。
+这有一个很大的好处：你不会看到一个工作在跑了若干天之后由于 pipeline 组件的不兼容而失败。
+因此，类型的兼容性在整个工作的早期就被检查。
 
 In order to make the `MeanTransformer` work on `LabeledVector` as well, we have to provide the corresponding operations.
 Consequently, we have to define a `FitOperation[MeanTransformer, LabeledVector]` and `TransformOperation[MeanTransformer, LabeledVector, LabeledVector]` as implicit values in the scope of `MeanTransformer`'s companion object.
