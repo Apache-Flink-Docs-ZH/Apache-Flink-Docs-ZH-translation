@@ -31,17 +31,9 @@ under the License.
 
 FlinkML旨在从您的数据中学习一个简单的过程，抽象出来通常带有大数据学习任务的复杂性。 在这个快速入门指南，我们将展示使用FlinkML解决简单监督学习问题是多么的简单。 但是首先是一些基础知识，如果你已经熟悉机器学习（ML），请随时跳过接下来的几行。
 
-As defined by Murphy [[1]](#murphy) ML deals with detecting patterns in data, and using those
-learned patterns to make predictions about the future. We can categorize most ML algorithms into
-two major categories: Supervised and Unsupervised Learning.
+如Murphy 所定义的，机器学习（ML）用于检测数据中的模式，并使用这些学习到的模式来预测未来。 我们可以将大多数机器学习（ML）算法分为两大类：监督学习和无监督学习。
 
-* **Supervised Learning** deals with learning a function (mapping) from a set of inputs
-(features) to a set of outputs. The learning is done using a *training set* of (input,
-output) pairs that we use to approximate the mapping function. Supervised learning problems are
-further divided into classification and regression problems. In classification problems we try to
-predict the *class* that an example belongs to, for example whether a user is going to click on
-an ad or not. Regression problems one the other hand, are about predicting (real) numerical
-values, often called the dependent variable, for example what the temperature will be tomorrow.
+* **监督学习** 涉及从一个输入（特征）集合到一个输出集合学习一个功能（映射）。 使用训练集（输入，输出）对来完成学习，我们用来近似映射函数。 监督学习问题进一步分为分类和回归问题。 在分类问题中，我们尝试预测样例属于的类，例如用户是否要点击广告。 另一方面，回归问题是关于预测（实际）数值，通常称为因变量，例如明天的温度是多少。
 
 * **Unsupervised Learning** deals with discovering patterns and regularities in the data. An example
 of this would be *clustering*, where we try to discover groupings of the data from the
