@@ -130,7 +130,7 @@ object StandardScaler {
 ### 如何实现一个 Pipeline 操作
 
 为了支持 FlinkML 中的管道操作 (pipelining)，算法必须遵循一个设计模式，我们会在这一章节描述该设计模式。
-假设我们希望想要实现一个 pipeline 操作，该操作能改变你所提供的数据的平均值。由于居中数据 (centering data) 在许多 pipeline 分析中是一个常用的预处理步骤，我们将以一个 `Transformer` 的形式实现它。因此我们首先创建一个 `MeanTransformer` 类，该类继承 `Transformer`。
+假设我们希望想要实现一个 pipeline 操作，该操作能改变你所提供的数据的平均值。由于居中数据 (centering data) 在许多分析管道 (pipeline) 中是一个常用的预处理步骤，我们将以一个 `Transformer` 的形式实现它。因此我们首先创建一个 `MeanTransformer` 类，该类继承 `Transformer`。
 
 {% highlight scala %}
 class MeanTransformer extends Transformer[MeanTransformer] {}
@@ -293,10 +293,10 @@ val meanTransformer = MeanTransformer()
 meanTransformer.fit(trainingData)
 {% endhighlight %}
 
-我们在运行时收到以下错误信息: `"There is no FitOperation defined for class MeanTransformer which trains on a DataSet[org.apache.flink.ml.math.DenseVector]"`.
+我们在运行程序时收到以下错误信息: `"There is no FitOperation defined for class MeanTransformer which trains on a DataSet[org.apache.flink.ml.math.DenseVector]"`.
 原因是 Scala 编译器不能为 `fit` 方法的隐式参数找到一个符合 `FitOperation` 正确类型的值。
 因此，它选择了最原先的隐式值，而该值在运行时引发了这个错误信息。
-为了使编译器能理解我们的实现，我们必须讲它作为一个隐式值定义，并将之放在在 `MeanTransformer` 的伴生对象中。
+为了使编译器能理解我们的实现，我们必须讲它作为一个隐式值定义，并将之放在 `MeanTransformer` 的伴生对象中。
 
 {% highlight scala %}
 object MeanTransformer{
@@ -306,8 +306,8 @@ object MeanTransformer{
 }
 {% endhighlight %}
 
-Now we can call `fit` and `transform` of our `MeanTransformer` with `DataSet[DenseVector]` as input.
-Furthermore, we can now use this transformer as part of an analysis pipeline where we have a `DenseVector` as input and expected output.
+现在我们以 `DataSet[DenseVector]` 为输入调用我们的 `MeanTransformer` 的 `fit` 和 `transform` 方法。
+不仅如此，我们现在能把 transformer 作为分析管道的一部分来使用，该管道有一个 `DenseVector` 作为输入和一个输出。
 
 {% highlight scala %}
 val trainingData: DataSet[DenseVector] = ...
@@ -320,11 +320,12 @@ val pipeline = mean.chainTransformer(polyFeatures)
 pipeline.fit(trainingData)
 {% endhighlight %}
 
-It is noteworthy that there is no additional code needed to enable chaining.
-The system automatically constructs the pipeline logic using the operations of the individual components.
+值得注意的是，不需要额外的代码来使用链接
+该系统会自动使用每个部件的操作来自动构建 pipeline 逻辑。
 
-So far everything works fine with `DenseVector`.
-But what happens, if we call our transformer with `LabeledVector` instead?
+到目前为止，用 `DenseVector` 作为输入一切顺利。
+但如果我们使用 `LabeledVector` 来调 transformer，会发生什么情况？
+
 {% highlight scala %}
 val trainingData: DataSet[LabeledVector] = ...
 
@@ -333,13 +334,13 @@ val mean = MeanTransformer()
 mean.fit(trainingData)
 {% endhighlight %}
 
-As before we see the following exception upon execution of the program: `"There is no FitOperation defined for class MeanTransformer which trains on a DataSet[org.apache.flink.ml.common.LabeledVector]"`.
-It is noteworthy, that this exception is thrown in the pre-flight phase, which means that the job has not been submitted to the runtime system.
-This has the advantage that you won't see a job which runs for a couple of days and then fails because of an incompatible pipeline component.
-Type compatibility is, thus, checked at the very beginning for the complete job.
+跟之前相同，在运行程序时抛出了以下异常信息: `"There is no FitOperation defined for class MeanTransformer which trains on a DataSet[org.apache.flink.ml.common.LabeledVector]"`.
+值得留意的是，这个异常在准备阶段 (pre-flight phase) 就被抛出，意味着此时工作还没被提交到运行系统。
+这有一个很大的好处：你不会看到一个工作在跑了若干天之后由于 pipeline 组件的不兼容而失败。
+因此，类型的兼容性在整个工作的早期就被检查。
 
-In order to make the `MeanTransformer` work on `LabeledVector` as well, we have to provide the corresponding operations.
-Consequently, we have to define a `FitOperation[MeanTransformer, LabeledVector]` and `TransformOperation[MeanTransformer, LabeledVector, LabeledVector]` as implicit values in the scope of `MeanTransformer`'s companion object.
+为了让 `MeanTransformer` 也能工作在 `LabeledVector` 上，我们必须提供相关的操作。
+因此，我们需要在 `MeanTransformer` 的伴生对象域内定义一个 `FitOperation[MeanTransformer, LabeledVector]` 和 `TransformOperation[MeanTransformer, LabeledVector, LabeledVector]` 作为隐式值。
 
 {% highlight scala %}
 object MeanTransformer {
@@ -349,5 +350,5 @@ object MeanTransformer {
 }
 {% endhighlight %}
 
-If we wanted to implement a `Predictor` instead of a `Transformer`, then we would have to provide a `FitOperation`, too.
-Moreover, a `Predictor` requires a `PredictOperation` which implements how predictions are calculated from testing data.  
+如果我们希望实现一个 `Predictor` 而不是 `Transformer`， 我们也需要提供一个 `FitOperation`。
+此外，一个 `Predictor` 需要一个实现如何在测试集上计算预测值的 `PredictOperation`。  
