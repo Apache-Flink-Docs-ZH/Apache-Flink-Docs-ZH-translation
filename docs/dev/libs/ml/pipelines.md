@@ -339,8 +339,8 @@ mean.fit(trainingData)
 这有一个很大的好处：你不会看到一个工作在跑了若干天之后由于 pipeline 组件的不兼容而失败。
 因此，类型的兼容性在整个工作的早期就被检查。
 
-In order to make the `MeanTransformer` work on `LabeledVector` as well, we have to provide the corresponding operations.
-Consequently, we have to define a `FitOperation[MeanTransformer, LabeledVector]` and `TransformOperation[MeanTransformer, LabeledVector, LabeledVector]` as implicit values in the scope of `MeanTransformer`'s companion object.
+为了让 `MeanTransformer` 也能工作在 `LabeledVector` 上，我们必须提供相关的操作。
+因此，我们需要在 `MeanTransformer` 的伴生对象域内定义一个 `FitOperation[MeanTransformer, LabeledVector]` 和 `TransformOperation[MeanTransformer, LabeledVector, LabeledVector]` 作为隐式值。
 
 {% highlight scala %}
 object MeanTransformer {
