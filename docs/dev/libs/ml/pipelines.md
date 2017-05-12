@@ -28,7 +28,7 @@ under the License.
 
 ## 简介
 
-把 transformer 和 predictor 链接起来的能力对任何机器学习库都是一个非常重要的特性。在 FlinkML 中，我们希望在提供一个直观的API的同时，能够充分利用 Scala 语言的能力来为我们的 pipelines 提供类型安全的实现。我们希望能够实现的是让API的使用变得简单轻松，让使用者在工作开始运行之前避免类型错误，并且消除在需要长期运行的工作提交后由于数据转换操作错误引起的失败情形，而这类错误在机器学习 pipeline 中是经常发生的。
+把 transformer 和 predictor 链接起来的能力对任何机器学习库都是一个非常重要的特性。在 FlinkML 中，我们希望在提供一个直观的API的同时，能够充分利用 Scala 语言的能力来为我们的 pipelines 提供类型安全的实现。我们希望能够实现的是让API的使用变得简单轻松，让使用者准备 (pre-flight) 时 (工作开始运行之前) 避免类型错误，并且消除在需要长期运行的工作提交后由于数据转换操作错误引起的失败情形，而这类错误在机器学习 pipeline 中是经常发生的。
 
 在本指南中，我们将会描述在 FlinkML 中实现可链接的 transformers 和 predictors 时所采用的选择，并且为开发人员提供关于如何充分使用 pipeline 特性来创建自己的算法的指导。
 
@@ -130,7 +130,7 @@ object StandardScaler {
 ### 如何实现一个 Pipeline 操作
 
 为了支持 FlinkML 中的管道操作 (pipelining)，算法必须遵循一个设计模式，我们会在这一章节描述该设计模式。
-假设我们希望想要实现一个 pipeline 操作，该操作能改变你所提供的数据的平均值。由于居中数据 (centering data) 在许多 pipeline 分析中是一个常用的预处理步骤，我们将以一个 `Transformer` 的形式实现它。因此我们首先创建一个 `MeanTransformer` 类，该类继承 `Transformer`。
+假设我们希望想要实现一个 pipeline 操作，该操作能改变你所提供的数据的平均值。由于居中数据 (centering data) 在许多分析管道 (pipeline) 中是一个常用的预处理步骤，我们将以一个 `Transformer` 的形式实现它。因此我们首先创建一个 `MeanTransformer` 类，该类继承 `Transformer`。
 
 {% highlight scala %}
 class MeanTransformer extends Transformer[MeanTransformer] {}
@@ -306,8 +306,8 @@ object MeanTransformer{
 }
 {% endhighlight %}
 
-Now we can call `fit` and `transform` of our `MeanTransformer` with `DataSet[DenseVector]` as input.
-Furthermore, we can now use this transformer as part of an analysis pipeline where we have a `DenseVector` as input and expected output.
+现在我们以 `DataSet[DenseVector]` 为输入调用我们的 `MeanTransformer` 的 `fit` 和 `transform` 方法。
+不仅如此，我们现在能把 transformer 作为分析管道的一部分来使用，该管道有一个 `DenseVector` 作为输入和一个输出。
 
 {% highlight scala %}
 val trainingData: DataSet[DenseVector] = ...
@@ -320,10 +320,10 @@ val pipeline = mean.chainTransformer(polyFeatures)
 pipeline.fit(trainingData)
 {% endhighlight %}
 
-It is noteworthy that there is no additional code needed to enable chaining.
-The system automatically constructs the pipeline logic using the operations of the individual components.
+值得注意的是，不需要额外的代码来使用链接
+该系统会自动使用每个部件的操作来自动构建 pipeline 逻辑。
 
-So far everything works fine with `DenseVector`.
+到目前为止，用 `DenseVector` 作为输入一切顺利。
 But what happens, if we call our transformer with `LabeledVector` instead?
 {% highlight scala %}
 val trainingData: DataSet[LabeledVector] = ...
