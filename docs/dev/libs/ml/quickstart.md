@@ -56,7 +56,7 @@ FlinkML 旨在从您的数据中学习一个简单的过程，抽象出来通常
 
 例如，我们可以使用 Haberman's Survival 数据集，您可以[从 UCI 机器学习数据库下载这个数据集](http://archive.ics.uci.edu/ml/machine-learning-databases/haberman/haberman.data)。 该数据集“包含了对乳腺癌手术患者的存活进行研究的病例”。 数据来自逗号分隔的文件，前3列是特征，最后一列是类，第4列表示患者是否存活5年以上（标记1），或者5年内死亡（标记2）。 您可以查看[ UCI 页面](https://archive.ics.uci.edu/ml/datasets/Haberman%27s+Survival)了解有关数据的更多信息。
 
-We can load the data as a `DataSet[String]` first:
+我们可以先把数据加载为一个 `DataSet[String]` ：
 
 {% highlight scala %}
 
@@ -68,9 +68,7 @@ val survival = env.readCsvFile[(String, String, String, String)]("/path/to/haber
 
 {% endhighlight %}
 
-We can now transform the data into a `DataSet[LabeledVector]`. This will allow us to use the
-dataset with the FlinkML classification algorithms. We know that the 4th element of the dataset
-is the class label, and the rest are features, so we can build `LabeledVector` elements like this:
+我们现在可以将数据转换成 `DataSet[LabeledVector]` 。 这将允许我们使用 FlinkML 分类算法的数据集。 我们知道数据集的第四个元素是类标记，其余的是特征，所以我们可以像这样构建 `LabeledVector` 元素：
 
 {% highlight scala %}
 
@@ -86,23 +84,13 @@ val survivalLV = survival
 
 {% endhighlight %}
 
-We can then use this data to train a learner. We will however use another dataset to exemplify
-building a learner; that will allow us to show how we can import other dataset formats.
+然后，我们可以使用这些数据来训练一个学习器。然而，我们将使用另一个数据集来示例建立学习器；这将让我们展示如何导入其他数据集格式。
 
-**LibSVM files**
+**LibSVM 文件**
 
-A common format for ML datasets is the LibSVM format and a number of datasets using that format can be
-found [in the LibSVM datasets website](http://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/). FlinkML provides utilities for loading
-datasets using the LibSVM format through the `readLibSVM` function available through the `MLUtils`
-object.
-You can also save datasets in the LibSVM format using the `writeLibSVM` function.
-Let's import the svmguide1 dataset. You can download the
-[training set here](http://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary/svmguide1)
-and the [test set here](http://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary/svmguide1.t).
-This is an astroparticle binary classification dataset, used by Hsu et al. [[3]](#hsu) in their
-practical Support Vector Machine (SVM) guide. It contains 4 numerical features, and the class label.
+机器学习数据集的通用格式是 LibSVM 格式，并且可以在 [LibSVM 数据集网站](http://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/)中找到使用该格式的多个数据集。 FlinkML 提供了通过 `MLUtils` 对象的 `readLibSVM` 函数加载 LibSVM 格式的数据集的实用程序。 您还可以使用 `writeLibSVM` 函数以 LibSVM 格式保存数据集。 我们导入 svmguide1 数据集。 您可以在这里下载[训练集](http://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary/svmguide1)和[测试集](http://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary/svmguide1.t)。 这是一个二进制分类数据集，由 Hsu 等人在他们的实用支持向量机（SVM）指南中使用。 它包含4个数字特征和它的类标记。
 
-We can simply import the dataset then using:
+我们可以简单地使用下面的代码导入数据集：
 
 {% highlight scala %}
 
@@ -114,17 +102,11 @@ val astroTest: DataSet[(Vector, Double)] = MLUtils.readLibSVM(env, "/path/to/svm
 
 {% endhighlight %}
 
-This gives us two `DataSet` objects that we will use in the following section to
-create a classifier.
+它给了我们两个 `DataSet` 对象，我们会在下面的章节中使用这两个对象来生成一个分类器。
 
-## Classification
+## 分类
 
-Once we have imported the dataset we can train a `Predictor` such as a linear SVM classifier.
-We can set a number of parameters for the classifier. Here we set the `Blocks` parameter,
-which is used to split the input by the underlying CoCoA algorithm [[2]](#jaggi) uses. The
-regularization parameter determines the amount of $l_2$ regularization applied, which is used
-to avoid overfitting. The step size determines the contribution of the weight vector updates to
-the next weight vector value. This parameter sets the initial step size.
+一旦我们导入了数据集，我们可以训练一个 `指示器` ，如线性 SVM 分类器。 我们可以为分类器设置多个参数。 这里我们设置 `Blocks` 参数，它用于通过底层CoCoA算法来分割输入。 正则化参数确定应用的 $l_2$ 正则化值，用于避免过拟合。 步长确定权重向量更新到下一个权重向量值的贡献。 此参数设置初始步长。
 
 {% highlight scala %}
 
@@ -141,7 +123,7 @@ svm.fit(astroTrain)
 
 {% endhighlight %}
 
-We can now make predictions on the test set, and use the `evaluate` function to create (truth, prediction) pairs.
+我们现在可以对测试集进行预测，并使用 `evaluate` 函数创建（真值，预测）对。
 
 {% highlight scala %}
 
@@ -149,7 +131,7 @@ val evaluationPairs: DataSet[(Double, Double)] = svm.evaluate(astroTest)
 
 {% endhighlight %}
 
-Next we will see how we can pre-process our data, and use the ML pipelines capabilities of FlinkML.
+接下来，我们将看到我们如何预处理我们的数据，并使用 FlinkML 的机器学习管道功能。
 
 ## Data pre-processing and pipelines
 
