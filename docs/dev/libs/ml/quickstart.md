@@ -35,10 +35,7 @@ FlinkML旨在从您的数据中学习一个简单的过程，抽象出来通常�
 
 * **监督学习** 涉及从一个输入（特征）集合到一个输出集合学习一个功能（映射）。 使用训练集（输入，输出）对来完成学习，我们用来近似映射函数。 监督学习问题进一步分为分类和回归问题。 在分类问题中，我们尝试预测样例属于的类，例如用户是否要点击广告。 另一方面，回归问题是关于预测（实际）数值，通常称为因变量，例如明天的温度是多少。
 
-* **Unsupervised Learning** deals with discovering patterns and regularities in the data. An example
-of this would be *clustering*, where we try to discover groupings of the data from the
-descriptive features. Unsupervised learning can also be used for feature selection, for example
-through [principal components analysis](https://en.wikipedia.org/wiki/Principal_component_analysis).
+* **无监督学习** 用来发现数据中的模式和规律。 一个例子是聚类，我们尝试从描述性的特征中发现数据分组。 无监督学习也可用于特征选择，例如通过 [主成分分析（principal components analysis）](https://en.wikipedia.org/wiki/Principal_component_analysis) 进行特征选择。
 
 ## Linking with FlinkML
 
