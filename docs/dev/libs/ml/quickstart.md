@@ -50,14 +50,9 @@ FlinkML 旨在从您的数据中学习一个简单的过程，抽象出来通常
 </dependency>
 {% endhighlight %}
 
-## Loading data
+## 加载数据
 
-To load data to be used with FlinkML we can use the ETL capabilities of Flink, or specialized
-functions for formatted data, such as the LibSVM format. For supervised learning problems it is
-common to use the `LabeledVector` class to represent the `(label, features)` examples. A `LabeledVector`
-object will have a FlinkML `Vector` member representing the features of the example and a `Double`
-member which represents the label, which could be the class in a classification problem, or the dependent
-variable for a regression problem.
+要加载与 FlinkML 一起使用的数据，我们可以使用 Flink 的 ETL 功能，或者使用诸如 LibSVM 格式的格式化数据的专门方法。 对于监督学习问题，通常使用 `LabeledVector` 类来表示 `（标记，特征）` 样例。 `LabeledVector` 对象将具有表示样例特征的 FlinkML `Vector` 成员，以及表示标记的 `Double` 成员，该标记可能是分类问题中的类，也可以是回归问题的因变量。
 
 As an example, we can use Haberman's Survival Data Set , which you can
 [download from the UCI ML repository](http://archive.ics.uci.edu/ml/machine-learning-databases/haberman/haberman.data).
