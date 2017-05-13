@@ -137,8 +137,7 @@ val evaluationPairs: DataSet[(Double, Double)] = svm.evaluate(astroTest)
 
 在使用 SVM 分类时，经常鼓励的预处理步骤是将输入特征缩放到 [0,1] 范围，以避免极值特征的影响。 FlinkML 有一些`转换器`，如 `MinMaxScaler` ，用于预处理数据，一个关键特征是将转换器 `转换器` 和`指示器` 链接在一起的能力。 这样我们可以运行相同的转换流程，并且以直接的和类型安全的方式对训练和测试数据进行预测。 您可以在[管道文档](pipelines.html)中阅读更多关于FlinkML管道系统的信息。
 
-Let us first create a normalizing transformer for the features in our dataset, and chain it to a
-new SVM classifier.
+我们首先为数据集中的特征创建一个归一化转换，并将其链接到一个新的 SVM 分类器。
 
 {% highlight scala %}
 
@@ -150,10 +149,9 @@ val scaledSVM = scaler.chainPredictor(svm)
 
 {% endhighlight %}
 
-We can now use our newly created pipeline to make predictions on the test set.
-First we call fit again, to train the scaler and the SVM classifier.
-The data of the test set will then be automatically scaled before being passed on to the SVM to
-make predictions.
+我们现在可以使用我们新创建的管道来对测试集进行预测。
+首先，训练缩放器和SVM分类器。
+然后测试集的数据将被自动缩放，然后传递给SVM进行预测。
 
 {% highlight scala %}
 
@@ -163,23 +161,13 @@ val evaluationPairsScaled: DataSet[(Double, Double)] = scaledSVM.evaluate(astroT
 
 {% endhighlight %}
 
-The scaled inputs should give us better prediction performance.
+被缩放的输入应该会给我们更好的预测表现。
 
-## Where to go from here
+## 下一步
 
-This quickstart guide can act as an introduction to the basic concepts of FlinkML, but there's a lot
-more you can do.
-We recommend going through the [FlinkML documentation]({{ site.baseurl }}/dev/libs/ml/index.html), and trying out the different
-algorithms.
-A very good way to get started is to play around with interesting datasets from the UCI ML
-repository and the LibSVM datasets.
-Tackling an interesting problem from a website like [Kaggle](https://www.kaggle.com) or
-[DrivenData](http://www.drivendata.org/) is also a great way to learn by competing with other
-data scientists.
-If you would like to contribute some new algorithms take a look at our
-[contribution guide](contribution_guide.html).
+这个快速入门指南是一个对于 FlinkML 基础概念的介绍，但是你能做更多的事情。我们建议您查看[ FlinkML 文档]({{ site.baseurl }}/dev/libs/ml/index.html)，尝试不同的算法。一个入门的好方法是用自己喜欢的来自于 UCI 机器学习库的数据集和 LibSVM 数据集进行试验。从 [Kaggle](https://www.kaggle.com) 或 [DrivenData](http://www.drivendata.org/) 这样的网站处理一个有趣的问题也是通过与其他数据科学家的竞争来学习的好方法。如果您想提供一些新的算法，请查看我们的[贡献指南](contribution_guide.html)。
 
-**References**
+**参考文献**
 
 <a name="murphy"></a>[1] Murphy, Kevin P. *Machine learning: a probabilistic perspective.* MIT
 press, 2012.
