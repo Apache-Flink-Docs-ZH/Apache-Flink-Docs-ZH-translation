@@ -135,8 +135,7 @@ pipeline.fit(trainingData)
 val predictions: DataSet[LabeledVector] = pipeline.predict(testingData)
 {% endhighlight %}
 
-One can chain a `Transformer` to another `Transformer` or a set of chained `Transformers` by calling the method `chainTransformer`.
-If one wants to chain a `Predictor` to a `Transformer` or a set of chained `Transformers`, one has to call the method `chainPredictor`.
+
 通过方法 `chainTransformer`可以将一个`Transformer`和另一个或多个`Transformer`链接在一起。
 而通过方法 `chainPredictor`可以将一个 `Predictor` 和一个或多个`Transformer`链接在一起。
 
