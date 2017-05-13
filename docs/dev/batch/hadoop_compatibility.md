@@ -107,7 +107,7 @@ Flink提供兼容Hadoop输出格式（Hadoop OutputFormat）的封装。支持�
 <div data-lang="java" markdown="1">
 
 ~~~java
-// Obtain the result we want to emit
+// 获取所需数据
 DataSet<Tuple2<Text, IntWritable>> hadoopResult = [...]
 
 // 创建和初始化Hadoop TextOutputFormat.
@@ -119,7 +119,7 @@ HadoopOutputFormat<Text, IntWritable> hadoopOF =
 hadoopOF.getConfiguration().set("mapreduce.output.textoutputformat.separator", " ");
 TextOutputFormat.setOutputPath(job, new Path(outputPath));
 
-// 通过Hadoop TextOutputFormat发布数据
+// 通过Hadoop TextOutputFormat输出结果
 hadoopResult.output(hadoopOF);
 ~~~
 
@@ -127,7 +127,7 @@ hadoopResult.output(hadoopOF);
 <div data-lang="scala" markdown="1">
 
 ~~~scala
-// Obtain your result to emit.
+// 获取所需数据
 val hadoopResult: DataSet[(Text, IntWritable)] = [...]
 
 val hadoopOF = new HadoopOutputFormat[Text,IntWritable](
@@ -164,7 +164,7 @@ Flink的方法封装有
 下面的例子介绍如何使用Hadoop的`Mapper`和`Reducer` 。
 
 ~~~java
-// Obtain data to process somehow.
+// 获取待处理数据
 DataSet<Tuple2<Text, LongWritable>> text = [...]
 
 DataSet<Tuple2<Text, LongWritable>> result = text
