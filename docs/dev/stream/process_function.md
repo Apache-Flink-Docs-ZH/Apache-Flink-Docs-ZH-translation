@@ -1,6 +1,6 @@
 ---
-title: "Process Function (Low-level Operations)"
-nav-title: "Process Function"
+title: "过程函数 (低层次操作)"
+nav-title: "过程函数"
 nav-parent_id: streaming
 nav-pos: 35
 ---
@@ -26,67 +26,50 @@ under the License.
 * This will be replaced by the TOC
 {:toc}
 
-## The ProcessFunction
+## 过程函数(ProcessFunction)
 
-The `ProcessFunction` is a low-level stream processing operation, giving access to the basic building blocks of
-all (acyclic) streaming applications:
+`过程函数(ProcessFunction)` 是一种低层次的流处理操作，它能访问到(无环的)流应用的基本构成单元：
 
-  - events (stream elements)
-  - state (fault-tolerant, consistent, only on keyed stream)
-  - timers (event time and processing time, only on keyed stream)
+  - 事件(events) (流元素)
+  - 状态(state) (容错, 一致性,只在keyed stream中)
+  - 定时器(timers) (事件时间和处理时间, 只在keyed stream中)
 
-The `ProcessFunction` can be thought of as a `FlatMapFunction` with access to keyed state and timers. It handles events
-by being invoked for each event received in the input stream(s).
+`过程函数(ProcessFunction)` 可以被认为一种提供了对有键状态(keyed state)和定时器(timers)访问的 `FlatMapFunction`。每在输入流中收到一个事件，过程函数就会被触发来对事件进行处理。
 
-For fault-tolerant state, the `ProcessFunction` gives access to Flink's [keyed state](state.html), accessible via the
-`RuntimeContext`, similar to the way other stateful functions can access keyed state.
+对于容错的状态(state), `过程函数(ProcessFunction)` 可以通过 `RuntimeContext` 访问Flink's [有键状态(keyed state)](state.html), 就像其它状态函数能够访问有键状态(keyed state)一样.
 
-The timers allow applications to react to changes in processing time and in [event time](../event_time.html).
-Every call to the function `processElement(...)` gets a `Context` object with gives access to the element's
-event time timestamp, and to the *TimerService*. The `TimerService` can be used to register callbacks for future
-event-/processing-time instants. When a timer's particular time is reached, the `onTimer(...)` method is
-called. During that call, all states are again scoped to the key with which the timer was created, allowing
-timers to perform keyed state manipulation as well.
+定时器则允许程序对处理时间和[事件时间(event time)](../event_time.html)的改变做出反应。每次对 `processElement(...)` 的调用都能拿到一个`上下文(Context)`对象,这个对象能访问到所处理元素事件时间的时间戳,还有 *定时服务器(TimerService)* 。`定时服务器(TimerService)`可以为尚未发生的处理时间或事件时间实例注册回调函数。当一个定时器到达特定的时间实例时，`onTimer(...)`方法就会被调用。在这个函数的调用期间，所有的状态(states)都会再次对应定时器被创建时key所属的states，同时被触发的回调函数也能操作这些状态。
 
-<span class="label label-info">Note</span> If you want to access keyed state and timers you have
-to apply the `ProcessFunction` on a keyed stream:
+<span class="label label-info">注意</span> 如果你希望访问有键状态(keyed state)和定时器(timers),你必须在一个键型流(keyed stream)上使用`过程函数(ProcessFunction)`:
 
 {% highlight java %}
 stream.keyBy(...).process(new MyProcessFunction())
 {% endhighlight %}
 
 
-## Low-level Joins
+## 低层的连接(Low-level Joins)
 
-To realize low-level operations on two inputs, applications can use `CoProcessFunction`. This
-function is bound to two different inputs and gets individual calls to `processElement1(...)` and
-`processElement2(...)` for records from the two different inputs.
+为了在两个输入源实现低层次的操作，应用可以使用 `CoProcessFunction`。该函数绑定了连个不同的输入源并且会对从两个输入源中得到的记录分别调用 `processElement1(...)` 和 `processElement2(...)` 方法。
 
-Implementing a low level join typically follows this pattern:
+可以按下面的步骤来实现一个低层典型的连接操作：
 
-  - Create a state object for one input (or both)
-  - Update the state upon receiving elements from its input
-  - Upon receiving elements from the other input, probe the state and produce the joined result
+  - 为一个(或两个)输入源创建一个状态(state)对象
+  - 在从输入源收到元素时更新这个状态(state)对象
+  - 在从另一个输入源接收到元素时，扫描这个state对象并产出连接的结果
 
-For example, you might be joining customer data to financial trades,
-while keeping state for the customer data. If you care about having
-complete and deterministic joins in the face of out-of-order events,
-you can use a timer to evaluate and emit the join for a trade when the
-watermark for the customer data stream has passed the time of that
-trade.
-
-## Example
+比如，你正在把顾客数据和交易数据做一个连接，并且为顾客数据保存了状态(state)。如果你担心因为事件乱序导致不能得到完整和准确的连接结果，你可以用定时器来
+控制，当顾客数据的水印(watermark)时间超过了那笔交易的时间时，再进行计算和产出连接的结果。
+## 例子
 
 The following example maintains counts per key, and emits a key/count pair whenever a minute passes (in event time) without an update for that key:
+下面的例子中每一个键维护了一个计数，并且会把一分钟(事件时间)内没有更新的键/值对输出:
 
-  - The count, key, and last-modification-timestamp are stored in a `ValueState`, which is implicitly scoped by key.
-  - For each record, the `ProcessFunction` increments the counter and sets the last-modification timestamp
-  - The function also schedules a callback one minute into the future (in event time)
-  - Upon each callback, it checks the callback's event time timestamp against the last-modification time of the stored count
-    and emits the key/count if they match (i.e., no further update occurred during that minute)
+  - 计数、键和最后一次更新时间存储在该键隐式持有的 `ValueState` 中
+  - 对于每一条记录，`过程函数(ProcessFunction)` 会对这个键对应的 `ValueState` 增加计数器的值，并且调整最后一次更新时间
+  - 该 `过程函数(ProcessFunction)` 也会注册一个一分钟(事件时间)后的回调函数
+  - 每一次回调触发时，它会检查回调事件的时间戳和存在 `ValueState` 中最后一次更新的时间戳是否符合要求(比如，在过去的一分钟没有再发生更新)，如果符合要求则会把键/计数对传出来
 
-<span class="label label-info">Note</span> This simple example could have been implemented with
-session windows. We use `ProcessFunction` here to illustrate the basic pattern it provides.
+<span class="label label-info">注意</span> 这个简单的列子本来可以通过会话窗口来实现。我们在这里使用 `过程函数(ProcessFunction)` 来举例说明它的基本模式。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -102,16 +85,16 @@ import org.apache.flink.streaming.api.functions.ProcessFunction.OnTimerContext;
 import org.apache.flink.util.Collector;
 
 
-// the source data stream
+// 源数据流
 DataStream<Tuple2<String, String>> stream = ...;
 
-// apply the process function onto a keyed stream
+// 对一个键型流(keyed stream) 使用过程函数
 DataStream<Tuple2<String, Long>> result = stream
     .keyBy(0)
     .process(new CountWithTimeoutFunction());
 
 /**
- * The data type stored in the state
+ * 存储在state中的数据类型
  */
 public class CountWithTimestamp {
 
@@ -121,11 +104,11 @@ public class CountWithTimestamp {
 }
 
 /**
- * The implementation of the ProcessFunction that maintains the count and timeouts
+ * 维护了计数和超时间隔的过程函数的实现
  */
 public class CountWithTimeoutFunction extends ProcessFunction<Tuple2<String, String>, Tuple2<String, Long>> {
 
-    /** The state that is maintained by this process function */
+    /** 这个状态是通过过程函数来维护 */
     private ValueState<CountWithTimestamp> state;
 
     @Override
@@ -137,23 +120,23 @@ public class CountWithTimeoutFunction extends ProcessFunction<Tuple2<String, Str
     public void processElement(Tuple2<String, String> value, Context ctx, Collector<Tuple2<String, Long>> out)
             throws Exception {
 
-        // retrieve the current count
+        // 得到当前的计数
         CountWithTimestamp current = state.value();
         if (current == null) {
             current = new CountWithTimestamp();
             current.key = value.f0;
         }
 
-        // update the state's count
+        // 更新状态中的计数
         current.count++;
 
-        // set the state's timestamp to the record's assigned event time timestamp
+        // 设置状态中相关的时间戳
         current.lastModified = ctx.timestamp();
 
-        // write the state back
+        // 状态回写
         state.update(current);
 
-        // schedule the next timer 60 seconds from the current event time
+        // 从当前事件时间开始注册一个60s的定时器
         ctx.timerService().registerEventTimeTimer(current.lastModified + 60000);
     }
 
@@ -161,7 +144,7 @@ public class CountWithTimeoutFunction extends ProcessFunction<Tuple2<String, Str
     public void onTimer(long timestamp, OnTimerContext ctx, Collector<Tuple2<String, Long>> out)
             throws Exception {
 
-        // get the state for the key that scheduled the timer
+        // 得到设置这个定时器的键对应的状态
         CountWithTimestamp result = state.value();
 
         // check if this is an outdated timer or the latest timer
@@ -183,25 +166,25 @@ import org.apache.flink.streaming.api.functions.ProcessFunction.Context
 import org.apache.flink.streaming.api.functions.ProcessFunction.OnTimerContext
 import org.apache.flink.util.Collector
 
-// the source data stream
+// 源数据流
 val stream: DataStream[Tuple2[String, String]] = ...
 
-// apply the process function onto a keyed stream
+// 对一个键型流(keyed stream) 使用过程函数
 val result: DataStream[Tuple2[String, Long]] = stream
   .keyBy(0)
   .process(new CountWithTimeoutFunction())
 
 /**
-  * The data type stored in the state
+  * 存储在state中的数据类型
   */
 case class CountWithTimestamp(key: String, count: Long, lastModified: Long)
 
 /**
-  * The implementation of the ProcessFunction that maintains the count and timeouts
+  * 维护了计数和超时间隔的过程函数的实现
   */
 class CountWithTimeoutFunction extends ProcessFunction[(String, String), (String, Long)] {
 
-  /** The state that is maintained by this process function */
+  /** 通过过程函数来维护的状态  */
   lazy val state: ValueState[CountWithTimestamp] = getRuntimeContext
     .getState(new ValueStateDescriptor[CountWithTimestamp]("myState", classOf[CountWithTimestamp]))
 
@@ -216,10 +199,10 @@ class CountWithTimeoutFunction extends ProcessFunction[(String, String), (String
         CountWithTimestamp(key, count + 1, ctx.timestamp)
     }
 
-    // write the state back
+    // 状态回写
     state.update(current)
 
-    // schedule the next timer 60 seconds from the current event time
+    // 从当前事件时间开始注册一个60s的定时器
     ctx.timerService.registerEventTimeTimer(current.lastModified + 60000)
   }
 
