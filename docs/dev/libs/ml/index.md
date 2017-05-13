@@ -35,7 +35,7 @@ and roadmap here](https://cwiki.apache.org/confluence/display/FLINK/FlinkML%3A+V
 
 ## 支持的算法
 
-Flink目前支持一下算法
+Flink目前支持以下算法
 
 ### 监督学习
 
