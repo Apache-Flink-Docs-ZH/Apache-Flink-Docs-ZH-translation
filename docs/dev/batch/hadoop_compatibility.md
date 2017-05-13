@@ -218,7 +218,7 @@ HadoopOutputFormat<Text, IntWritable> hadoopOF =
 hadoopOF.getConfiguration().set("mapreduce.output.textoutputformat.separator", " ");
 TextOutputFormat.setOutputPath(job, new Path(outputPath));
 
-// 使用the Hadoop TextOutputFormat输出结果.
+// 使用Hadoop TextOutputFormat输出结果.
 result.output(hadoopOF);
 
 // 执行程序
