@@ -25,6 +25,8 @@ specific language governing permissions and limitations
 under the License.
 -->
 
+FlinkML是Flink内部的机器学习工具库。它是Flink生态圈的新组件，在不断贡献新的算法。
+FlinkML目标是提供可扩展的机器学习算法，良好的API和工具来最小化构建端对端的机器学习系统。
 FlinkML is the Machine Learning (ML) library for Flink. It is a new effort in the Flink community,
 with a growing list of algorithms and contributors. With FlinkML we aim to provide
 scalable ML algorithms, an intuitive API, and tools that help minimize glue code in end-to-end ML
