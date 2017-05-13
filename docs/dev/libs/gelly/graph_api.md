@@ -25,20 +25,25 @@ under the License.
 * This will be replaced by the TOC
 {:toc}
 
-Graph Representation
+Graph Representation图的表示
 -----------
 
-In Gelly, a `Graph` is represented by a `DataSet` of vertices and a `DataSet` of edges.
+In Gelly, a `Graph` is represented by a `DataSet` of vertices and a `DataSet` of edges.  
+在Gelly中， `图(Graph)`由顶点(vertex)的`DataSet` 和边(edge)的`DataSet`表示。  
 
-The `Graph` nodes are represented by the `Vertex` type. A `Vertex` is defined by a unique ID and a value. `Vertex` IDs should implement the `Comparable` interface. Vertices without value can be represented by setting the value type to `NullValue`.
+The `Graph` nodes are represented by the `Vertex` type. A `Vertex` is defined by a unique ID and a value. `Vertex` IDs should implement the `Comparable` interface. Vertices without value can be represented by setting the value type to `NullValue`.  
+`图`的顶点由`Vertex`类表示。`Vertex`由一个唯一ID 和一个value 定义。`Vertex`ID 应该实现`Comparable`接口。要表示没有value的顶点，可以将value的类型设为`NullType`。  
+
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
 {% highlight java %}
 // create a new vertex with a Long ID and a String value
+// 用Long 类型的ID 和String 类型的 value 新建一个顶点
 Vertex<Long, String> v = new Vertex<Long, String>(1L, "foo");
 
 // create a new vertex with a Long ID and no value
+// 用一个Long 类型的ID 和空value 新建一个顶点
 Vertex<Long, NullValue> v = new Vertex<Long, NullValue>(1L, NullValue.getInstance());
 {% endhighlight %}
 </div>
@@ -46,15 +51,18 @@ Vertex<Long, NullValue> v = new Vertex<Long, NullValue>(1L, NullValue.getInstanc
 <div data-lang="scala" markdown="1">
 {% highlight scala %}
 // create a new vertex with a Long ID and a String value
+// 用Long 类型的ID 和String 类型的 value 新建一个顶点
 val v = new Vertex(1L, "foo")
 
 // create a new vertex with a Long ID and no value
+// 用一个Long 类型的ID 和空value 新建一个顶点
 val v = new Vertex(1L, NullValue.getInstance())
 {% endhighlight %}
 </div>
 </div>
 
-The graph edges are represented by the `Edge` type. An `Edge` is defined by a source ID (the ID of the source `Vertex`), a target ID (the ID of the target `Vertex`) and an optional value. The source and target IDs should be of the same type as the `Vertex` IDs. Edges with no value have a `NullValue` value type.
+The graph edges are represented by the `Edge` type. An `Edge` is defined by a source ID (the ID of the source `Vertex`), a target ID (the ID of the target `Vertex`) and an optional value. The source and target IDs should be of the same type as the `Vertex` IDs. Edges with no value have a `NullValue` value type.  
+图的边用`Edge`类表示。`Edge`由一个源ID (即源`Vertex`的ID)，一个目的ID (即目的`Vertex`的ID)，一个可选的value 定义。源ID 和目的ID 应该与`Vertex`的ID 属于相同的类。没有值的边，它的value 类型为`NullValue`。  
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -62,6 +70,7 @@ The graph edges are represented by the `Edge` type. An `Edge` is defined by a so
 Edge<Long, Double> e = new Edge<Long, Double>(1L, 2L, 0.5);
 
 // reverse the source and target of this edge
+// 反转一条边的两个点
 Edge<Long, Double> reversed = e.reverse();
 
 Double weight = e.getValue(); // weight = 0.5
@@ -73,6 +82,7 @@ Double weight = e.getValue(); // weight = 0.5
 val e = new Edge(1L, 2L, 0.5)
 
 // reverse the source and target of this edge
+// 反转一条边的两个点
 val reversed = e.reverse
 
 val weight = e.getValue // weight = 0.5
@@ -81,16 +91,19 @@ val weight = e.getValue // weight = 0.5
 </div>
 
 In Gelly an `Edge` is always directed from the source vertex to the target vertex. A `Graph` may be undirected if for
-every `Edge` it contains a matching `Edge` from the target vertex to the source vertex.
+every `Edge` it contains a matching `Edge` from the target vertex to the source vertex.   
+在Gelly中，`Edge`永远从源端点指向目的端点。对一个`Graph`而言，如果每条`Edge` 都对应着另一条从目的端点指向源端点的`Edge`，那么它可能是无向的。  
 
 {% top %}
 
-Graph Creation
+Graph Creation 创建图
 -----------
 
-You can create a `Graph` in the following ways:
+You can create a `Graph` in the following ways:  
+你可以通过如下方法创建一个`Graph`：  
 
-* from a `DataSet` of edges and an optional `DataSet` of vertices:
+* from a `DataSet` of edges and an optional `DataSet` of vertices:  
+* 根据一个由边组成的`DataSet`和可选的一个由顶点组成的`DataSet`：  
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -119,7 +132,7 @@ val graph = Graph.fromDataSet(vertices, edges, env)
 </div>
 
 * from a `DataSet` of `Tuple2` representing the edges. Gelly will convert each `Tuple2` to an `Edge`, where the first field will be the source ID and the second field will be the target ID. Both vertex and edge values will be set to `NullValue`.
-
+* 根据一个由表示边的`Tuple2`类组成的`DataSet`。Gelly 将把每个`Tuple2`转换成`Edge`，其中第一个field 将作为源ID，第二个field 将作为目的ID。顶点和边的值都会被置为`NullValue`。  
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
 {% highlight java %}
@@ -143,6 +156,7 @@ val graph = Graph.fromTuple2DataSet(edges, env)
 </div>
 
 * from a `DataSet` of `Tuple3` and an optional `DataSet` of `Tuple2`. In this case, Gelly will convert each `Tuple3` to an `Edge`, where the first field will be the source ID, the second field will be the target ID and the third field will be the edge value. Equivalently, each `Tuple2` will be converted to a `Vertex`, where the first field will be the vertex ID and the second field will be the vertex value:
+* 根据一个由`Tuple3`组成的`DataSet`，以及可选的一个由`Tuple2`组成的`DataSet`。这种情况下，Gelly 将把每个`Tuple3`转换成`Edge`，其中第一个field 将成为源ID，第二个field 将成为目的ID，第三个field 将成为边的value。同样地，每个`Tuple2`将被转换为一个`Vertex`，其中第一个field 将成为端点的ID，第二个field 将成为端点的value。  
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -157,6 +171,7 @@ Graph<String, Long, Double> graph = Graph.fromTupleDataSet(vertexTuples, edgeTup
 {% endhighlight %}
 
 * from a CSV file of Edge data and an optional CSV file of Vertex data. In this case, Gelly will convert each row from the Edge CSV file to an `Edge`, where the first field will be the source ID, the second field will be the target ID and the third field (if present) will be the edge value. Equivalently, each row from the optional Vertex CSV file will be converted to a `Vertex`, where the first field will be the vertex ID and the second field (if present) will be the vertex value. In order to get a `Graph` from a `GraphCsvReader` one has to specify the types, using one of the following methods:
+* 根据一个包含边数据的CSV文件，以及可选的一个包含端点数据的CSV文件。这种情况下，Gelly 将把边CSV文件的每一行转换成一个`Edge`，其中第一个field 将成为源ID， 第二个field 将成为目的ID， 第三个field (如果存在的话)将成为边的value。同样地，可选端点CSV文件的每一行将被转换成一个`Vertex`，其中第一个field 将成为端点的ID，第二个field（如果存在的话）将成为端点的value。想从`GraphCsvReader`得到`Graph`，必须用下面的某种方法指定类型：  
 
 - `types(Class<K> vertexKey, Class<VV> vertexValue,Class<EV> edgeValue)`: both vertex and edge values are present.
 - `edgeTypes(Class<K> vertexKey, Class<EV> edgeValue)`: the Graph has edge values, but no vertex values.
@@ -167,11 +182,13 @@ Graph<String, Long, Double> graph = Graph.fromTupleDataSet(vertexTuples, edgeTup
 ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
 // create a Graph with String Vertex IDs, Long Vertex values and Double Edge values
+// 生成一个Vertex ID为String 类型、Vertex value为Long 类型，Edge value为Double 类型的图  
 Graph<String, Long, Double> graph = Graph.fromCsvReader("path/to/vertex/input", "path/to/edge/input", env)
 					.types(String.class, Long.class, Double.class);
 
 
 // create a Graph with neither Vertex nor Edge values
+// 生成一个Vertex 和Edge 都没有value 的图
 Graph<Long, NullValue, NullValue> simpleGraph = Graph.fromCsvReader("path/to/edge/input", env).keyType(Long.class);
 {% endhighlight %}
 </div>
@@ -190,14 +207,17 @@ val graph = Graph.fromTupleDataSet(vertexTuples, edgeTuples, env)
 * from a CSV file of Edge data and an optional CSV file of Vertex data.
 In this case, Gelly will convert each row from the Edge CSV file to an `Edge`.
 The first field of the each row will be the source ID, the second field will be the target ID and the third field (if present) will be the edge value.
-If the edges have no associated value, set the edge value type parameter (3rd type argument) to `NullValue`.
-You can also specify that the vertices are initialized with a vertex value.
+If the edges have no associated value, set the edge value type parameter (3rd type argument) to `NullValue`.You can also specify that the vertices are initialized with a vertex value.
+* 根据一个包含边数据的csv文件，以及可选的一个包含端点数据的csv文件。这种情况下，Gelly 将把边CSV文件的每一行转换成一个`Edge`，其中第一个field 将成为源ID， 第二个field 将成为目的ID， 第三个field (如果存在的话)将成为边的value。如果这条边没有关联的value， 将边的类型参数(第三个类型参数)设为`NullValue`。你也可以指定用某个值初始化端点。  
 If you provide a path to a CSV file via `pathVertices`, each row of this file will be converted to a `Vertex`.
-The first field of each row will be the vertex ID and the second field will be the vertex value.
+The first field of each row will be the vertex ID and the second field will be the vertex value.  
+如果通过`pathVertices`提供了CSV 文件的路径，那么文件的每行都会被转换成一个`Vertex`。每行的第一个field 将成为端点的ID， 第二个field 将成为端点的value。  
 If you provide a vertex value initializer `MapFunction` via the `vertexValueInitializer` parameter, then this function is used to generate the vertex values.
 The set of vertices will be created automatically from the edges input.
 If the vertices have no associated value, set the vertex value type parameter (2nd type argument) to `NullValue`.
-The vertices will then be automatically created from the edges input with vertex value of type `NullValue`.
+The vertices will then be automatically created from the edges input with vertex value of type `NullValue`.  
+如果通过参数`vertexValueInitializer`提供了端点value的初始化工具`MapFunction` ，那么这个函数可以用来生成端点的值。根据边的输入，可以自动生成端点的集合。如果端点没有关联值，要将端点value的类型参数（第二个类型参数）设为`NullValue`。根据边的输入，会自动生成值类型为`NullValue`的端点集合。  
+
 
 {% highlight scala %}
 val env = ExecutionEnvironment.getExecutionEnvironment
