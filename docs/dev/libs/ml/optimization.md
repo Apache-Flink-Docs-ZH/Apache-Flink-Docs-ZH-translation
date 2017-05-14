@@ -43,7 +43,7 @@ FlinkML 中的优化框架是一个面向开发人员的包，这个包可以解
 
 这里 $L$ 是损失函数，而$R(\wv)$是正则化惩罚 (regularization penalty)。我们使用 $L$ 来衡量一个模型对观察数据的拟合有多好，并且我们使用 $R$ 来影响对一个模型的复杂度损失 (complexity cost)，其中 $\lambda > 0$ 是正则化惩罚。
 
-### Loss Functions
+### 损失函数
 
 In supervised learning, we use loss functions in order to measure the model fit, by
 penalizing errors in the predictions $p$ made by the model compared to the true $y$ for each
@@ -56,7 +56,7 @@ Some common loss functions are:
 * Hinge Loss: $ \max \left(0, 1 - y ~ \wv^T \cdot \x\right), \quad y \in \{-1, +1\} $
 * Logistic Loss: $ \log\left(1+\exp\left( -y ~ \wv^T \cdot \x\right)\right), \quad y \in \{-1, +1\}$
 
-### Regularization Types
+### 正则化类型
 
 [Regularization](https://en.wikipedia.org/wiki/Regularization_(mathematics)) in machine learning
 imposes penalties to the estimated models, in order to reduce overfitting. The most common penalties
@@ -74,7 +74,7 @@ and is usually determined through model cross-validation.
 A good comparison of regularization types can be found in [this](http://www.robotics.stanford.edu/~ang/papers/icml04-l1l2.pdf) paper by Andrew Ng.
 Which regularization type is supported depends on the actually used optimization algorithm.
 
-## Stochastic Gradient Descent
+## 随机梯度下降
 
 In order to find a (local) minimum of a function, Gradient Descent methods take steps in the
 direction opposite to the gradient of the function $\eqref{eq:objectiveFunc}$ taken with
@@ -97,7 +97,7 @@ effectively a batch gradient descent. Once a sampling operator has been introduc
 mini-batch SGD will be performed.
 
 
-### Parameters
+### 参数
 
   The stochastic gradient descent implementation can be controlled by the following parameters:
 
@@ -181,7 +181,7 @@ mini-batch SGD will be performed.
     </tbody>
   </table>
 
-### Regularization
+### 正则化
 
 FlinkML supports Stochastic Gradient Descent with L1, L2 and no regularization. The regularization type has to implement the `RegularizationPenalty` interface,
 which calculates the new weights based on the gradient and regularization type.
@@ -210,7 +210,7 @@ The following list contains the supported regularization functions.
   </tbody>
 </table>
 
-### Loss Function
+### 损失函数
 
 The loss function which is minimized has to implement the `LossFunction` interface, which defines methods to compute the loss and the gradient of it.
 Either one defines ones own `LossFunction` or one uses the `GenericLossFunction` class which constructs the loss function from an outer loss function and a prediction function.
@@ -223,7 +223,7 @@ val lossFunction = GenericLossFunction(SquaredLoss, LinearPrediction)
 The full list of supported outer loss functions can be found [here](#partial-loss-function-values).
 The full list of supported prediction functions can be found [here](#prediction-function-values).
 
-#### Partial Loss Function Values ##
+#### 偏随机函数 (Partial Loss Function) 值 ##
 
   <table class="table table-bordered">
     <thead>
@@ -271,7 +271,7 @@ The full list of supported prediction functions can be found [here](#prediction-
     </tbody>
   </table>
 
-#### Prediction Function Values ##
+#### 预测函数值 ##
 
   <table class="table table-bordered">
       <thead>
@@ -297,7 +297,7 @@ The full list of supported prediction functions can be found [here](#prediction-
       </tbody>
     </table>
 
-#### Effective Learning Rate ##
+#### 有效学习率 ##
 
 Where:
 
@@ -378,7 +378,7 @@ Where:
     </tbody>
   </table>
 
-### Examples
+### 例子
 
 In the Flink implementation of SGD, given a set of examples in a `DataSet[LabeledVector]` and
 optionally some initial weights, we can use `GradientDescent.optimize()` in order to optimize
