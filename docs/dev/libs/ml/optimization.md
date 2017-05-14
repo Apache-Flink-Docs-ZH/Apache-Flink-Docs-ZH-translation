@@ -28,16 +28,9 @@ under the License.
 * Table of contents
 {:toc}
 
-## Mathematical Formulation
+## 数学公式
 
-The optimization framework in FlinkML is a developer-oriented package that can be used to solve
-[optimization](https://en.wikipedia.org/wiki/Mathematical_optimization)
-problems common in Machine Learning (ML) tasks. In the supervised learning context, this usually
-involves finding a model, as defined by a set of parameters $w$, that minimize a function $f(\wv)$
-given a set of $(\x, y)$ examples,
-where $\x$ is a feature vector and $y$ is a real number, which can represent either a real value in
-the regression case, or a class label in the classification case. In supervised learning, the
-function to be minimized is usually of the form:
+FlinkML 中的优化框架是一个面向开发人员的包，这个包可以解决机器学习任务中经常遇到的[优化](https://en.wikipedia.org/wiki/Mathematical_optimization)问题。在谈论监督式学习时，这涉及找到一个模型，用一组参数 $w$ 定义，该模型能够在给定一组 $(\x, y)$ 例子的情况下最小化 $f(\wv)$，这里$\x$是一个特征向量，而 $y$ 是一个表征一个回归模型的实数值或分类模型的类别标签的实数。在监督式学习中，需要被最小化的函数通常是以下形式：
 
 
 \begin{equation} \label{eq:objectiveFunc}
@@ -48,9 +41,7 @@ function to be minimized is usually of the form:
 \end{equation}
 
 
-where $L$ is the loss function and $R(\wv)$ the regularization penalty. We use $L$ to measure how
-well the model fits the observed data, and we use $R$ in order to impose a complexity cost to the
-model, with $\lambda > 0$ being the regularization parameter.
+这里 $L$ 是损失函数，而$R(\wv)$是正则化惩罚 (regularization penalty)。我们使用 $L$ 来衡量一个模型对观察数据的拟合有多好，并且我们使用 $R$ 来影响对一个模型的复杂度损失 (complexity cost)，其中 $\lambda > 0$ 是正则化惩罚。
 
 ### Loss Functions
 
