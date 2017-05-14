@@ -45,16 +45,13 @@ FlinkML 中的优化框架是一个面向开发人员的包，这个包可以解
 
 ### 损失函数
 
-In supervised learning, we use loss functions in order to measure the model fit, by
-penalizing errors in the predictions $p$ made by the model compared to the true $y$ for each
-example. Different loss functions can be used for regression (e.g. Squared Loss) and classification
-(e.g. Hinge Loss) tasks.
+在监督式学习中，我们用损失函数来衡量模型的拟合程度，损失函数通过对比模型做出的预测 $p$ 和每个实例的真值 $y$。不同的损失函数可以被回归任务 (比如平方损失) 和分类任务 (比如转折点损失(hinge loss))。
 
-Some common loss functions are:
+常用的损失函数有：
 
-* Squared Loss: $ \frac{1}{2} \left(\wv^T \cdot \x - y\right)^2, \quad y \in \R $
-* Hinge Loss: $ \max \left(0, 1 - y ~ \wv^T \cdot \x\right), \quad y \in \{-1, +1\} $
-* Logistic Loss: $ \log\left(1+\exp\left( -y ~ \wv^T \cdot \x\right)\right), \quad y \in \{-1, +1\}$
+* 平方损失: $ \frac{1}{2} \left(\wv^T \cdot \x - y\right)^2, \quad y \in \R $
+* 转折点损失: $ \max \left(0, 1 - y ~ \wv^T \cdot \x\right), \quad y \in \{-1, +1\} $
+* 逻辑损失: $ \log\left(1+\exp\left( -y ~ \wv^T \cdot \x\right)\right), \quad y \in \{-1, +1\}$
 
 ### 正则化类型
 
