@@ -55,21 +55,16 @@ FlinkML 中的优化框架是一个面向开发人员的包，这个包可以解
 
 ### 正则化类型
 
-[Regularization](https://en.wikipedia.org/wiki/Regularization_(mathematics)) in machine learning
-imposes penalties to the estimated models, in order to reduce overfitting. The most common penalties
-are the $L_1$ and $L_2$ penalties, defined as:
+机器学习中的[正则化] (https://en.wikipedia.org/wiki/Regularization_(mathematics)) 会惩罚需要被评价的模型，为了减少过拟合，最常见的惩罚是 $L_1$ 和 $L_2$ 惩罚，定义如下：
 
 * $L_1$: $R(\wv) = \norm{\wv}_1$
 * $L_2$: $R(\wv) = \frac{1}{2}\norm{\wv}_2^2$
 
-The $L_2$ penalty penalizes large weights, favoring solutions with more small weights rather than
-few large ones.
-The $L_1$ penalty can be used to drive a number of the solution coefficients to 0, thereby
-producing sparse solutions.
-The regularization constant $\lambda$ in $\eqref{eq:objectiveFunc}$ determines the amount of regularization applied to the model,
-and is usually determined through model cross-validation.
-A good comparison of regularization types can be found in [this](http://www.robotics.stanford.edu/~ang/papers/icml04-l1l2.pdf) paper by Andrew Ng.
-Which regularization type is supported depends on the actually used optimization algorithm.
+$L_2$ 惩罚会惩罚大权重，比起含若干大权重的解决方法，它更倾向含更多小权重的解决方案。
+$L_1$ 惩罚能用来归零解决方案中的系数 (solution coefficients)，所以会产生稀疏的解决方案。
+$\eqref{eq:objectiveFunc}$ 中的正则化常数 $\lambda$ 决定了用在模型上的正则化数量，该常数经常通过交叉验证模型决定。
+关于比较好的正则化类型的对比，可以参阅[这](http://www.robotics.stanford.edu/~ang/papers/icml04-l1l2.pdf)篇由 Andrew Ng 发表的论文
+至于什么样的正则化类型会被支持，取决于实际使用的优化算法。
 
 ## 随机梯度下降
 
