@@ -22,29 +22,27 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-Gelly exploits Flink's efficient iteration operators to support large-scale iterative graph processing. Currently, we provide implementations of the vertex-centric, scatter-gather, and gather-sum-apply models. In the following sections, we describe these abstractions and show how you can use them in Gelly.
+Gelly利用了Flink的高效迭代操作以支持大型迭代图计算。目前我们提供了Vertex Centric，Scatter Gather和Gather Sum Apply模型的实现。接下来的章节中，我们描述了这些抽象并展示了如何在Gelly中使用它们。
 
 * This will be replaced by the TOC
 {:toc}
 
-## Vertex-Centric Iterations
-The vertex-centric model, also known as "think like a vertex" or "Pregel", expresses computation from the perspective of a vertex in the graph.
-The computation proceeds in synchronized iteration steps, called supersteps. In each superstep, each vertex executes one user-defined function.
-Vertices communicate with other vertices through messages. A vertex can send a message to any other vertex in the graph, as long as it knows its unique ID.
+## Vertex Centric迭代计算
+Vertex Centric模型，也称为"像顶点一样思考"或"Pregel"，通过图顶点的角度表达计算。
+该计算在迭代的每一步（称为超步）中同步地处理，在每个超步时，每个顶点执行一个UDF（User Defined Function）。
+顶点之间通过消息进行通讯，任何一个顶点可以给图中任何其他的顶点发送消息，只要知道它的ID即可。
 
-The computational model is shown in the figure below. The dotted boxes correspond to parallelization units.
-In each superstep, all active vertices execute the
-same user-defined computation in parallel. Supersteps are executed synchronously, so that messages sent during one superstep are guaranteed to be delivered in the beginning of the next superstep.
+下面的图中展示该计算模型，虚线框和并行单元对应。在每个超步中，所有的活跃顶点并行执行相同的用户定义的计算。因为超步时同步执行的，因此每次超步中发送的消息都被保证发送了到下次超步的开始。
 
 <p class="text-center">
     <img alt="Vertex-Centric Computational Model" width="70%" src="{{ site.baseurl }}/fig/vertex-centric supersteps.png"/>
 </p>
 
-To use vertex-centric iterations in Gelly, the user only needs to define the vertex compute function, `ComputeFunction`.
-This function and the maximum number of iterations to run are given as parameters to Gelly's `runVertexCentricIteration`. This method will execute the vertex-centric iteration on the input Graph and return a new Graph, with updated vertex values. An optional message combiner, `MessageCombiner`, can be defined to reduce communication costs.
+在Gelly中使用Vertex Centric迭代，用户只需要定义顶点的计算函数`ComputeFunction`即可。
 
-Let us consider computing Single-Source-Shortest-Paths with vertex-centric iterations. Initially, each vertex has a value of infinite distance, except from the source vertex, which has a value of zero. During the first superstep, the source propagates distances to its neighbors. During the following supersteps, each vertex checks its received messages and chooses the minimum distance among them. If this distance is smaller than its current value, it updates its state and produces messages for its neighbors. If a vertex does not change its value during a superstep, then it does not produce any messages for its neighbors for the next superstep. The algorithm converges when there are no value updates or the maximum number of supersteps has been reached. In this algorithm, a message combiner can be used to reduce the number of messages sent to a target vertex.
+该函数和最大迭代次数通过Gelly的`runVertexCentricIteration`函数参数指定。该方法在输入图上执行Vertex Centric迭代计算，并输出更新后顶点值的新图。可选的`MessageCombiner`函数可以被用于减少通信消耗。
 
+让我们考虑基于Vertex Centric的单源点最短路径算法（SSSP）。算法开始时，除了源顶点初始值为0，每个顶点初始值为正无穷。第一次超步计算时，源顶点将距离传播给它的邻居。在接下来的超步中，每个顶点检查接收的消息并选择其中最小的距离值。如果该距离值比顶点当前值小，则更新顶点的值，并产生消息发送给其邻居。如果顶点在超步中没有更新它的值，则在下次超步时不会发送任何消息给它的邻居。当没有顶点的值发生更新或者达到了最大的超步迭代次数，算法将会收敛。在这个算法中，Message Combiner可以被用来减少发送给目标顶点的消息个数。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -159,21 +157,20 @@ final class SSSPCombiner extends MessageCombiner[Long, Double] {
 
 {% top %}
 
-## Configuring a Vertex-Centric Iteration
-A vertex-centric iteration can be configured using a `VertexCentricConfiguration` object.
-Currently, the following parameters can be specified:
+## Vertex Centric迭代计算配置
+Vertex Centric迭代计算可以使用`VertexCentricConfiguration`对象进行配置。
 
-* <strong>Name</strong>: The name for the vertex-centric iteration. The name is displayed in logs and messages
-and can be specified using the `setName()` method.
+目前有如下参数可以指定：
 
-* <strong>Parallelism</strong>: The parallelism for the iteration. It can be set using the `setParallelism()` method.
+* <strong>名称</strong>: Vertex Centric迭代计算的名称，该名称在日志和消息中显示，并可以使用`setName()`进行指定。
 
-* <strong>Solution set in unmanaged memory</strong>: Defines whether the solution set is kept in managed memory (Flink's internal way of keeping objects in serialized form) or as a simple object map. By default, the solution set runs in managed memory. This property can be set using the `setSolutionSetUnmanagedMemory()` method.
+* <strong>并行度</strong>: 迭代计算的并行度，可以使用`setParallelism()`进行指定。
 
-* <strong>Aggregators</strong>: Iteration aggregators can be registered using the `registerAggregator()` method. An iteration aggregator combines
-all aggregates globally once per superstep and makes them available in the next superstep. Registered aggregators can be accessed inside the user-defined `ComputeFunction`.
+* <strong>堆内Solution Set</strong>: 定义了Solution Set是否保存在堆内内存（Flink内部对象的序列化方式）中，还是保存在简单的对象表中。默认情况下，Solution Set保存在堆内内存中，该属性可以通过`setSolutionSetUnmanagedMemory()`方法进行设置。
 
-* <strong>Broadcast Variables</strong>: DataSets can be added as [Broadcast Variables]({{site.baseurl}}/dev/batch/index.html#broadcast-variables) to the `ComputeFunction`, using the `addBroadcastSet()` method.
+* <strong>聚合器</strong>: 迭代聚合器可以使用`registerAggregator()`方法进行注册，迭代聚合器可以将每次超步的聚合结果合并起来，并使得在下次超步中可以访问它们。注册后的聚合器可以在用户定义的`ComputeFunction`的内部进行访问。
+
+* <strong>广播变量</strong>: 可以使用`addBroadcastSet()`方法将数据集作为[广播变量]({{site.baseurl}}/dev/batch/index.html#broadcast-variables)添加到`ComputeFunction`。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -276,19 +273,21 @@ final class Compute extends ComputeFunction {
 
 {% top %}
 
-## Scatter-Gather Iterations
-The scatter-gather model, also known as "signal/collect" model, expresses computation from the perspective of a vertex in the graph. The computation proceeds in synchronized iteration steps, called supersteps. In each superstep, a vertex produces messages for other vertices and updates its value based on the messages it receives. To use scatter-gather iterations in Gelly, the user only needs to define how a vertex behaves in each superstep:
+## Scatter Gather迭代计算
+Scatter Gather模型，也称为"signal/collect"模型，通过图顶点的角度表达计算。该计算在迭代的每一步（称为超步）中同步地处理，在每个超步时，每个顶点为其他顶点产生消息，并基于它接受到的消息更新自己的值。在Gelly使用Scatter Gather迭代计算，用户只需要定义每次超步中每个顶点的行为即可：
 
-* <strong>Scatter</strong>:  produces the messages that a vertex will send to other vertices.
-* <strong>Gather</strong>: updates the vertex value using received messages.
+* <strong>Scatter</strong>: 产生一个顶点发送给其他顶点的消息。
+* <strong>Gather</strong>: 使用接收到的消息更新顶点的值。
 
-Gelly provides methods for scatter-gather iterations. The user only needs to implement two functions, corresponding to the scatter and gather phases. The first function is a `ScatterFunction`, which allows a vertex to send out messages to other vertices. Messages are received during the same superstep as they are sent. The second function is `GatherFunction`, which defines how a vertex will update its value based on the received messages.
-These functions and the maximum number of iterations to run are given as parameters to Gelly's `runScatterGatherIteration`. This method will execute the scatter-gather iteration on the input Graph and return a new Graph, with updated vertex values.
+Gelly为Scatter Gather迭代计算提供了方法，用户只需要实现两个函数，与scatter和gather阶段相对应。第一个函数是`ScatterFunction`，它允许顶点向其他顶点发送消息，消息将会在它们被发送所在的超步时被接收。第二个函数是`GatherFunction`，它定义了顶点如何基于接收到的消息更新自己的值。
 
-A scatter-gather iteration can be extended with information such as the total number of vertices, the in degree and out degree.
-Additionally, the  neighborhood type (in/out/all) over which to run the scatter-gather iteration can be specified. By default, the updates from the in-neighbors are used to modify the current vertex's state and messages are sent to out-neighbors.
+这些函数和最大迭代次数通过Gelly的`runScatterGatherIteration`函数参数指定。该方法在输入图上执行Vertex Centric迭代计算，并输出更新后顶点值的新图。
 
-Let us consider computing Single-Source-Shortest-Paths with scatter-gather iterations on the following graph and let vertex 1 be the source. In each superstep, each vertex sends a candidate distance message to all its neighbors. The message value is the sum of the current value of the vertex and the edge weight connecting this vertex with its neighbor. Upon receiving candidate distance messages, each vertex calculates the minimum distance and, if a shorter path has been discovered, it updates its value. If a vertex does not change its value during a superstep, then it does not produce messages for its neighbors for the next superstep. The algorithm converges when there are no value updates.
+一次Scatter Gather迭代可以使用类如总顶点数、入度和出度等信息进行扩展。
+
+另外，Scatter Gather迭代运行使用的邻居类型(in/out/all)也可以被指定。默认情况下，来自输入邻居的更新将会修改当前顶点的状态，而消息将发送给输出的邻居。
+
+让我们考虑使用Scatter Gather迭代模型计算单源点最短路径的算法（SSSP），下面的图中顶点1是原点。每次超步中，每个顶点发送候选的距离消息到它的邻居，消息的值是当前顶点值与连接到该顶点的边的权值之和。当收到候选的距离消息时，每个顶点计算最小的距离，如果更短的路径被计算出来，顶点的值就会被更新。如果顶点在超步中没有更改它的值，那么它就不会产生下次超步中发送给邻居的消息。该算法在没有顶点值更新时收敛。
 
 <p class="text-center">
     <img alt="Scatter-gather SSSP superstep 1" width="70%" src="{{ site.baseurl }}/fig/gelly-vc-sssp1.png"/>
@@ -395,30 +394,32 @@ final class VertexDistanceUpdater extends GatherFunction[Long, Double, Double] {
 
 {% top %}
 
-## Configuring a Scatter-Gather Iteration
-A scatter-gather iteration can be configured using a `ScatterGatherConfiguration` object.
-Currently, the following parameters can be specified:
+## Scatter Gather迭代计算配置
 
-* <strong>Name</strong>: The name for the scatter-gather iteration. The name is displayed in logs and messages
-and can be specified using the `setName()` method.
+Scatter Gather迭代可以使用`ScatterGatherConfiguration`对象进行配置。
 
-* <strong>Parallelism</strong>: The parallelism for the iteration. It can be set using the `setParallelism()` method.
+目前有以下参数可以被指定：
 
-* <strong>Solution set in unmanaged memory</strong>: Defines whether the solution set is kept in managed memory (Flink's internal way of keeping objects in serialized form) or as a simple object map. By default, the solution set runs in managed memory. This property can be set using the `setSolutionSetUnmanagedMemory()` method.
 
-* <strong>Aggregators</strong>: Iteration aggregators can be registered using the `registerAggregator()` method. An iteration aggregator combines
-all aggregates globally once per superstep and makes them available in the next superstep. Registered aggregators can be accessed inside the user-defined `ScatterFunction` and `GatherFunction`.
+* <strong>名称</strong>: Scatter Gather迭代计算的名称，该名称在日志和消息中显示，并可以使用`setName()`进行指定。
 
-* <strong>Broadcast Variables</strong>: DataSets can be added as [Broadcast Variables]({{site.baseurl}}/dev/batch/index.html#broadcast-variables) to the `ScatterFunction` and `GatherFunction`, using the `addBroadcastSetForUpdateFunction()` and `addBroadcastSetForMessagingFunction()` methods, respectively.
+* <strong>并行度</strong>: 迭代计算的并行度，可以使用`setParallelism()`进行指定。
 
-* <strong>Number of Vertices</strong>: Accessing the total number of vertices within the iteration. This property can be set using the `setOptNumVertices()` method.
-The number of vertices can then be accessed in the vertex update function and in the messaging function using the `getNumberOfVertices()` method. If the option is not set in the configuration, this method will return -1.
+* <strong>堆内Solution Set</strong>: 定义了Solution Set是否保存在堆内内存（Flink内部对象的序列化方式）中，还是保存在简单的对象表中。默认情况下，Solution Set保存在堆内内存中，该属性可以通过`setSolutionSetUnmanagedMemory()`方法进行设置。
 
-* <strong>Degrees</strong>: Accessing the in/out degree for a vertex within an iteration. This property can be set using the `setOptDegrees()` method.
-The in/out degrees can then be accessed in the vertex update function and in the messaging function, per vertex using the `getInDegree()` and `getOutDegree()` methods.
-If the degrees option is not set in the configuration, these methods will return -1.
+* <strong>聚合器</strong>: 迭代聚合器可以使用`registerAggregator()`方法进行注册，迭代聚合器可以将每次超步的聚合结果合并起来，并使得在下次超步中可以访问它们。注册后的聚合器可以在用户定义的`ScatterFunction`和`GatherFunction`的内部进行访问。
 
-* <strong>Messaging Direction</strong>: By default, a vertex sends messages to its out-neighbors and updates its value based on messages received from its in-neighbors. This configuration option allows users to change the messaging direction to either `EdgeDirection.IN`, `EdgeDirection.OUT`, `EdgeDirection.ALL`. The messaging direction also dictates the update direction which would be `EdgeDirection.OUT`, `EdgeDirection.IN` and `EdgeDirection.ALL`, respectively. This property can be set using the `setDirection()` method.
+* <strong>广播变量</strong>: 可以分别使用`addBroadcastSetForUpdateFunction()`和`addBroadcastSetForMessagingFunction()`方法将数据集作为[广播变量]({{site.baseurl}}/dev/batch/index.html#broadcast-variables)添加到`ScatterFunction`和`GatherFunction`。
+
+* <strong>顶点数</strong>: 允许迭代内部访问顶点总数，该属性可以通过`setOptNumVertices()`方法设置。
+
+在顶点更新函数和消息传播函数内可以使用`getNumberOfVertices()`函数访问顶点数。如果该选型未设置，方法返回-1。
+
+* <strong>度</strong>: 允许迭代内部访问顶点的出度或入度，该属性可以通过`setOptDegrees()`方法设置。
+
+在scatter和gather函数内可以使用`getInDegree()`和`getInDegree()`函数访问顶点的入度和出度。如果度选项未设置，方法返回-1。
+
+* <strong>消息传播方向</strong>: 默认情况下，顶点发送消息给它的邻居，并基于从邻居接收到的消息更新自身的值。该配置选项允许用户更改消息传播的方向，取值EdgeDirection.IN`，`EdgeDirection.OUT`和`EdgeDirection.ALL`。相应地，消息传播方向决定了更新接受消息的方向为`EdgeDirection.OUT`，`EdgeDirection.IN`和`EdgeDirection.ALL`。该属性可以通过`setDirection()`方法进行设置。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -523,7 +524,7 @@ final class VertexUpdater extends GatherFunction {
 </div>
 </div>
 
-The following example illustrates the usage of the degree as well as the number of vertices options.
+下面的例子展示了度数和顶点数选项的使用。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -599,7 +600,7 @@ final class VertexUpdater extends GatherFunction {
 </div>
 </div>
 
-The following example illustrates the usage of the edge direction option. Vertices update their values to contain a list of all their in-neighbors.
+下面的例子展示了边方向选项的使用，顶点更新的值包含它的输入邻居列表。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -651,22 +652,22 @@ final class VertexUpdater extends GatherFunction {...}
 
 {% top %}
 
-## Gather-Sum-Apply Iterations
-Like in the scatter-gather model, Gather-Sum-Apply also proceeds in synchronized iterative steps, called supersteps. Each superstep consists of the following three phases:
+## Gather Sum Apply迭代计算
+就像Scatter Gather模型，Gather Sum Apply也在迭代步骤中同步执行，即超步。每个超步包含以下部分：
 
-* <strong>Gather</strong>: a user-defined function is invoked in parallel on the edges and neighbors of each vertex, producing a partial value.
-* <strong>Sum</strong>: the partial values produced in the Gather phase are aggregated to a single value, using a user-defined reducer.
-* <strong>Apply</strong>:  each vertex value is updated by applying a function on the current value and the aggregated value produced by the Sum phase.
+* <strong>Gather</strong>: 一个在边和对应顶点邻居上并行调用的UDF，产生一个局部值。
+* <strong>Sum</strong>: 用户定义的聚合函数，讲Gather产生的局部值合并为一个单一值。
+* <strong>Apply</strong>: 通过该函数将Sum产生的聚合值更新到每个顶点的当前值。
 
-Let us consider computing Single-Source-Shortest-Paths with GSA on the following graph and let vertex 1 be the source. During the `Gather` phase, we calculate the new candidate distances, by adding each vertex value with the edge weight. In `Sum`, the candidate distances are grouped by vertex ID and the minimum distance is chosen. In `Apply`, the newly calculated distance is compared to the current vertex value and the minimum of the two is assigned as the new value of the vertex.
+让我们考虑使用GSA迭代模型计算单源点最短路径的算法（SSSP），下面的图中顶点1是原点。在`Gather`阶段，我们通过累加每个顶点的值和边的权值计算新的候选距离。在`Sum`阶段，候选距离通过顶点ID分组，并选择最小的距离。在`Apply`阶段，新计算出来的距离将会和当前顶点的值，二者之间的最小值将会被设为顶点的新值。
 
 <p class="text-center">
     <img alt="GSA SSSP superstep 1" width="70%" src="{{ site.baseurl }}/fig/gelly-gsa-sssp1.png"/>
 </p>
 
-Notice that, if a vertex does not change its value during a superstep, it will not calculate candidate distance during the next superstep. The algorithm converges when no vertex changes value.
+需要注意的是，如果顶点在超步中没有更新它的值，将不会在下次超步中计算候选距离。当没有顶点值发生更新时，算法收敛。
 
-To implement this example in Gelly GSA, the user only needs to call the `runGatherSumApplyIteration` method on the input graph and provide the `GatherFunction`, `SumFunction` and `ApplyFunction` UDFs. Iteration synchronization, grouping, value updates and convergence are handled by the system:
+使用Gelly GSA实现该例子，用户只需要在输入图上调用`runGatherSumApplyIteration`方法，并提供`GatherFunction`，`SumFunction`和`ApplyFunction`用户定义函数。迭代的同步、分组、值更新和收敛由框架处理。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -763,33 +764,35 @@ final class UpdateDistance extends ApplyFunction[Long, Double, Double] {
 </div>
 </div>
 
-Note that `gather` takes a `Neighbor` type as an argument. This is a convenience type which simply wraps a vertex with its neighboring edge.
+注意`gather`将`Neighbor`类型作为参数，这个方便的类型简单包装了顶点和它的邻边。
 
-For more examples of how to implement algorithms with the Gather-Sum-Apply model, check the {% gh_link /flink-libraries/flink-gelly/src/main/java/org/apache/flink/graph/library/GSAPageRank.java "GSAPageRank" %} and {% gh_link /flink-libraries/flink-gelly/src/main/java/org/apache/flink/graph/library/GSAConnectedComponents.java "GSAConnectedComponents" %} library methods of Gelly.
+想要了解更多如何使用Gather Sum Apply模型实现算法，请查看{% gh_link /flink-libraries/flink-gelly/src/main/java/org/apache/flink/graph/library/GSAPageRank.java "GSAPageRank" %} and {% gh_link /flink-libraries/flink-gelly/src/main/java/org/apache/flink/graph/library/GSAConnectedComponents.java "GSAConnectedComponents" %}提供的Gelly库方法。
 
 {% top %}
 
-## Configuring a Gather-Sum-Apply Iteration
-A GSA iteration can be configured using a `GSAConfiguration` object.
-Currently, the following parameters can be specified:
+## Gather Sum Apply迭代计算配置
 
-* <strong>Name</strong>: The name for the GSA iteration. The name is displayed in logs and messages and can be specified using the `setName()` method.
+GSA迭代计算可以通过`GSAConfiguration`对象进行配置。
 
-* <strong>Parallelism</strong>: The parallelism for the iteration. It can be set using the `setParallelism()` method.
+目前以下参数可以被指定：
 
-* <strong>Solution set in unmanaged memory</strong>: Defines whether the solution set is kept in managed memory (Flink's internal way of keeping objects in serialized form) or as a simple object map. By default, the solution set runs in managed memory. This property can be set using the `setSolutionSetUnmanagedMemory()` method.
+* <strong>名称</strong>: GSA迭代计算的名称，该名称在日志和消息中显示，并可以使用`setName()`进行指定。
 
-* <strong>Aggregators</strong>: Iteration aggregators can be registered using the `registerAggregator()` method. An iteration aggregator combines all aggregates globally once per superstep and makes them available in the next superstep. Registered aggregators can be accessed inside the user-defined `GatherFunction`, `SumFunction` and `ApplyFunction`.
+* <strong>并行度</strong>: 迭代计算的并行度，可以使用`setParallelism()`进行指定。
 
-* <strong>Broadcast Variables</strong>: DataSets can be added as [Broadcast Variables]({{site.baseurl}}/dev/index.html#broadcast-variables) to the `GatherFunction`, `SumFunction` and `ApplyFunction`, using the methods `addBroadcastSetForGatherFunction()`, `addBroadcastSetForSumFunction()` and `addBroadcastSetForApplyFunction` methods, respectively.
+* <strong>堆内Solution Set</strong>: 定义了Solution Set是否保存在堆内内存（Flink内部对象的序列化方式）中，还是保存在简单的对象表中。默认情况下，Solution Set保存在堆内内存中，该属性可以通过`setSolutionSetUnmanagedMemory()`方法进行设置。
 
-* <strong>Number of Vertices</strong>: Accessing the total number of vertices within the iteration. This property can be set using the `setOptNumVertices()` method.
-The number of vertices can then be accessed in the gather, sum and/or apply functions by using the `getNumberOfVertices()` method. If the option is not set in the configuration, this method will return -1.
+* <strong>聚合器</strong>: 迭代聚合器可以使用`registerAggregator()`方法进行注册，迭代聚合器可以将每次超步的聚合结果合并起来，并使得在下次超步中可以访问它们。注册后的聚合器可以在用户定义的`GatherFunction`，`SumFunction`和`ApplyFunction`的内部进行访问。
 
-* <strong>Neighbor Direction</strong>: By default values are gathered from the out neighbors of the Vertex. This can be modified
-using the `setDirection()` method.
+* <strong>广播变量</strong>: 可以分别使用`addBroadcastSetForGatherFunction()`，`addBroadcastSetForSumFunction()`和`addBroadcastSetForApplyFunction`方法将数据集作为[广播变量]({{site.baseurl}}/dev/batch/index.html#broadcast-variables)添加到`GatherFunction`，`SumFunction`和`ApplyFunction`。
 
-The following example illustrates the usage of the number of vertices option.
+* <strong>顶点数</strong>: 允许迭代内部访问顶点总数，该属性可以通过`setOptNumVertices()`方法设置。
+
+在gather，sum和apply函数内可以使用`getNumberOfVertices()`函数访问顶点数。如果该选型未设置，方法返回-1。
+
+* <strong>边方向</strong>: 默认情况下会收集顶点输出邻居的值，该方向可以使用`setDirection()`修改。
+
+下面的例子展示了顶点数选项的使用。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -873,7 +876,7 @@ final class Apply {
 </div>
 </div>
 
-The following example illustrates the usage of the edge direction option.
+下面的例子展示了边方向选项的使用。
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
 {% highlight java %}
@@ -913,22 +916,23 @@ val result = graph.runGatherSumApplyIteration(new Gather, new Sum, new Apply, ma
 </div>
 {% top %}
 
-## Iteration Abstractions Comparison
-Although the three iteration abstractions in Gelly seem quite similar, understanding their differences can lead to more performant and maintainable programs.
-Among the three, the vertex-centric model is the most general model and supports arbitrary computation and messaging for each vertex. In the scatter-gather model, the logic of producing messages is decoupled from the logic of updating vertex values. Thus, programs written using scatter-gather are sometimes easier to follow and maintain.
-Separating the messaging phase from the vertex value update logic not only makes some programs easier to follow but might also have a positive impact on performance. Scatter-gather implementations typically have lower memory requirements, because concurrent access to the inbox (messages received) and outbox (messages to send) data structures is not required. However, this characteristic also limits expressiveness and makes some computation patterns non-intuitive. Naturally, if an algorithm requires a vertex to concurrently access its inbox and outbox, then the expression of this algorithm in scatter-gather might be problematic. Strongly Connected Components and Approximate Maximum
-Weight Matching are examples of such graph algorithms. A direct consequence of this restriction is that vertices cannot generate messages and update their states in the same phase. Thus, deciding whether to propagate a message based on its content would require storing it in the vertex value, so that the gather phase has access to it, in the following iteration step. Similarly, if the vertex update logic includes computation over the values of the neighboring edges, these have to be included inside a special message passed from the scatter to the gather phase. Such workarounds often lead to higher memory requirements and non-elegant, hard to understand algorithm implementations.
+## 迭代计算抽象对比
 
-Gather-sum-apply iterations are also quite similar to scatter-gather iterations. In fact, any algorithm which can be expressed as a GSA iteration can also be written in the scatter-gather model. The messaging phase of the scatter-gather model is equivalent to the Gather and Sum steps of GSA: Gather can be seen as the phase where the messages are produced and Sum as the phase where they are routed to the target vertex. Similarly, the value update phase corresponds to the Apply step.
+虽然Gelly提供的三种迭代计算抽象看起来很相似，然而理解它们之间的差别可以为程序提供更高的性能和可维护性。
 
-The main difference between the two implementations is that the Gather phase of GSA parallelizes the computation over the edges, while the messaging phase distributes the computation over the vertices. Using the SSSP examples above, we see that in the first superstep of the scatter-gather case, vertices 1, 2 and 3 produce messages in parallel. Vertex 1 produces 3 messages, while vertices 2 and 3 produce one message each. In the GSA case on the other hand, the computation is parallelized over the edges: the three candidate distance values of vertex 1 are produced in parallel. Thus, if the Gather step contains "heavy" computation, it might be a better idea to use GSA and spread out the computation, instead of burdening a single vertex. Another case when parallelizing over the edges might prove to be more efficient is when the input graph is skewed (some vertices have a lot more neighbors than others).
+以上三者之中，Vertex Centric模型是最通用的模型，并支持任意的计算和消息发送。Scatter Gather模型中，生产消息的逻辑和更顶点新的逻辑解耦。因此使用Scatter Gather模型开发的程序更容易跟进和维护。
 
-Another difference between the two implementations is that the scatter-gather implementation uses a `coGroup` operator internally, while GSA uses a `reduce`. Therefore, if the function that combines neighbor values (messages) requires the whole group of values for the computation, scatter-gather should be used. If the update function is associative and commutative, then the GSA's reducer is expected to give a more efficient implementation, as it can make use of a combiner.
+将消息发送阶段和顶点更新逻辑分开，不仅让程序更容易跟进，更能对性能产生积极的影响。因为不需要同时访问存储接收消息和发送消息的数据结构，传统方式实现的Scatter Gather模型有更低的内存需求。然而，这个特性也限制了算法的表达能力，使得一些计算模式变得不够直观。自然地，如果一个算法需要顶点同时访问接收消息和发送消息的存储，那么使用Scatter Gather进行表示将会出现问题。强连通分量和近似最大权匹配算法就是类似的算法。这个限制的直接后果，就是顶点在同一个阶段中，无法既生成消息又更新状态。从而，要决定是否传播消息，就需要存储点的值，以便下一次迭代的gather阶段可以访问得到。如果顶点更新逻辑包含对邻边权值的计算，这就需要内部包含一个从scatter到gather阶段的特殊消息。因此，通常的解决办法将会导致更高的内存消耗，降低代码的优雅性，从而导致算法实现更难被理解。
 
-Another thing to note is that GSA works strictly on neighborhoods, while in the vertex-centric and scatter-gather models, a vertex can send a message to any vertex, given that it knows its vertex ID, regardless of whether it is a neighbor. Finally, in Gelly's scatter-gather implementation, one can choose the messaging direction, i.e. the direction in which updates propagate. GSA does not support this yet, so each vertex will be updated based on the values of its in-neighbors only.
+GSA迭代模型和Scatter Gather模型也很相似。实际上，任何使用GSA表达的算法都可以使用Scatter Gather模型实现。Scatter Gather模型的消息发送阶段和GSA的Gather和Sum阶段等价：Gather可以被看作消息的生产阶段，Sum可以被看作消息路由到目标顶点的阶段。而顶点更新阶段和Apply步骤相对应。
 
-The main differences among the Gelly iteration models are shown in the table below.
+二者实现的最主要的差别是GSA的Gather阶段是基于边的并行计算，而Scatter Gather的消息发送阶段是基于顶点的并行计算。结合上边SSSP的例子，我们可以看到在Scatter Gather例子的第一个超不中，顶点1、2、3并行产生消息，顶点1生产了3条消息，而顶点2和3各生产了一条消息。而在GSA的例子中，计算是基于边并行的：顶点1的三个候选的距离值是并行产生的。因此，如果Gather阶段包含了大量计算，使用GSA进行传播计算将是更好的方案，而不是加重一个顶点的计算。另外一种情况就是当输入图是倾斜（一些顶点相对于其他顶点拥有更多的邻居）的时候，基于边的并行计算会更加高效。
 
+两者的另外一个区别就是Scatter Gather模型内部使用了`coGroup`，而GSA使用`reduce`进行计算。因此，如果计算中合并消息的函数需要全组的值，就应该使用Scatter Gather模型。如果更新函数是可结合、可交换的，那么GSA的聚合操作将是更高效的实现，因为它可以利用组合的特性。
+
+另外需要注意的是，GSA需要严格地在邻居上执行，而Vertex Centric和Scatter Gather模型，顶点可以给任何已知ID的顶点发送消息，而不管这个顶点是否是自己的邻居。最后，在Gelly的Scatter Gather实现中，用户可以选择消息传播的方向，而GSA尚不能支持该特性，因此每个顶点只能基于它的输入邻居的值进行更新。
+
+Gelly的迭代计算模型之间的主要差别如下表所示。
 
 <table class="table table-bordered">
   <thead>
