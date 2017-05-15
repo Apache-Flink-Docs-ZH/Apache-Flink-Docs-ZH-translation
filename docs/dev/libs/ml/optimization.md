@@ -165,28 +165,27 @@ $\eqref{eq:objectiveFunc}$ 中的正则化常数 $\lambda$ 决定了用在模型
 
 ### 正则化
 
-FlinkML supports Stochastic Gradient Descent with L1, L2 and no regularization. The regularization type has to implement the `RegularizationPenalty` interface,
-which calculates the new weights based on the gradient and regularization type.
-The following list contains the supported regularization functions.
+FlinkML 支持含 L1, L2 和无正则化的随机梯度下降。正则化类型必须实现 `RegularizationPenalty` 接口，该接口根据梯度和正则化类型计算新的权重。
+下表包含了支持的正则化函数。
 
 <table class="table table-bordered">
   <thead>
     <tr>
-      <th class="text-left" style="width: 20%">Class Name</th>
-      <th class="text-center">Regularization function $R(\wv)$</th>
+      <th class="text-left" style="width: 20%">类别名称</th>
+      <th class="text-center">正则化函数 $R(\wv)$</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td><strong>NoRegularization</strong></td>
+      <td><strong>无正则化</strong></td>
       <td>$R(\wv) = 0$</td>
     </tr>
     <tr>
-      <td><strong>L1Regularization</strong></td>
+      <td><strong>L1正则化</strong></td>
       <td>$R(\wv) = \norm{\wv}_1$</td>
     </tr>
     <tr>
-      <td><strong>L2Regularization</strong></td>
+      <td><strong>L2正则化</strong></td>
       <td>$R(\wv) = \frac{1}{2}\norm{\wv}_2^2$</td>
     </tr>
   </tbody>
@@ -194,16 +193,15 @@ The following list contains the supported regularization functions.
 
 ### 损失函数
 
-The loss function which is minimized has to implement the `LossFunction` interface, which defines methods to compute the loss and the gradient of it.
-Either one defines ones own `LossFunction` or one uses the `GenericLossFunction` class which constructs the loss function from an outer loss function and a prediction function.
-An example can be seen here
+需要被最小化的损失函数需要实现 `LossFunction` 接口，该接口定义了计算损失及其梯度的方法。
+任何一个定义了自己 `LossFunction` 或使用  `GenericLossFunction` 类会从一个外部损失函数和一个预测函数构造损失函数。
+以下是一个实例：
 
 ```Scala
 val lossFunction = GenericLossFunction(SquaredLoss, LinearPrediction)
 ```
-
-The full list of supported outer loss functions can be found [here](#partial-loss-function-values).
-The full list of supported prediction functions can be found [here](#prediction-function-values).
+支持的外部损失函数请参阅[此处](#partial-loss-function-values).
+支持的预测函数请参阅[here](#prediction-function-values).
 
 #### 偏随机函数 (Partial Loss Function) 值 ##
 
