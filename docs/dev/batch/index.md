@@ -25,22 +25,32 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-Dataset是Flink中实现数据转换（例如，过滤（filtering），映射（maping），结合（joining）和分组（grouping））的常规程序。
-初始数据集是从指定的源（例如文件和本地集合）中获取的。通过sink来返回结果，它可以是写入到（分布式）文件，也可能是标准输出（命令行终端）。
-Flink程序可运行在多种环境下，可以独立执行也可以嵌入到其他程序中，也可以在本地JVM上执行也可以在集群上执行。
+DataSet programs in Flink are regular programs that implement transformations on data sets
+(e.g., filtering, mapping, joining, grouping). The data sets are initially created from certain
+sources (e.g., by reading files, or from local collections). Results are returned via sinks, which may for
+example write the data to (distributed) files, or to standard output (for example the command line
+terminal). Flink programs run in a variety of contexts, standalone, or embedded in other programs.
+The execution can happen in a local JVM, or on clusters of many machines.
 
-请参看[basic concepts]({{ site.baseurl }}/dev/api_concepts.html)来了解Flink API的基本概念
+Please see [basic concepts]({{ site.baseurl }}/dev/api_concepts.html) for an introduction
+to the basic concepts of the Flink API.
 
-为了便于开发自己的Flink Dataset程序，我们建议你从[Flink程序解析]({{ site.baseurl }}/dev/api_concepts.html#anatomy-of-a-flink-program)开始，之后逐渐加入你自己的[数据转换](#dataset-transformations). 其余的章节作为可选操作和高级特性的参考。
+In order to create your own Flink DataSet program, we encourage you to start with the
+[anatomy of a Flink Program]({{ site.baseurl }}/dev/api_concepts.html#anatomy-of-a-flink-program)
+and gradually add your own
+[transformations](#dataset-transformations). The remaining sections act as references for additional
+operations and advanced features.
 
 * This will be replaced by the TOC
 {:toc}
 
-示例程序
+Example Program
 ---------------
 
-以下是一个完整的WordCount的程序范例。你可以复制粘贴这段代码并在本地运行它。你只需要正确地把Flink的库加入到项目中
-(参看[链接Flink]({{ site.baseurl }}/dev/linking_with_flink.html)) 并在导入所需的包，就可以直接运行。
+The following program is a complete, working example of WordCount. You can copy &amp; paste the code
+to run it locally. You only have to include the correct Flink's library into your project
+(see Section [Linking with Flink]({{ site.baseurl }}/dev/linking_with_flink.html)) and specify the imports. Then you are ready
+to go!
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -102,12 +112,15 @@ object WordCount {
 
 {% top %}
 
-数据转换
+DataSet Transformations
 -----------------------
 
-数据转换是将一个或多个数据集转化成一个新的数据集的操作。程序可以组合多种转换方法形成复杂的功能。
+Data transformations transform one or more DataSets into a new DataSet. Programs can combine
+multiple transformations into sophisticated assemblies.
 
-本节将简要地介绍数据转换。[数据转换文档](dataset_transformations.html) 提供对所有数据转换方法的全面解析，并附有示例。
+This section gives a brief overview of the available transformations. The [transformations
+documentation](dataset_transformations.html) has a full description of all transformations with
+examples.
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -124,9 +137,9 @@ object WordCount {
 
   <tbody>
     <tr>
-      <td><strong>映射</strong></td>
+      <td><strong>Map</strong></td>
       <td>
-        <p>输入一个元素输出一个元素</p>
+        <p>Takes one element and produces one element.</p>
 {% highlight java %}
 data.map(new MapFunction<String, Integer>() {
   public Integer map(String value) { return Integer.parseInt(value); }
@@ -138,7 +151,7 @@ data.map(new MapFunction<String, Integer>() {
     <tr>
       <td><strong>FlatMap</strong></td>
       <td>
-        <p>输入一个元素输出0个，1个或多个元素 </p>
+        <p>Takes one element and produces zero, one, or more elements. </p>
 {% highlight java %}
 data.flatMap(new FlatMapFunction<String, String>() {
   public void flatMap(String value, Collector<String> out) {
@@ -152,9 +165,11 @@ data.flatMap(new FlatMapFunction<String, String>() {
     </tr>
 
     <tr>
-      <td><strong>映射分割</strong></td>
+      <td><strong>MapPartition</strong></td>
       <td>
-        <p>调用一个函数完成水平分割。函数以一个<code>Iterable</code> 流的形式输出，产生任意数量的结果。每个分块的元素数量取决于并行度和先前的操作。</p>
+        <p>Transforms a parallel partition in a single function call. The function gets the partition
+        as an <code>Iterable</code> stream and can produce an arbitrary number of result values. The number of
+        elements in each partition depends on the degree-of-parallelism and previous operations.</p>
 {% highlight java %}
 data.mapPartition(new MapPartitionFunction<String, Long>() {
   public void mapPartition(Iterable<String> values, Collector<Long> out) {
@@ -170,11 +185,13 @@ data.mapPartition(new MapPartitionFunction<String, Long>() {
     </tr>
 
     <tr>
-      <td><strong>过滤</strong></td>
+      <td><strong>Filter</strong></td>
       <td>
-        <p>对每一个元素依据规则判断真假，并保留值为真的元素。<br/>
+        <p>Evaluates a boolean function for each element and retains those for which the function
+        returns true.<br/>
 
-        <strong>重要：</strong> 系统假设过滤方法不会改变预测要用到的元素内容，如果破坏这一规则可能引发错误。
+        <strong>IMPORTANT:</strong> The system assumes that the function does not modify the elements on which the predicate is applied. Violating this assumption
+        can lead to incorrect results.
         </p>
 {% highlight java %}
 data.filter(new FilterFunction<Integer>() {
@@ -187,7 +204,8 @@ data.filter(new FilterFunction<Integer>() {
     <tr>
       <td><strong>Reduce</strong></td>
       <td>
-        <p>Reduce通过不断地两两合并，将一组元素合并成一个元素。Reduce可能会应用于整个数据集或者一组数据集。</p>
+        <p>Combines a group of elements into a single element by repeatedly combining two elements
+        into one. Reduce may be applied on a full data set, or on a grouped data set.</p>
 {% highlight java %}
 data.reduce(new ReduceFunction<Integer> {
   public Integer reduce(Integer a, Integer b) { return a + b; }
@@ -199,7 +217,8 @@ data.reduce(new ReduceFunction<Integer> {
     <tr>
       <td><strong>ReduceGroup</strong></td>
       <td>
-        <p>ReduceGroup将一组元素合并成一个或多个元素。ReduceGroup可能会应用于整个数据集或者一组数据集。</p>
+        <p>Combines a group of elements into one or more elements. ReduceGroup may be applied on a
+        full data set, or on a grouped data set.</p>
 {% highlight java %}
 data.reduceGroup(new GroupReduceFunction<Integer, Integer> {
   public void reduce(Iterable<Integer> values, Collector<Integer> out) {
@@ -211,19 +230,24 @@ data.reduceGroup(new GroupReduceFunction<Integer, Integer> {
   }
 });
 {% endhighlight %}
-        <p>如果对一个分组数据集实施reduce，你可以提供一个合并线索（ComebineHInt）作为第二个参数来设定合并的时机。这种基于哈希算法的策略在大多数情况下可以提高计算速度，特别是对于不同键值数目相对输入元素数目较小时（例如，1/10）。</p>
+        <p>If the reduce was applied to a grouped data set, you can specify the way that the
+        runtime executes the combine phase of the reduce via supplying a CombineHint as a second
+        parameter. The hash-based strategy should be faster in most cases, especially if the
+        number of different keys is small compared to the number of input elements (eg. 1/10).</p>
       </td>
     </tr>
 
     <tr>
-      <td><strong>合计（Aggregate）</strong></td>
+      <td><strong>Aggregate</strong></td>
       <td>
-        <p>Aggregate将一组值合计出一个值。Aggregation方法可以理解为一种内部实现的reduce方法。Aggregation可能会应用于整个数据集或者一组数据集。</p>
+        <p>Aggregates a group of values into a single value. Aggregation functions can be thought of
+        as built-in reduce functions. Aggregate may be applied on a full data set, or on a grouped
+        data set.</p>
 {% highlight java %}
 Dataset<Tuple3<Integer, String, Double>> input = // [...]
 DataSet<Tuple3<Integer, String, Double>> output = input.aggregate(SUM, 0).and(MIN, 2);
 {% endhighlight %}
-	<p>你也可以使用速记语法来做最小值，最大值，合计运算。</p>
+	<p>You can also use short-hand syntax for minimum, maximum, and sum aggregations.</p>
 	{% highlight java %}
 	Dataset<Tuple3<Integer, String, Double>> input = // [...]
 DataSet<Tuple3<Integer, String, Double>> output = input.sum(0).andMin(2);
@@ -234,7 +258,8 @@ DataSet<Tuple3<Integer, String, Double>> output = input.sum(0).andMin(2);
     <tr>
       <td><strong>Distinct</strong></td>
       <td>
-        <p>返回数据集的独特元素，即从输入中删除数据域都重复的数据项。</p>
+        <p>Returns the distinct elements of a data set. It removes the duplicate entries
+        from the input DataSet, with respect to all fields of the elements, or a subset of fields.</p>
     {% highlight java %}
         data.distinct();
     {% endhighlight %}
@@ -242,32 +267,38 @@ DataSet<Tuple3<Integer, String, Double>> output = input.sum(0).andMin(2);
     </tr>
 
     <tr>
-      <td><strong>连接（Join）</strong></td>
-      <td>通过新建所有键相等的元素对将两个数据集连接。也可以使用JoinFunction将元素对转化成单个元素，
-      	  或者使用FlatJoinFunction将元素对转化成不定数量的元素，详情参看
-       <a href="{{ site.baseurl }}/dev/api_concepts.html#specifying-keys">键的选择</a>来了解如何设定合并规则。.
+      <td><strong>Join</strong></td>
+      <td>
+        Joins two data sets by creating all pairs of elements that are equal on their keys.
+        Optionally uses a JoinFunction to turn the pair of elements into a single element, or a
+        FlatJoinFunction to turn the pair of elements into arbitrarily many (including none)
+        elements. See the <a href="{{ site.baseurl }}/dev/api_concepts.html#specifying-keys">keys section</a> to learn how to define join keys.
 {% highlight java %}
 result = input1.join(input2)
                .where(0)       // key of the first input (tuple field 0)
                .equalTo(1);    // key of the second input (tuple field 1)
 {% endhighlight %}
-        你可以通过 <i>连接线索（Join Hints）</i>来设置连接的执行策略，连接线索描述了在分割和广播过程中是否进行连接，以及采取基于排序还是哈希的连接算法。请参考
-        <a href="dataset_transformations.html#join-algorithm-hints">数据转换指南</a>了解可用的Hint及相关例子。</br>
-        如果没有设置线索，系统会对输入数据大小进行估计并自行选择一个最佳方案。
+        You can specify the way that the runtime executes the join via <i>Join Hints</i>. The hints
+        describe whether the join happens through partitioning or broadcasting, and whether it uses
+        a sort-based or a hash-based algorithm. Please refer to the
+        <a href="dataset_transformations.html#join-algorithm-hints">Transformations Guide</a> for
+        a list of possible hints and an example.</br>
+        If no hint is specified, the system will try to make an estimate of the input sizes and
+        pick the best strategy according to those estimates.
 {% highlight java %}
-// 这里，通过广播第一个数据集执行连接
-// 使用针对广播数据的哈希表
+// This executes a join by broadcasting the first data set
+// using a hash table for the broadcasted data
 result = input1.join(input2, JoinHint.BROADCAST_HASH_FIRST)
                .where(0).equalTo(1);
 {% endhighlight %}
-        需要注意，连接转换只对equi-joins有效，其他的连接方式需要表示成外连接或CoGroup形式。
+        Note that the join transformation works only for equi-joins. Other join types need to be expressed using OuterJoin or CoGroup.
       </td>
     </tr>
 
     <tr>
-      <td><strong>外连接</strong></td>
+      <td><strong>OuterJoin</strong></td>
       <td>
-      左，右，或全外连接两个数据集。外连接和常规（内）连接相似，也是通过创建所有键相等的元素对来连接。另外，如果没有找到匹配的键，“外”侧的（左，右或左右皆有）的记录会被保留。 Matching pairs of elements (or one element and a <code>null</code> value for the other input) are given to a JoinFunction to turn the pair of elements into a single element, or to a FlatJoinFunction to turn the pair of elements into arbitrarily many (including none)         elements. See the <a href="{{ site.baseurl }}/dev/api_concepts.html#specifying-keys">keys section</a> to learn how to define join keys.
+        Performs a left, right, or full outer join on two data sets. Outer joins are similar to regular (inner) joins and create all pairs of elements that are equal on their keys. In addition, records of the "outer" side (left, right, or both in case of full) are preserved if no matching key is found in the other side. Matching pairs of elements (or one element and a <code>null</code> value for the other input) are given to a JoinFunction to turn the pair of elements into a single element, or to a FlatJoinFunction to turn the pair of elements into arbitrarily many (including none)         elements. See the <a href="{{ site.baseurl }}/dev/api_concepts.html#specifying-keys">keys section</a> to learn how to define join keys.
 {% highlight java %}
 input1.leftOuterJoin(input2) // rightOuterJoin or fullOuterJoin for right or full outer joins
       .where(0)              // key of the first input (tuple field 0)
