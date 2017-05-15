@@ -65,7 +65,7 @@ class ExampleITSuite extends FlatSpec with FlinkTestBase {
 }
 {% endhighlight %}
 
-这个测试风格不一定非得是 `FlatSpec`，它可以是任何其它 Scalatest 的 `Suite` 的子类。
+这个测试风格不一定必须是 `FlatSpec`，它可以是任何其它 Scalatest 的 `Suite` 的子类。
 更多详细的信息，请参阅[ScalaTest测试风格](http://scalatest.org/user_guide/selecting_a_style)。
 
 ## 文档
