@@ -347,8 +347,7 @@ val lossFunction = GenericLossFunction(SquaredLoss, LinearPrediction)
         <td><strong>Wei Xu 方法</strong></td>
         <td>
           <p>
-            由 Wei Xu 在 <a href="http://arxiv.org/pdf/1107.2490.pdf">Towards Optimal One Pass Large Scale Learning with
-            Averaged Stochastic Gradient Descent</a> 的方法
+            由 Wei Xu 在 <a href="http://arxiv.org/pdf/1107.2490.pdf">Towards Optimal One Pass Large Scale Learning with Averaged Stochastic Gradient Descent</a> 的方法
           </p>
         </td>
         <td class="text-center">$\eta_j = \eta_0 \cdot (1+ \lambda \cdot \eta_0 \cdot j)^{-\tau} $</td>
@@ -359,19 +358,15 @@ val lossFunction = GenericLossFunction(SquaredLoss, LinearPrediction)
 
 ### 例子
 
-In the Flink implementation of SGD, given a set of examples in a `DataSet[LabeledVector]` and
-optionally some initial weights, we can use `GradientDescent.optimize()` in order to optimize
-the weights for the given data.
+在随机梯度下降的 Flink 实现中，假如在一个 `DataSet[LabeledVector]` 给定一组实例，并选择性地给定一些初始初始权重，我们可以使用 `GradientDescent.optimize()` 来找到给定数据的最优权重。
 
-The user can provide an initial `DataSet[WeightVector]`,
-which contains one `WeightVector` element, or use the default weights which are all set to 0.
-A `WeightVector` is a container class for the weights, which separates the intercept from the
-weight vector. This allows us to avoid applying regularization to the intercept.
+用户能提供一个包含 `WeightVector` 元素的初始的 `DataSet[WeightVector]`，或者使用所有集合均为0的默认权重。
+一个 `WeightVector` 就是一个含权重的容器类 (container class)，这个类把截距从权重向量中分离出来。这允许我们避免把正则化运用到截距上。
 
 
 
 {% highlight scala %}
-// Create stochastic gradient descent solver
+// 创建一个随机梯度下降实例
 val sgd = GradientDescent()
   .setLossFunction(SquaredLoss())
   .setRegularizationPenalty(L1Regularization)
@@ -381,9 +376,9 @@ val sgd = GradientDescent()
   .setLearningRateMethod(LearningRateMethod.Xu(-0.75))
 
 
-// Obtain data
+// 获取数据
 val trainingDS: DataSet[LabeledVector] = ...
 
-// Optimize the weights, according to the provided data
+// 根据所提供的数据优化权重
 val weightDS = sgd.optimize(trainingDS)
 {% endhighlight %}
