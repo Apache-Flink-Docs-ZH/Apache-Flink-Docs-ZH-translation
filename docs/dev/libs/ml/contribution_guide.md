@@ -99,4 +99,4 @@ title: <a href="../ml">FlinkML</a> - Example title
 ## 贡献
 
 一旦您实现了算法，并经过充分地测试和注释，您将可以进行 pull request。
-关入如何进行 pull request，详情可以参阅[这里](http://flink.apache.org/how-to-contribute.html#contributing-code--documentation)。
+关于如何进行 pull request，详情可以参阅[这里](http://flink.apache.org/how-to-contribute.html#contributing-code--documentation)。
