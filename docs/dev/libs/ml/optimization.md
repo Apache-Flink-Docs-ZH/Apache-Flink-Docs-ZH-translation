@@ -194,13 +194,13 @@ FlinkML 支持含 L1, L2 和无正则化的随机梯度下降。正则化类型�
 ### 损失函数
 
 需要被最小化的损失函数需要实现 `LossFunction` 接口，该接口定义了计算损失及其梯度的方法。
-任何一个定义了自己 `LossFunction` 或使用  `GenericLossFunction` 类会从一个外部损失函数和一个预测函数构造损失函数。
+任何一个定义了自己 `LossFunction` 或使用  `GenericLossFunction` 类会从一个偏损失函数和一个预测函数构造损失函数。
 以下是一个实例：
 
 ```Scala
 val lossFunction = GenericLossFunction(SquaredLoss, LinearPrediction)
 ```
-支持的外部损失函数请参阅[此处](#partial-loss-function-values).
+支持的偏损失函数请参阅[此处](#partial-loss-function-values).
 支持的预测函数请参阅[here](#prediction-function-values).
 
 #### 偏随机函数 (Partial Loss Function) 值 ##
@@ -208,38 +208,38 @@ val lossFunction = GenericLossFunction(SquaredLoss, LinearPrediction)
   <table class="table table-bordered">
     <thead>
       <tr>
-        <th class="text-left" style="width: 20%">Function Name</th>
-        <th class="text-center">Description</th>
-        <th class="text-center">Loss</th>
-        <th class="text-center">Loss Derivative</th>
+        <th class="text-left" style="width: 20%">函数名</th>
+        <th class="text-center">描述</th>
+        <th class="text-center">损失</th>
+        <th class="text-center">损失导数</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td><strong>SquaredLoss</strong></td>
+        <td><strong>平方损失</strong></td>
         <td>
           <p>
-            Loss function most commonly used for regression tasks.
+            回归任务中最常用的损失函数.
           </p>
         </td>
         <td class="text-center">$\frac{1}{2} (\wv^T \cdot \x - y)^2$</td>
         <td class="text-center">$\wv^T \cdot \x - y$</td>
       </tr>
       <tr>
-        <td><strong>LogisticLoss</strong></td>
+        <td><strong>逻辑损失</strong></td>
         <td>
           <p>
-            Loss function used for classification tasks.
+            分类任务中最常用的损失函数.
           </p>
         </td>
         <td class="text-center">$\log\left(1+\exp\left( -y ~ \wv^T \cdot \x\right)\right), \quad y \in \{-1, +1\}$</td>
         <td class="text-center">$\frac{-y}{1+\exp\left(y ~ \wv^T \cdot \x\right)}$</td>
       </tr>
       <tr>
-        <td><strong>HingeLoss</strong></td>
+        <td><strong>转折点损失</strong></td>
         <td>
           <p>
-            Loss function used for classification tasks.
+            可用于分类任务的损失函数.
           </p>
         </td>
         <td class="text-center">$\max \left(0, 1 - y ~ \wv^T \cdot \x\right), \quad y \in \{-1, +1\}$</td>
@@ -256,19 +256,18 @@ val lossFunction = GenericLossFunction(SquaredLoss, LinearPrediction)
   <table class="table table-bordered">
       <thead>
         <tr>
-          <th class="text-left" style="width: 20%">Function Name</th>
-          <th class="text-center">Description</th>
-          <th class="text-center">Prediction</th>
-          <th class="text-center">Prediction Gradient</th>
+          <th class="text-left" style="width: 20%">函数名</th>
+          <th class="text-center">描述</th>
+          <th class="text-center">预测</th>
+          <th class="text-center">预测梯度</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td><strong>LinearPrediction</strong></td>
+          <td><strong>线性预测</strong></td>
           <td>
             <p>
-              The function most commonly used for linear models, such as linear regression and
-              linear classifiers.
+              线性模型比如线性回归和线性分类最常用的函数.
             </p>
           </td>
           <td class="text-center">$\x^T \cdot \wv$</td>
@@ -279,17 +278,17 @@ val lossFunction = GenericLossFunction(SquaredLoss, LinearPrediction)
 
 #### 有效学习率 ##
 
-Where:
+这里:
 
-- $j$ is the iteration number
+- $j$ 是迭代数
 
-- $\eta_j$ is the step size on step $j$
+- $\eta_j$ 是每一步 $j$ 的步长
 
-- $\eta_0$ is the initial step size
+- $\eta_0$ 是初始学习率
 
-- $\lambda$ is the regularization constant
+- $\lambda$ 是正则化常量
 
-- $\tau$ is the decay constant, which causes the learning rate to be a decreasing function of $j$, that is to say as iterations increase, learning rate decreases. The exact rate of decay is function specific, see **Inverse Scaling** and **Wei Xu's Method** (which is an extension of the **Inverse Scaling** method).
+- $\tau$ 是衰退常量, 该常量会使得学习率变成一个递减函数 $j$，也就是说，随着迭代次数的增加，学习率会衰减。衰减的精准率是由函数特定的，请参阅 **Inverse Scaling** 和 **Wei Xu's Method** (该方法是 **Inverse Scaling** 方法的一个延伸)。 
 
 <table class="table table-bordered">
     <thead>
