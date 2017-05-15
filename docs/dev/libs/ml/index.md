@@ -88,11 +88,11 @@ Flink目前支持以下算法
 下面的代码片段展示了使用FlinkML可以非常简单的训练一个多元线性回归模型。
 
 {% highlight scala %}
-// LabeledVector is a feature vector with a label (class or real value)
+// LabeledVector是一个带有标签的特征向量，标签可以使一个类或者是一个实值。
 val trainingData: DataSet[LabeledVector] = ...
 val testingData: DataSet[Vector] = ...
 
-// Alternatively, a Splitter is used to break up a DataSet into training and testing data.
+//可以选用Splitter来将一个数据集分割成训练集和测试集。 
 val dataSet: DataSet[LabeledVector] = ...
 val trainTestData: DataSet[TrainTestDataSet] = Splitter.trainTestSplit(dataSet)
 val trainingData: DataSet[LabeledVector] = trainTestData.training
@@ -105,7 +105,7 @@ val mlr = MultipleLinearRegression()
 
 mlr.fit(trainingData)
 
-// The fitted model can now be used to make predictions
+// 调试好的模型可以用来做预测。
 val predictions: DataSet[LabeledVector] = mlr.predict(testingData)
 {% endhighlight %}
 
@@ -125,13 +125,13 @@ val scaler = StandardScaler()
 val polyFeatures = PolynomialFeatures().setDegree(3)
 val mlr = MultipleLinearRegression()
 
-// Construct pipeline of standard scaler, polynomial features and multiple linear regression
+// 构建标准化，多项式特征和多元线性回归的管道（Pipeline）
 val pipeline = scaler.chainTransformer(polyFeatures).chainPredictor(mlr)
 
-// Train pipeline
+// 训练管道
 pipeline.fit(trainingData)
 
-// Calculate predictions
+// 预测计算
 val predictions: DataSet[LabeledVector] = pipeline.predict(testingData)
 {% endhighlight %}
 
