@@ -43,7 +43,7 @@ FlnikML 为对机器学习有兴趣的人员提供高度且活跃的开源项目
 
 ## 测试
 
-新的贡献会接受测试来验证算法的行为。这个测试会在代码发生变化时 (比如重构) 对算法的正确性进行维护。
+当提交新的贡献时，还需要提供相关的测试来验证算法的行为。这个测试会在代码发生变化时 (比如重构) 对算法的正确性进行维护。
 
 我们会对单元测试 (unit test) 和集成测试 (integration test) 进行区分，单元测试在 Maven 的测试阶段会被执行，而集成测试会在 Maven 的验证阶段被执行。
 Maven 会使用下列命名规则对这二者进行区分：
@@ -98,5 +98,5 @@ title: <a href="../ml">FlinkML</a> - Example title
 
 ## 贡献
 
-Once you have implemented the algorithm with adequate test coverage and added documentation, you are ready to open a pull request.
-Details of how to open a pull request can be found [here](http://flink.apache.org/how-to-contribute.html#contributing-code--documentation).
+一旦您实现了算法，并经过充分地测试和注释，您将可以进行 pull request。
+关入如何进行 pull request，详情可以参阅[这里](http://flink.apache.org/how-to-contribute.html#contributing-code--documentation)。
