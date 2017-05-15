@@ -48,7 +48,7 @@ FlnikML 为对机器学习有兴趣的人员提供高度且活跃的开源项目
 我们会对单元测试 (unit test) 和集成测试 (integration test) 进行区分，单元测试在 Maven 的测试阶段会被执行，而集成测试会在 Maven 的验证阶段被执行。
 Maven 会使用下列命名规则对这二者进行区分：
 所有包含以正则表达式 `(IT|Integration)(Test|Suite|Case)` 结尾的类的测试样会被认为是集成测试。
-剩余的情况都被认为是单元测试，并只测试对所测试组建所表现的行为
+剩余的情况都被认为是单元测试，并只测试对所测试组建所表现的行为。
 
 集成测试是一个需要启动整个 Flink 系统的测试。
 为了能合适地进行集成测试，所有的集成测试样例必须是继承 `FlinkTestBase` 特质的类。
@@ -66,7 +66,7 @@ class ExampleITSuite extends FlatSpec with FlinkTestBase {
 {% endhighlight %}
 
 这个测试风格不一定非得是 `FlatSpec`，它可以是任何其它 Scalatest 的 `Suite` 的子类。
-更多详细的信息，请参阅[ScalaTest测试风格](http://scalatest.org/user_guide/selecting_a_style)
+更多详细的信息，请参阅[ScalaTest测试风格](http://scalatest.org/user_guide/selecting_a_style)。
 
 ## 文档
 
