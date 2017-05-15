@@ -154,8 +154,7 @@ data.flatMap(new FlatMapFunction<String, String>() {
     <tr>
       <td><strong>映射分割</strong></td>
       <td>
-        <p>调用一个函数完成水平分割。函数以一个<code>Iterable</code> 流的形式输出，产生任意数量的结果。元素的数量取决于The number of
-        elements in each partition depends on the degree-of-parallelism and previous operations.</p>
+        <p>调用一个函数完成水平分割。函数以一个<code>Iterable</code> 流的形式输出，产生任意数量的结果。每个分块的元素数量取决于并行度和先前的操作。</p>
 {% highlight java %}
 data.mapPartition(new MapPartitionFunction<String, Long>() {
   public void mapPartition(Iterable<String> values, Collector<Long> out) {
@@ -171,13 +170,11 @@ data.mapPartition(new MapPartitionFunction<String, Long>() {
     </tr>
 
     <tr>
-      <td><strong>Filter</strong></td>
+      <td><strong>过滤</strong></td>
       <td>
-        <p>Evaluates a boolean function for each element and retains those for which the function
-        returns true.<br/>
+        <p>对每一个元素依据规则判断真假，并保留值为真的元素。<br/>
 
-        <strong>IMPORTANT:</strong> The system assumes that the function does not modify the elements on which the predicate is applied. Violating this assumption
-        can lead to incorrect results.
+        <strong>重要：</strong> 系统假设过滤方法不会改变预测要用到的元素内容，如果破坏这一规则可能引发错误。
         </p>
 {% highlight java %}
 data.filter(new FilterFunction<Integer>() {
@@ -190,8 +187,7 @@ data.filter(new FilterFunction<Integer>() {
     <tr>
       <td><strong>Reduce</strong></td>
       <td>
-        <p>Combines a group of elements into a single element by repeatedly combining two elements
-        into one. Reduce may be applied on a full data set, or on a grouped data set.</p>
+        <p>Reduce通过不断地两两合并，将一组元素合并成一个元素。Reduce可能会应用于整个数据集或者一组数据集。</p>
 {% highlight java %}
 data.reduce(new ReduceFunction<Integer> {
   public Integer reduce(Integer a, Integer b) { return a + b; }
@@ -203,8 +199,7 @@ data.reduce(new ReduceFunction<Integer> {
     <tr>
       <td><strong>ReduceGroup</strong></td>
       <td>
-        <p>Combines a group of elements into one or more elements. ReduceGroup may be applied on a
-        full data set, or on a grouped data set.</p>
+        <p>ReduceGroup将一组元素合并成一个或多个元素。ReduceGroup可能会应用于整个数据集或者一组数据集。</p>
 {% highlight java %}
 data.reduceGroup(new GroupReduceFunction<Integer, Integer> {
   public void reduce(Iterable<Integer> values, Collector<Integer> out) {
@@ -216,24 +211,19 @@ data.reduceGroup(new GroupReduceFunction<Integer, Integer> {
   }
 });
 {% endhighlight %}
-        <p>If the reduce was applied to a grouped data set, you can specify the way that the
-        runtime executes the combine phase of the reduce via supplying a CombineHint as a second
-        parameter. The hash-based strategy should be faster in most cases, especially if the
-        number of different keys is small compared to the number of input elements (eg. 1/10).</p>
+        <p>如果对一个分组数据集实施reduce，你可以提供一个合并线索（ComebineHInt）作为第二个参数来设定合并的时机。这种基于哈希算法的策略在大多数情况下可以提高计算速度，特别是对于不同键值数目相对输入元素数目较小时（例如，1/10）。</p>
       </td>
     </tr>
 
     <tr>
-      <td><strong>Aggregate</strong></td>
+      <td><strong>合计（Aggregate）</strong></td>
       <td>
-        <p>Aggregates a group of values into a single value. Aggregation functions can be thought of
-        as built-in reduce functions. Aggregate may be applied on a full data set, or on a grouped
-        data set.</p>
+        <p>Aggregate将一组值合计出一个值。Aggregation方法可以理解为一种内部实现的reduce方法。Aggregation可能会应用于整个数据集或者一组数据集。</p>
 {% highlight java %}
 Dataset<Tuple3<Integer, String, Double>> input = // [...]
 DataSet<Tuple3<Integer, String, Double>> output = input.aggregate(SUM, 0).and(MIN, 2);
 {% endhighlight %}
-	<p>You can also use short-hand syntax for minimum, maximum, and sum aggregations.</p>
+	<p>你也可以使用速记语法来做最小值，最大值，合计运算。</p>
 	{% highlight java %}
 	Dataset<Tuple3<Integer, String, Double>> input = // [...]
 DataSet<Tuple3<Integer, String, Double>> output = input.sum(0).andMin(2);
@@ -244,8 +234,7 @@ DataSet<Tuple3<Integer, String, Double>> output = input.sum(0).andMin(2);
     <tr>
       <td><strong>Distinct</strong></td>
       <td>
-        <p>Returns the distinct elements of a data set. It removes the duplicate entries
-        from the input DataSet, with respect to all fields of the elements, or a subset of fields.</p>
+        <p>返回数据集的独特元素，即从输入中删除数据域都重复的数据项。</p>
     {% highlight java %}
         data.distinct();
     {% endhighlight %}
@@ -253,7 +242,7 @@ DataSet<Tuple3<Integer, String, Double>> output = input.sum(0).andMin(2);
     </tr>
 
     <tr>
-      <td><strong>Join</strong></td>
+      <td><strong>加入（Join）</strong></td>
       <td>
         Joins two data sets by creating all pairs of elements that are equal on their keys.
         Optionally uses a JoinFunction to turn the pair of elements into a single element, or a
