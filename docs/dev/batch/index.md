@@ -242,38 +242,32 @@ DataSet<Tuple3<Integer, String, Double>> output = input.sum(0).andMin(2);
     </tr>
 
     <tr>
-      <td><strong>加入（Join）</strong></td>
-      <td>
-        Joins two data sets by creating all pairs of elements that are equal on their keys.
-        Optionally uses a JoinFunction to turn the pair of elements into a single element, or a
-        FlatJoinFunction to turn the pair of elements into arbitrarily many (including none)
-        elements. See the <a href="{{ site.baseurl }}/dev/api_concepts.html#specifying-keys">keys section</a> to learn how to define join keys.
+      <td><strong>连接（Join）</strong></td>
+      <td>通过新建所有键相等的元素对将两个数据集连接。也可以使用JoinFunction将元素对转化成单个元素，
+      	  或者使用FlatJoinFunction将元素对转化成不定数量的元素，详情参看
+       <a href="{{ site.baseurl }}/dev/api_concepts.html#specifying-keys">键的选择</a>来了解如何设定合并规则。.
 {% highlight java %}
 result = input1.join(input2)
                .where(0)       // key of the first input (tuple field 0)
                .equalTo(1);    // key of the second input (tuple field 1)
 {% endhighlight %}
-        You can specify the way that the runtime executes the join via <i>Join Hints</i>. The hints
-        describe whether the join happens through partitioning or broadcasting, and whether it uses
-        a sort-based or a hash-based algorithm. Please refer to the
-        <a href="dataset_transformations.html#join-algorithm-hints">Transformations Guide</a> for
-        a list of possible hints and an example.</br>
-        If no hint is specified, the system will try to make an estimate of the input sizes and
-        pick the best strategy according to those estimates.
+        你可以通过 <i>连接线索（Join Hints）</i>来设置连接的执行策略，连接线索描述了在分割和广播过程中是否进行连接，以及采取基于排序还是哈希的连接算法。请参考
+        <a href="dataset_transformations.html#join-algorithm-hints">数据转换指南</a>了解可用的Hint及相关例子。</br>
+        如果没有设置线索，系统会对输入数据大小进行估计并自行选择一个最佳方案。
 {% highlight java %}
-// This executes a join by broadcasting the first data set
-// using a hash table for the broadcasted data
+// 这里，通过广播第一个数据集执行连接
+// 使用针对广播数据的哈希表
 result = input1.join(input2, JoinHint.BROADCAST_HASH_FIRST)
                .where(0).equalTo(1);
 {% endhighlight %}
-        Note that the join transformation works only for equi-joins. Other join types need to be expressed using OuterJoin or CoGroup.
+        需要注意，连接转换只对equi-joins有效，其他的连接方式需要表示成外连接或CoGroup形式。
       </td>
     </tr>
 
     <tr>
-      <td><strong>OuterJoin</strong></td>
+      <td><strong>外连接</strong></td>
       <td>
-        Performs a left, right, or full outer join on two data sets. Outer joins are similar to regular (inner) joins and create all pairs of elements that are equal on their keys. In addition, records of the "outer" side (left, right, or both in case of full) are preserved if no matching key is found in the other side. Matching pairs of elements (or one element and a <code>null</code> value for the other input) are given to a JoinFunction to turn the pair of elements into a single element, or to a FlatJoinFunction to turn the pair of elements into arbitrarily many (including none)         elements. See the <a href="{{ site.baseurl }}/dev/api_concepts.html#specifying-keys">keys section</a> to learn how to define join keys.
+      左，右，或全外连接两个数据集。外连接和常规（内）连接相似，也是通过创建所有键相等的元素对来连接。另外，如果没有找到匹配的键，“外”侧的（左，右或左右皆有）的记录会被保留。 Matching pairs of elements (or one element and a <code>null</code> value for the other input) are given to a JoinFunction to turn the pair of elements into a single element, or to a FlatJoinFunction to turn the pair of elements into arbitrarily many (including none)         elements. See the <a href="{{ site.baseurl }}/dev/api_concepts.html#specifying-keys">keys section</a> to learn how to define join keys.
 {% highlight java %}
 input1.leftOuterJoin(input2) // rightOuterJoin or fullOuterJoin for right or full outer joins
       .where(0)              // key of the first input (tuple field 0)
