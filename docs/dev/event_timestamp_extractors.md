@@ -25,7 +25,7 @@ under the License.
 * toc
 {:toc}
 
-正如在上一节[ timestamp 与 watermark 处理]({{ site.baseurl }}/dev/event_timestamps_watermarks.html)中提到的，Flink 提供了抽象类来让开发者给自己的 timestamps（时间戳）并发送他们自己的watermark（水印）赋值。更确切地说，开发者需要依照不同的使用场景来实现接口 `AssignerWithPeriodicWatermarks` 或接口 `AssignerWithPunctuatedWatermarks`。简而言之，前一个接口将会周期性发送 watermark，而第二个接口则根据到达数据的一些属性发送 watermark，例如:一旦在流中碰到一个特殊的元素, 便发送 watermark。
+正如在上一节[ timestamp 与 watermark 处理]({{ site.baseurl }}/dev/event_timestamps_watermarks.html)中提到的，Flink 提供了抽象类来让开发者给自己的 timestamps（时间戳）赋值并发送他们自己的watermark（水印）。更确切地说，开发者需要依照不同的使用场景来实现接口 `AssignerWithPeriodicWatermarks` 或接口 `AssignerWithPunctuatedWatermarks`。简而言之，前一个接口将会周期性发送 watermark，而第二个接口则根据到达数据的一些属性发送 watermark，例如:一旦在流中碰到一个特殊的元素, 便发送 watermark。
 
 为了进一步简化开发者开发类似的任务，Flink自带了一些预先实现的时间戳分配器（timestamp assigners）。本节列举了关于这些时间戳分配器的相关内容。除了开箱即用的函数，这些预先实现的分配器还可以作为自定义分配器的示例。
 
@@ -64,7 +64,7 @@ val withTimestampsAndWatermarks = stream.assignAscendingTimestamps( _.getCreatio
 
 ### **允许固定数量延迟的分配器**
 
-周期性 watermark 产生的另外一种情况是在当 watermark 滞后于最大值（即事件时间）时，timestamp 会被一段固定时间流锁定。这种方法包括了在流中遇到的最大延迟，且这个最大延迟可以被提前知道的情况。例如：当在创建元素包含 timestamp 的自定义源时，这些 timestamp 只可在固定时间的测试中进行散播。对于这些情况，FLink提供了`BoundedOutOfOrdernessTimestampExtractor` 作为 `maxOutOfOrderness` 的一个参数。即在一个 element（元素）被给定窗口，在计算最终结果忽略之前（即该element过期前），所允许该 element 迟到的最大 lateness（延迟）。lateness 与 `t-t_w` （t减t_w,译者注）相对应，其中 `t` 指代元素的 timestamp (event-time) ，而 `t_w` 则指代先前的 watermark。如果 `lateness>0`，则可认为此时该 element 延迟，而且在默认情况下，当计算相应窗口结果时，该 element 会被忽略掉。想了解更多关于使用延迟元素的知识，请参阅 [allowed lateness]({{ site.baseurl }}/dev/windows.html#allowed-lateness)的相关文档。
+周期性 watermark 产生的另外一种情况是在当 watermark 滞后于流中的一个固定时间段内观察到的最大（即 event-time）时间戳。该情况包括预先知道在流中将会遇到的最大lateness(延迟)的情况，例如创建一个测试用的自定义source时，它的element的时间戳会分布在一个固定的时间段内。对于这些情况，FLink提供了 `BoundedOutOfOrdernessTimestampExtractor` 作为 `maxOutOfOrderness` 的一个参数。即在一个 element（元素）被给定窗口，在计算最终结果忽略之前（即该element过期前），所允许该 element 迟到的最大 lateness（延迟）。lateness 与 `t-t_w` （t减t_w,译者注）相对应，其中 `t` 指代元素的 timestamp (event-time) ，而 `t_w` 则指代先前的 watermark。如果 `lateness>0`，则可认为此时该 element 延迟，而且在默认情况下，当计算相应窗口结果时，该 element 会被忽略掉。想了解更多关于使用延迟元素的知识，请参阅 [allowed lateness]({{ site.baseurl }}/dev/windows.html#allowed-lateness)的相关文档。
 
 
 <div class="codetabs" markdown="1">
