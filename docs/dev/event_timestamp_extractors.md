@@ -64,7 +64,7 @@ val withTimestampsAndWatermarks = stream.assignAscendingTimestamps( _.getCreatio
 
 ### **允许固定数量延迟的分配器**
 
-周期性 watermark 产生的另外一种情况是在当 watermark 滞后于流中的一个固定时间段内观察到的最大（即 event-time）时间戳。该情况包括预先知道在流中将会遇到的最大 lateness (延迟)的情况，例如创建一个测试用的自定义source时，它的element的时间戳会分布在一个固定的时间段内。对于这些情况，FLink 提供了 `BoundedOutOfOrdernessTimestampExtractor` 作为 `maxOutOfOrderness` 的一个参数。即在一个 element（元素）被给定窗口，在计算最终结果忽略之前（即该element过期前），所允许该 element 迟到的最大 lateness（延迟）。lateness 与 `t-t_w`（t 减 t_w,译者注）相对应，其中 `t` 指代元素的 timestamp (event-time) ，而 `t_w` 则指代先前的 watermark。如果 `lateness>0`，则可认为此时该 element 延迟，而且在默认情况下，当计算相应窗口结果时，该 element 会被忽略掉。想了解更多关于使用延迟元素的知识，请参阅 [allowed lateness]({{ site.baseurl }}/dev/windows.html#allowed-lateness)的相关文档。
+周期性 watermark 产生的另外一种情况是在当 watermark 滞后于流中的一个固定时间段内观察到的最大（即 event-time）时间戳。该情况包括预先知道在流中将会遇到的最大 lateness (延迟)的情况，例如创建一个测试用的自定义 source 时，它的element的时间戳会分布在一个固定的时间段内。对于这些情况，FLink 提供了 `BoundedOutOfOrdernessTimestampExtractor` 作为 `maxOutOfOrderness` 的一个参数。即在一个 element（元素）被给定窗口，在计算最终结果忽略之前（即该element过期前），所允许该 element 迟到的最大 lateness（延迟）。lateness 与 `t-t_w`（t 减 t_w,译者注）相对应，其中 `t` 指代元素的 timestamp (event-time) ，而 `t_w` 则指代先前的 watermark。如果 `lateness>0`，则可认为此时该 element 延迟，而且在默认情况下，当计算相应窗口结果时，该 element 会被忽略掉。想了解更多关于使用延迟元素的知识，请参阅 [allowed lateness]({{ site.baseurl }}/dev/windows.html#allowed-lateness)的相关文档。
 
 
 <div class="codetabs" markdown="1">
