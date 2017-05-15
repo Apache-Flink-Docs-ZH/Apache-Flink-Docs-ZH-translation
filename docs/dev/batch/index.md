@@ -27,8 +27,7 @@ under the License.
 
 Dataset是Flink中实现数据转换（例如，过滤（filtering），映射（maping），结合（joining）和分组（grouping））的常规程序。
 初始数据集是从指定的源（例如文件和本地集合）中获取的。通过sink来返回结果，它可以是写入到（分布式）文件，也可能是标准输出（命令行终端）。
-Flink程序可运行在多种环境下，可以独立执行也可以嵌入到其他程序中。
-可以在本地JVM上执行也可以在集群上执行。
+Flink程序可运行在多种环境下，可以独立执行也可以嵌入到其他程序中，也可以在本地JVM上执行也可以在集群上执行。
 
 请参看[basic concepts]({{ site.baseurl }}/dev/api_concepts.html)来了解Flink API的基本概念
 
@@ -41,7 +40,7 @@ Flink程序可运行在多种环境下，可以独立执行也可以嵌入到其
 ---------------
 
 以下是一个完整的WordCount的程序范例。你可以复制粘贴这段代码并在本地运行它。你只需要正确地把Flink的库加入到项目中
-(参看[链接Flink]({{ site.baseurl }}/dev/linking_with_flink.html)) 并在必要位置进行import，就可以直接运行。
+(参看[链接Flink]({{ site.baseurl }}/dev/linking_with_flink.html)) 并在导入所需的包，就可以直接运行。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -106,9 +105,9 @@ object WordCount {
 数据转换
 -----------------------
 
-数据转换试讲一个或多个数据集转化成一个新的数据集的操作。程序可以组合多种转换方法形成复杂的功能。
+数据转换是将一个或多个数据集转化成一个新的数据集的操作。程序可以组合多种转换方法形成复杂的功能。
 
-本节将简要地介绍数据转换。另外[数据转换文档](dataset_transformations.html) 提供对所有数据转换方法的全面解析，并附有示例。
+本节将简要地介绍数据转换。[数据转换文档](dataset_transformations.html) 提供对所有数据转换方法的全面解析，并附有示例。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -125,9 +124,9 @@ object WordCount {
 
   <tbody>
     <tr>
-      <td><strong>Map</strong></td>
+      <td><strong>映射</strong></td>
       <td>
-        <p>Takes one element and produces one element.</p>
+        <p>输入一个元素输出一个元素</p>
 {% highlight java %}
 data.map(new MapFunction<String, Integer>() {
   public Integer map(String value) { return Integer.parseInt(value); }
@@ -139,7 +138,7 @@ data.map(new MapFunction<String, Integer>() {
     <tr>
       <td><strong>FlatMap</strong></td>
       <td>
-        <p>Takes one element and produces zero, one, or more elements. </p>
+        <p>输入一个元素输出0个，1个或多个元素 </p>
 {% highlight java %}
 data.flatMap(new FlatMapFunction<String, String>() {
   public void flatMap(String value, Collector<String> out) {
@@ -153,10 +152,9 @@ data.flatMap(new FlatMapFunction<String, String>() {
     </tr>
 
     <tr>
-      <td><strong>MapPartition</strong></td>
+      <td><strong>映射分割</strong></td>
       <td>
-        <p>Transforms a parallel partition in a single function call. The function gets the partition
-        as an <code>Iterable</code> stream and can produce an arbitrary number of result values. The number of
+        <p>调用一个函数完成水平分割。函数以一个<code>Iterable</code> 流的形式输出，产生任意数量的结果。元素的数量取决于The number of
         elements in each partition depends on the degree-of-parallelism and previous operations.</p>
 {% highlight java %}
 data.mapPartition(new MapPartitionFunction<String, Long>() {
