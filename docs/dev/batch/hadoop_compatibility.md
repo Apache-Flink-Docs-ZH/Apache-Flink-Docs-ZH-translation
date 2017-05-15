@@ -27,9 +27,9 @@ Flink兼容Apache Hadoop MapReduce的接口，因此可以使用面向MapReduce�
 
 你可以:
 
-- Flink中使用Hadoop `Writable` [data types](index.html#data-types).
-- 使用Hadoop `InputFormat` 作为[DataSource](index.html#data-sources).
-- 使用Hadoop `OutputFormat` 作为 a [DataSink](index.html#data-sinks).
+- Flink中使用Hadoop `Writable` [数据类型（Data type）](index.html#data-types).
+- 使用Hadoop `InputFormat` 作为[数据源（DataSource）](index.html#data-sources).
+- 使用Hadoop `OutputFormat` 作为 [数据落地（DataSink）](index.html#data-sinks).
 - 使用Hadoop `Mapper` 作为 [FlatMapFunction](dataset_transformations.html#flatmap).
 - 使用Hadoop `Reducer` 作为 [GroupReduceFunction](dataset_transformations.html#groupreduce-on-grouped-dataset).
 
@@ -41,11 +41,11 @@ Flink兼容Apache Hadoop MapReduce的接口，因此可以使用面向MapReduce�
 
 ### 项目配置
 
-支持Hadoop的input／output格式是`flink-java`和`flink-scala`的maven模块的一部分，这两部分是在编写Flink任务时经常需要用到的。 `mapred`和`mapreduce` 的api代码分别在`org.apache.flink.api.java.hadoop`和`org.apache.flink.api.scala.hadoop`以及一个额外的子package中。
+支持Hadoop的输入输出（input／output）格式是`flink-java`和`flink-scala`的maven模块的一部分，这两部分是在编写Flink任务时经常需要用到的。 `mapred`和`mapreduce` 的api代码分别在`org.apache.flink.api.java.hadoop`和`org.apache.flink.api.scala.hadoop`以及一个额外的子包中。
 
 对Hadoop MapReduce的支持是在`flink-hadoop-compatibility`的maven模块中。代码具体在`org.apache.flink.hadoopcompatibility`包中。
 
-如果想要重复使用`Mappers and Reducers`， 需要在maven中添加下面依赖：
+如果想要重复使用`Mappers and Reducers`， 需要在maven中的pom.xml中添加下面依赖：
 
 ~~~xml
 <dependency>
