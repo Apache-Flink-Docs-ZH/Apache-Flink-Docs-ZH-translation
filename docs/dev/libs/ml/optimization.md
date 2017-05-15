@@ -66,107 +66,97 @@ $\eqref{eq:objectiveFunc}$ 中的正则化常数 $\lambda$ 决定了用在模型
 关于比较好的正则化类型的对比，可以参阅[这](http://www.robotics.stanford.edu/~ang/papers/icml04-l1l2.pdf)篇由 Andrew Ng 发表的论文
 至于什么样的正则化类型会被支持，取决于实际使用的优化算法。
 
-## 随机梯度下降
+## 随机梯度下降 (Stochastic Gradient Descent)
 
-In order to find a (local) minimum of a function, Gradient Descent methods take steps in the
-direction opposite to the gradient of the function $\eqref{eq:objectiveFunc}$ taken with
-respect to the current parameters (weights).
-In order to compute the exact gradient we need to perform one pass through all the points in
-a dataset, making the process computationally expensive.
-An alternative is Stochastic Gradient Descent (SGD) where at each iteration we sample one point
-from the complete dataset and update the parameters for each point, in an online manner.
+为了找到一个 (局部) 最小值，梯度下降法会朝着与当前参数 (权重) 相关 $\eqref{eq:objectiveFunc}$ 函数的梯度相反的方向的下降。
+为了计算精确的梯度，我们需要对一个数据集里的所有点进行一次传递 (one pass)，让整个过程的计算量增大。
+另一个替代的方案是随机梯度下降，在随机梯度下降中我们每一轮迭代都从完整的数据集中采集一个点，并通过在线方式对每个点更新参数。
 
-In mini-batch SGD we instead sample random subsets of the dataset, and compute the gradient
-over each batch. At each iteration of the algorithm we update the weights once, based on
-the average of the gradients computed from each mini-batch.
+在小批次的随机梯度下降中，我们则从一个数据集中采样随机数据集，并在每一批次上计算梯度。在算法的每一轮迭代中我们根据从每一个批次中计算得到的梯度，对权重只更新一次。
 
-An important parameter is the learning rate $\eta$, or step size, which can be determined by one of five methods, listed below. The setting of the initial step size can significantly affect the performance of the
-algorithm. For some practical tips on tuning SGD see Leon Botou's
-"[Stochastic Gradient Descent Tricks](http://research.microsoft.com/pubs/192769/tricks-2012.pdf)".
+一个重要的参数是学习率 $\eta$，或者称为步长 (step size)，该参数可由以下列出的五个方法之一决定。
+初始步长的设定会对算法的表现有重要的影响。如果想要知道一些实际运用中的指导，清参与 Leon Botou 的 "[Stochastic Gradient Descent Tricks](http://research.microsoft.com/pubs/192769/tricks-2012.pdf)"。
 
-The current implementation of SGD  uses the whole partition, making it
-effectively a batch gradient descent. Once a sampling operator has been introduced in Flink, true
-mini-batch SGD will be performed.
+目前随机梯度下降的实现使用所有的分区，这样能让一批次的梯度下降变更加有效。只要一个采集操作被引入到 Flink 中，真实的小批次随机梯度下降算法就会被执行。
 
 
 ### 参数
 
-  The stochastic gradient descent implementation can be controlled by the following parameters:
+  随机梯度下降的实现可以由以下参数控制：
 
    <table class="table table-bordered">
     <thead>
       <tr>
-        <th class="text-left" style="width: 20%">Parameter</th>
-        <th class="text-center">Description</th>
+        <th class="text-left" style="width: 20%">参数</th>
+        <th class="text-center">描述</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td><strong>RegularizationPenalty</strong></td>
+        <td><strong>正则化惩罚</strong></td>
         <td>
           <p>
-            The regularization function to apply. (Default value: <strong>NoRegularization</strong>)
+            要应用的正则化方程. (默认值: <strong>NoRegularization</strong>)
           </p>
         </td>
       </tr>
       <tr>
-        <td><strong>RegularizationConstant</strong></td>
+        <td><strong>正则化常数</strong></td>
         <td>
           <p>
-            The amount of regularization to apply. (Default value: <strong>0.1</strong>)
+            使用的正则化量. (默认值: <strong>0.1</strong>)
           </p>
         </td>
       </tr>
       <tr>
-        <td><strong>LossFunction</strong></td>
+        <td><strong>损失函数</strong></td>
         <td>
           <p>
-            The loss function to be optimized. (Default value: <strong>None</strong>)
+            要被优化的损失函数. (默认值: <strong>None</strong>)
           </p>
         </td>
       </tr>
       <tr>
-        <td><strong>Iterations</strong></td>
+        <td><strong>迭代数</strong></td>
         <td>
           <p>
-            The maximum number of iterations. (Default value: <strong>10</strong>)
+            最大迭代次数. (默认值: <strong>10</strong>)
+          </p>
+        </td>
+      </tr>
+      <tr>
+        <td><strong>学习率</strong></td>
+        <td>
+          <p>
+            梯度下降法中的初始学习率.
+            这个值控制了梯度下降法要沿着梯度的反方向移多远.
+            (默认值: <strong>0.1</strong>)
           </p>
         </td>
       </tr>
       <tr>
-        <td><strong>LearningRate</strong></td>
+        <td><strong>聚合阀值</strong></td>
         <td>
           <p>
-            Initial learning rate for the gradient descent method.
-            This value controls how far the gradient descent method moves in the opposite direction
-            of the gradient.
-            (Default value: <strong>0.1</strong>)
+            当被设置时，如果目标函数 $\eqref{eq:objectiveFunc}$ 的值的相对变化量小于提供的阀值 $\tau$，则迭代停止
+            聚合的标准定义如下：$\left| \frac{f(\wv)_{i-1} - f(\wv)_i}{f(\wv)_{i-1}}\right| < \tau$.
+            (默认值: <strong>None</strong>)
           </p>
         </td>
       </tr>
       <tr>
-        <td><strong>ConvergenceThreshold</strong></td>
+        <td><strong>学习率方法</strong></td>
         <td>
           <p>
-            When set, iterations stop if the relative change in the value of the objective function $\eqref{eq:objectiveFunc}$ is less than the provided threshold, $\tau$.
-            The convergence criterion is defined as follows: $\left| \frac{f(\wv)_{i-1} - f(\wv)_i}{f(\wv)_{i-1}}\right| < \tau$.
-            (Default value: <strong>None</strong>)
+            (默认值: <strong>LearningRateMethod.Default</strong>)
           </p>
         </td>
       </tr>
       <tr>
-        <td><strong>LearningRateMethod</strong></td>
+        <td><strong>衰退值</strong></td>
         <td>
           <p>
-            (Default value: <strong>LearningRateMethod.Default</strong>)
-          </p>
-        </td>
-      </tr>
-      <tr>
-        <td><strong>Decay</strong></td>
-        <td>
-          <p>
-            (Default value: <strong>0.0</strong>)
+            (默认值: <strong>0.0</strong>)
           </p>
         </td>
       </tr>
