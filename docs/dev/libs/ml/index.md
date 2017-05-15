@@ -67,10 +67,10 @@ Flink目前支持以下算法：
 
 ## 开始
 
-你可以通过我们的[快速入门指南](quickstart.html)中的例子了解基本的概念。
+你可以通过我们的[快速入门指南](quickstart.html)中的例子了解概况。
 
-如果你想快速实践, 你可以学习[创建一个Flink程序]({{ site.baseurl }}/dev/linking_with_flink.html).
-之后，需要在你项目的`pom.xml`中加入FlinkML的依赖。
+如果你想直接实践, 你可需要[创建一个Flink程序]({{ site.baseurl }}/dev/linking_with_flink.html).
+然后后，在你项目的`pom.xml`中加入FlinkML的依赖。
 
 {% highlight xml %}
 <dependency>
@@ -80,11 +80,11 @@ Flink目前支持以下算法：
 </dependency>
 {% endhighlight %}
 
-需要注意的是FlinkML目前还不是二进制发行版的一部分。
-点击[这里]({{site.baseurl}}/dev/linking.html).看如何在集群中链接不在二进制文件中的库。
+需要注意的是FlinkML目前没有编译进二进制文件版。
+点击[这里]({{site.baseurl}}/dev/linking.html).了解如何在集群中链接不在二进制文件中的库。
 
 至此，你可以开始你的分析任务了。
-下面的代码片段展示了使用FlinkML可以非常简单的训练一个多元线性回归模型。
+下面的代码片段展示了使用FlinkML可以非常简单地训练一个多元线性回归模型。
 
 {% highlight scala %}
 // LabeledVector是一个带有标签的特征向量，标签可以使一个类或者是一个实值。
@@ -114,7 +114,7 @@ FlinkML的一个关键概念是它基于[scikit-learn](http://scikit-learn.org) 
 它能帮助你快速建立复杂的数据分析管道，这是每一位数据分析师日常工作中不可或缺的部分。
 你可以在[这里](pipelines.html)了解Flink Pipeline的详细情况。
 
-下面的代码片段展示了使用FlinkML可以非常简单的创建数据分析管道。
+下面的代码片段展示了使用FlinkML可以非常简单地创建数据分析管道。
 
 {% highlight scala %}
 val trainingData: DataSet[LabeledVector] = ...
@@ -124,7 +124,7 @@ val scaler = StandardScaler()
 val polyFeatures = PolynomialFeatures().setDegree(3)
 val mlr = MultipleLinearRegression()
 
-// 构建标准化，多项式特征和多元线性回归的管道（Pipeline）
+// 构建标准化，多项式特征和多元线性回归的管道
 val pipeline = scaler.chainTransformer(polyFeatures).chainPredictor(mlr)
 
 // 训练管道
