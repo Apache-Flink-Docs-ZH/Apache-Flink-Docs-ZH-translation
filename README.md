@@ -51,19 +51,25 @@ Apache Flink官网：[http://flink.apache.org](http://flink.apache.org/index.htm
 
 *翻译* [认领](https://github.com/Apache-Flink-Docs-ZH/Apache-Flink-Docs-ZH-translation/wiki)
  - [tuhaihe](https://github.com/tuahihe)
- - XXX
+ - [vinsyuan7788](https://github.com/vinsyuan7788)
+ - [lsvih](https://github.com/lsvih)
+ - [stubird](https://github.com/stubird)
+ - [zjuwangg](https://github.com/zjuwangg)
+ - [lmalds](https://github.com/lmalds)
+ - [felixcyj](https://github.com/felixcyj)
 
 ---
 
 *审校* [点我认领](https://github.com/Apache-Flink-Docs-ZH/Apache-Flink-Docs-ZH-translation/wiki)
  - [tuhaihe](https://github.com/tuahihe) 
- - XXX
+ - [lviiii](https://github.com/lviiii)
+ 
  
  
  ---
  
  *项目经理* [认领](https://github.com/Apache-Flink-Docs-ZH/Apache-Flink-Docs-ZH-translation/issues/1)
- - XXX
+- [lviiii](https://github.com/lviiii)
  
 
 
