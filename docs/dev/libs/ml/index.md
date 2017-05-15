@@ -27,15 +27,14 @@ under the License.
 
 FlinkML是Flink内部的机器学习工具库。它是Flink生态圈的新组件，社区成员不断向它贡献新的算法。
 FlinkML目标是提供可扩展的机器学习算法，良好的API和工具来使构建端对端的机器学习系统的工作量最小化。
-你可以查阅[vision
-and roadmap here](https://cwiki.apache.org/confluence/display/FLINK/FlinkML%3A+Vision+and+Roadmap)了解更多关于FlinkML的目标和趋势。
+你可以查阅[路线图](https://cwiki.apache.org/confluence/display/FLINK/FlinkML%3A+Vision+and+Roadmap)了解更多关于FlinkML的目标和趋势。
 
 * This will be replaced by the TOC
 {:toc}
 
 ## 支持的算法
 
-Flink目前支持以下算法
+Flink目前支持以下算法：
 
 ### 监督学习
 
@@ -49,9 +48,9 @@ Flink目前支持以下算法
 
 ### 数据处理
 
-* [多项式特征（Polynomial Features）](polynomial_features.html)
-* [标准化（Standard Scaler）](standard_scaler.html)
-* [区间缩放（Minmax Scaler）](min_max_scaler.html)
+* [多项式特征转化（Polynomial Features）](polynomial_features.html)
+* [标准化处理（Standard Scaler）](standard_scaler.html)
+* [区间缩放处理（Minmax Scaler）](min_max_scaler.html)
 
 ### 推荐
 
@@ -71,7 +70,7 @@ Flink目前支持以下算法
 你可以通过我们的[快速入门指南](quickstart.html)中的例子了解基本的概念。
 
 如果你想快速实践, 你可以学习[创建一个Flink程序]({{ site.baseurl }}/dev/linking_with_flink.html).
-之后，你需要在你项目的`pom.xml`中加入FlinkML的依赖。
+之后，需要在你项目的`pom.xml`中加入FlinkML的依赖。
 
 {% highlight xml %}
 <dependency>
