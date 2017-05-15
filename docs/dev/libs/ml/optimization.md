@@ -288,68 +288,68 @@ val lossFunction = GenericLossFunction(SquaredLoss, LinearPrediction)
 
 - $\lambda$ 是正则化常量
 
-- $\tau$ 是衰退常量, 该常量会使得学习率变成一个递减函数 $j$，也就是说，随着迭代次数的增加，学习率会衰减。衰减的精准率是由函数特定的，请参阅 **Inverse Scaling** 和 **Wei Xu's Method** (该方法是 **Inverse Scaling** 方法的一个延伸)。 
+- $\tau$ 是衰退常量, 该常量会使得学习率变成一个递减函数 $j$，也就是说，随着迭代次数的增加，学习率会衰减。衰减的精准率是由函数特定的，请参阅 **反缩放 (Inverse Scaling) ** 和 **Wei Xu 方法 (Wei Xu's Method)** (该方法是 **反缩放** 方法的一个延伸)。 
 
 <table class="table table-bordered">
     <thead>
       <tr>
-        <th class="text-left" style="width: 20%">Function Name</th>
-        <th class="text-center">Description</th>
-        <th class="text-center">Function</th>
-        <th class="text-center">Called As</th>
+        <th class="text-left" style="width: 20%">函数名</th>
+        <th class="text-center">描述</th>
+        <th class="text-center">函数</th>
+        <th class="text-center">称呼为</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td><strong>Default</strong></td>
+        <td><strong>默认</strong></td>
         <td>
           <p>
-            The function default method used for determining the step size. This is equivalent to the inverse scaling method for $\tau$ = 0.5.  This special case is kept as the default to maintain backwards compatibility.
+            决定步长的默认方法。该方法相当于当 $\tau$ = 0.5 时的 inverse scaling 方法。默认保留该特殊情况来为保持向后兼容性.
           </p>
         </td>
         <td class="text-center">$\eta_j = \eta_0/\sqrt{j}$</td>
         <td class="text-center"><code>LearningRateMethod.Default</code></td>
       </tr>
       <tr>
-        <td><strong>Constant</strong></td>
+        <td><strong>常数</strong></td>
         <td>
           <p>
-            The step size is constant throughout the learning task.
+            步长在整个学习任务中保持不变.
           </p>
         </td>
         <td class="text-center">$\eta_j = \eta_0$</td>
         <td class="text-center"><code>LearningRateMethod.Constant</code></td>
       </tr>
       <tr>
-        <td><strong>Leon Bottou's Method</strong></td>
+        <td><strong>Leon Bottou 方法</strong></td>
         <td>
           <p>
-            This is the <code>'optimal'</code> method of sklearn.
-            The optimal initial value $t_0$ has to be provided.
-            Sklearn uses the following heuristic: $t_0 = \max(1.0, L^\prime(-\beta, 1.0) / (\alpha \cdot \beta)$
-            with $\beta = \sqrt{\frac{1}{\sqrt{\alpha}}}$ and $L^\prime(prediction, truth)$ being the derivative of the loss function.
+            这是 sklearn 中 <code>"最优的"</code> 方法.
+            这个最优初始值必须被提供。
+            Sklearn 使用下列启发法: $t_0 = \max(1.0, L^\prime(-\beta, 1.0) / (\alpha \cdot \beta)$.
+            其中 $\beta = \sqrt{\frac{1}{\sqrt{\alpha}}}$ 且 $L^\prime(prediction, truth)$ 是损失函数的导数.
           </p>
         </td>
         <td class="text-center">$\eta_j = 1 / (\lambda \cdot (t_0 + j -1)) $</td>
         <td class="text-center"><code>LearningRateMethod.Bottou</code></td>
       </tr>
       <tr>
-        <td><strong>Inverse Scaling</strong></td>
+        <td><strong>反缩放</strong></td>
         <td>
           <p>
-            A very common method for determining the step size.
+            一个决定步长的非常常用的方法.
           </p>
         </td>
         <td class="text-center">$\eta_j = \eta_0 / j^{\tau}$</td>
         <td class="text-center"><code>LearningRateMethod.InvScaling</code></td>
       </tr>
       <tr>
-        <td><strong>Wei Xu's Method</strong></td>
+        <td><strong>Wei Xu 方法</strong></td>
         <td>
           <p>
-            Method proposed by Wei Xu in <a href="http://arxiv.org/pdf/1107.2490.pdf">Towards Optimal One Pass Large Scale Learning with
-            Averaged Stochastic Gradient Descent</a>
-          </p>
+            由 Wei Xu 在 <a href="http://arxiv.org/pdf/1107.2490.pdf">Towards Optimal One Pass Large Scale Learning with
+            Averaged Stochastic Gradient Descent</a> 的方法
+          </p>
         </td>
         <td class="text-center">$\eta_j = \eta_0 \cdot (1+ \lambda \cdot \eta_0 \cdot j)^{-\tau} $</td>
         <td class="text-center"><code>LearningRateMethod.Xu</code></td>
