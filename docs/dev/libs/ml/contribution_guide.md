@@ -22,7 +22,7 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-Flink 社区非常感谢所有类型的对 FlinkML 类型的贡献。
+Flink 社区非常感谢对 FlinkML 的所有类型的贡献。
 FlnikML 为对机器学习有兴趣的人员提供高度且活跃的开源项目来进行工作，这能让可扩展的机器学习得以实现。
 以下文档描述了如何对 FlinkML 做贡献。
 
@@ -48,7 +48,7 @@ FlnikML 为对机器学习有兴趣的人员提供高度且活跃的开源项目
 我们会对单元测试 (unit test) 和集成测试 (integration test) 进行区分，单元测试在 Maven 的测试阶段会被执行，而集成测试会在 Maven 的验证阶段被执行。
 Maven 会使用下列命名规则对这二者进行区分：
 所有包含以正则表达式 `(IT|Integration)(Test|Suite|Case)` 结尾的类的测试样会被认为是集成测试。
-剩余的情况都被认为是单元测试，并只测试对所测试部分表现的行为
+剩余的情况都被认为是单元测试，并只测试对所测试组建所表现的行为
 
 集成测试是一个需要启动整个 Flink 系统的测试。
 为了能合适地进行集成测试，所有的集成测试样例必须是继承 `FlinkTestBase` 特质的类。
@@ -70,19 +70,18 @@ class ExampleITSuite extends FlatSpec with FlinkTestBase {
 
 ## 文档
 
-When contributing new algorithms, it is required to add code comments describing the way the algorithm works and its parameters with which the user can control its behavior.
-Additionally, we would like to encourage contributors to add this information to the online documentation.
-The online documentation for FlinkML's components can be found in the directory `docs/libs/ml`.
+当对新的算法有贡献时，添加一些代码注释来描述算法工作的方法和用户可以用来控制算法行为的参数是必要的。
+此外，我们鼓励贡献者添加这些信息到线上文档 (online documentation) 上，FlinkML 组件的线上文档可以在 `docs/libs/ml` 找到。
 
-Every new algorithm is described by a single markdown file.
-This file should contain at least the following points:
+每个新的算法需要用一个 markdown 文件进行描述。
+这个文件应该包括至少下列信息点：
 
-1. What does the algorithm do
-2. How does the algorithm work (or reference to description)
-3. Parameter description with default values
-4. Code snippet showing how the algorithm is used
+1. 这个算法是做什么的？
+2. 该算法是如何工作的 (或引用描述)
+3. 参数的描述及其默认值
+4. 展示如何使用该算法的代码段
 
-In order to use latex syntax in the markdown file, you have to include `mathjax: include` in the YAML front matter.
+为了在 markdown 文件中使用 latex 语法，您需要在 YAML front matter 中引入 `mathjax: include`。
 
 {% highlight java %}
 ---
@@ -92,10 +91,10 @@ title: <a href="../ml">FlinkML</a> - Example title
 ---
 {% endhighlight %}
 
-In order to use displayed mathematics, you have to put your latex code in `$$ ... $$`.
-For in-line mathematics, use `$ ... $`.
-Additionally some predefined latex commands are included into the scope of your markdown file.
-See `docs/_include/latex_commands.html` for the complete list of predefined latex commands.
+为了展示数学公式，您需要把您的 latex 代码放在 `$$ ... $$` 内。
+对于行内的数学公式，使用 `$ ... $`。
+此外，在您的 markdown 文件域内需要引入一些预定义的 latex 命令。
+预定义 latex 命令的完整列表，请参阅 `docs/_include/latex_commands.html`。
 
 ## 贡献
 
