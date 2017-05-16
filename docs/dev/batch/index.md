@@ -25,32 +25,23 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-DataSet programs in Flink are regular programs that implement transformations on data sets
-(e.g., filtering, mapping, joining, grouping). The data sets are initially created from certain
-sources (e.g., by reading files, or from local collections). Results are returned via sinks, which may for
-example write the data to (distributed) files, or to standard output (for example the command line
-terminal). Flink programs run in a variety of contexts, standalone, or embedded in other programs.
-The execution can happen in a local JVM, or on clusters of many machines.
+Dataset是Flink中实现数据转换（例如，过滤（filtering），映射（maping），结合（joining）和分组（grouping））的常规程序。
+初始数据集是从指定的源（例如文件和本地集合）中获取的。通过sink来返回结果，它可以是写入到（分布式）文件，也可能是标准输出（命令行终端）。
+Flink程序可运行在多种环境下，可以独立执行也可以嵌入到其他程序中。
+可以在本地JVM上执行也可以在集群上执行。
 
-Please see [basic concepts]({{ site.baseurl }}/dev/api_concepts.html) for an introduction
-to the basic concepts of the Flink API.
+请参看[basic concepts]({{ site.baseurl }}/dev/api_concepts.html)来了解Flink API的基本概念
 
-In order to create your own Flink DataSet program, we encourage you to start with the
-[anatomy of a Flink Program]({{ site.baseurl }}/dev/api_concepts.html#anatomy-of-a-flink-program)
-and gradually add your own
-[transformations](#dataset-transformations). The remaining sections act as references for additional
-operations and advanced features.
+为了便于开发自己的Flink Dataset程序，我们建议你从[Flink程序解析]({{ site.baseurl }}/dev/api_concepts.html#anatomy-of-a-flink-program)开始，之后逐渐加入你自己的[数据转换](#dataset-transformations). 其余的章节作为可选操作和高级特性的参考。
 
 * This will be replaced by the TOC
 {:toc}
 
-Example Program
+示例程序
 ---------------
 
-The following program is a complete, working example of WordCount. You can copy &amp; paste the code
-to run it locally. You only have to include the correct Flink's library into your project
-(see Section [Linking with Flink]({{ site.baseurl }}/dev/linking_with_flink.html)) and specify the imports. Then you are ready
-to go!
+以下是一个完整的WordCount的程序范例。你可以复制粘贴这段代码并在本地运行它。你只需要正确地把Flink的库加入到项目中
+(参看[链接Flink]({{ site.baseurl }}/dev/linking_with_flink.html)) 并在必要位置进行import，就可以直接运行。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -112,15 +103,12 @@ object WordCount {
 
 {% top %}
 
-DataSet Transformations
+数据转换
 -----------------------
 
-Data transformations transform one or more DataSets into a new DataSet. Programs can combine
-multiple transformations into sophisticated assemblies.
+数据转换试讲一个或多个数据集转化成一个新的数据集的操作。程序可以组合多种转换方法形成复杂的功能。
 
-This section gives a brief overview of the available transformations. The [transformations
-documentation](dataset_transformations.html) has a full description of all transformations with
-examples.
+本节将简要地介绍数据转换。另外[数据转换文档](dataset_transformations.html) 提供对所有数据转换方法的全面解析，并附有示例。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
