@@ -28,16 +28,9 @@ under the License.
 * Table of contents
 {:toc}
 
-## Mathematical Formulation
+## 数学公式
 
-The optimization framework in FlinkML is a developer-oriented package that can be used to solve
-[optimization](https://en.wikipedia.org/wiki/Mathematical_optimization)
-problems common in Machine Learning (ML) tasks. In the supervised learning context, this usually
-involves finding a model, as defined by a set of parameters $w$, that minimize a function $f(\wv)$
-given a set of $(\x, y)$ examples,
-where $\x$ is a feature vector and $y$ is a real number, which can represent either a real value in
-the regression case, or a class label in the classification case. In supervised learning, the
-function to be minimized is usually of the form:
+FlinkML 中的优化框架是一个面向开发人员的包，这个包可以解决机器学习任务中经常遇到的[优化](https://en.wikipedia.org/wiki/Mathematical_optimization)问题。在谈论监督式学习时，这涉及找到一个模型，用一组参数 $w$ 定义，该模型能够在给定一组 $(\x, y)$ 例子的情况下最小化 $f(\wv)$，这里$\x$是一个特征向量，而 $y$ 是一个表征一个回归模型的实数值或分类模型的类别标签的实数。在监督式学习中，需要被最小化的函数通常是以下形式：
 
 
 \begin{equation} \label{eq:objectiveFunc}
@@ -48,227 +41,205 @@ function to be minimized is usually of the form:
 \end{equation}
 
 
-where $L$ is the loss function and $R(\wv)$ the regularization penalty. We use $L$ to measure how
-well the model fits the observed data, and we use $R$ in order to impose a complexity cost to the
-model, with $\lambda > 0$ being the regularization parameter.
+这里 $L$ 是损失函数，而$R(\wv)$是正则化惩罚 (regularization penalty)。我们使用 $L$ 来衡量一个模型对观察数据的拟合有多好，并且我们使用 $R$ 来影响对一个模型的复杂度损失 (complexity cost)，其中 $\lambda > 0$ 是正则化惩罚。
 
-### Loss Functions
+### 损失函数
 
-In supervised learning, we use loss functions in order to measure the model fit, by
-penalizing errors in the predictions $p$ made by the model compared to the true $y$ for each
-example. Different loss functions can be used for regression (e.g. Squared Loss) and classification
-(e.g. Hinge Loss) tasks.
+在监督式学习中，我们用损失函数来衡量模型的拟合程度，损失函数通过对比模型做出的预测 $p$ 和每个实例的真值 $y$ 来惩罚错误。不同的损失函数可以被回归任务 (比如平方损失) 和分类任务 (比如转折点损失(hinge loss))。
 
-Some common loss functions are:
+常用的损失函数有：
 
-* Squared Loss: $ \frac{1}{2} \left(\wv^T \cdot \x - y\right)^2, \quad y \in \R $
-* Hinge Loss: $ \max \left(0, 1 - y ~ \wv^T \cdot \x\right), \quad y \in \{-1, +1\} $
-* Logistic Loss: $ \log\left(1+\exp\left( -y ~ \wv^T \cdot \x\right)\right), \quad y \in \{-1, +1\}$
+* 平方损失: $ \frac{1}{2} \left(\wv^T \cdot \x - y\right)^2, \quad y \in \R $
+* 转折点损失: $ \max \left(0, 1 - y ~ \wv^T \cdot \x\right), \quad y \in \{-1, +1\} $
+* 逻辑损失: $ \log\left(1+\exp\left( -y ~ \wv^T \cdot \x\right)\right), \quad y \in \{-1, +1\}$
 
-### Regularization Types
+### 正则化类型
 
-[Regularization](https://en.wikipedia.org/wiki/Regularization_(mathematics)) in machine learning
-imposes penalties to the estimated models, in order to reduce overfitting. The most common penalties
-are the $L_1$ and $L_2$ penalties, defined as:
+机器学习中的[正则化] (https://en.wikipedia.org/wiki/Regularization_(mathematics)) 会惩罚需要被评价的模型，为了减少过拟合，最常见的惩罚是 $L_1$ 和 $L_2$ 惩罚，定义如下：
 
 * $L_1$: $R(\wv) = \norm{\wv}_1$
 * $L_2$: $R(\wv) = \frac{1}{2}\norm{\wv}_2^2$
 
-The $L_2$ penalty penalizes large weights, favoring solutions with more small weights rather than
-few large ones.
-The $L_1$ penalty can be used to drive a number of the solution coefficients to 0, thereby
-producing sparse solutions.
-The regularization constant $\lambda$ in $\eqref{eq:objectiveFunc}$ determines the amount of regularization applied to the model,
-and is usually determined through model cross-validation.
-A good comparison of regularization types can be found in [this](http://www.robotics.stanford.edu/~ang/papers/icml04-l1l2.pdf) paper by Andrew Ng.
-Which regularization type is supported depends on the actually used optimization algorithm.
+$L_2$ 惩罚会惩罚大权重，比起含若干大权重的解决方法，它更倾向含更多小权重的解决方案。
+$L_1$ 惩罚能用来归零解决方案中的系数 (solution coefficients)，所以会产生稀疏的解决方案。
+$\eqref{eq:objectiveFunc}$ 中的正则化常数 $\lambda$ 决定了用在模型上的正则化数量，该常数经常通过交叉验证模型决定。
+关于比较好的正则化类型的对比，可以参阅[这](http://www.robotics.stanford.edu/~ang/papers/icml04-l1l2.pdf)篇由 Andrew Ng 发表的论文
+至于什么样的正则化类型会被支持，取决于实际使用的优化算法。
 
-## Stochastic Gradient Descent
+## 随机梯度下降 (Stochastic Gradient Descent)
 
-In order to find a (local) minimum of a function, Gradient Descent methods take steps in the
-direction opposite to the gradient of the function $\eqref{eq:objectiveFunc}$ taken with
-respect to the current parameters (weights).
-In order to compute the exact gradient we need to perform one pass through all the points in
-a dataset, making the process computationally expensive.
-An alternative is Stochastic Gradient Descent (SGD) where at each iteration we sample one point
-from the complete dataset and update the parameters for each point, in an online manner.
+为了找到一个 (局部) 最小值，梯度下降法会朝着与当前参数 (权重) 相关 $\eqref{eq:objectiveFunc}$ 函数的梯度相反的方向的下降。
+为了计算精确的梯度，我们需要对一个数据集里的所有点进行一次传递 (one pass)，让整个过程的计算量增大。
+另一个替代的方案是随机梯度下降，在随机梯度下降中我们每一轮迭代都从完整的数据集中采集一个点，并通过在线方式对每个点更新参数。
 
-In mini-batch SGD we instead sample random subsets of the dataset, and compute the gradient
-over each batch. At each iteration of the algorithm we update the weights once, based on
-the average of the gradients computed from each mini-batch.
+在小批次的随机梯度下降中，我们则从一个数据集中采样随机数据集，并在每一批次上计算梯度。在算法的每一轮迭代中我们根据从每一个批次中计算得到的梯度，对权重只更新一次。
 
-An important parameter is the learning rate $\eta$, or step size, which can be determined by one of five methods, listed below. The setting of the initial step size can significantly affect the performance of the
-algorithm. For some practical tips on tuning SGD see Leon Botou's
-"[Stochastic Gradient Descent Tricks](http://research.microsoft.com/pubs/192769/tricks-2012.pdf)".
+一个重要的参数是学习率 $\eta$，或者称为步长 (step size)，该参数可由以下列出的五个方法之一决定。
+初始步长的设定会对算法的表现有重要的影响。如果想要知道一些实际运用中的指导，清参与 Leon Botou 的 "[Stochastic Gradient Descent Tricks](http://research.microsoft.com/pubs/192769/tricks-2012.pdf)"。
 
-The current implementation of SGD  uses the whole partition, making it
-effectively a batch gradient descent. Once a sampling operator has been introduced in Flink, true
-mini-batch SGD will be performed.
+目前随机梯度下降的实现使用所有的分区，这样能让一批次的梯度下降变更加有效。只要一个采集操作被引入到 Flink 中，真实的小批次随机梯度下降算法就会被执行。
 
 
-### Parameters
+### 参数
 
-  The stochastic gradient descent implementation can be controlled by the following parameters:
+  随机梯度下降的实现可以由以下参数控制：
 
    <table class="table table-bordered">
     <thead>
       <tr>
-        <th class="text-left" style="width: 20%">Parameter</th>
-        <th class="text-center">Description</th>
+        <th class="text-left" style="width: 20%">参数</th>
+        <th class="text-center">描述</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td><strong>RegularizationPenalty</strong></td>
+        <td><strong>正则化惩罚</strong></td>
         <td>
           <p>
-            The regularization function to apply. (Default value: <strong>NoRegularization</strong>)
+            要应用的正则化方程. (默认值: <strong>NoRegularization</strong>)
           </p>
         </td>
       </tr>
       <tr>
-        <td><strong>RegularizationConstant</strong></td>
+        <td><strong>正则化常数</strong></td>
         <td>
           <p>
-            The amount of regularization to apply. (Default value: <strong>0.1</strong>)
+            使用的正则化量. (默认值: <strong>0.1</strong>)
           </p>
         </td>
       </tr>
       <tr>
-        <td><strong>LossFunction</strong></td>
+        <td><strong>损失函数</strong></td>
         <td>
           <p>
-            The loss function to be optimized. (Default value: <strong>None</strong>)
+            要被优化的损失函数. (默认值: <strong>None</strong>)
           </p>
         </td>
       </tr>
       <tr>
-        <td><strong>Iterations</strong></td>
+        <td><strong>迭代数</strong></td>
         <td>
           <p>
-            The maximum number of iterations. (Default value: <strong>10</strong>)
+            最大迭代次数. (默认值: <strong>10</strong>)
+          </p>
+        </td>
+      </tr>
+      <tr>
+        <td><strong>学习率</strong></td>
+        <td>
+          <p>
+            梯度下降法中的初始学习率.
+            这个值控制了梯度下降法要沿着梯度的反方向移多远.
+            (默认值: <strong>0.1</strong>)
           </p>
         </td>
       </tr>
       <tr>
-        <td><strong>LearningRate</strong></td>
+        <td><strong>聚合阀值</strong></td>
         <td>
           <p>
-            Initial learning rate for the gradient descent method.
-            This value controls how far the gradient descent method moves in the opposite direction
-            of the gradient.
-            (Default value: <strong>0.1</strong>)
+            当被设置时，如果目标函数 $\eqref{eq:objectiveFunc}$ 的值的相对变化量小于提供的阀值 $\tau$，则迭代停止
+            聚合的标准定义如下：$\left| \frac{f(\wv)_{i-1} - f(\wv)_i}{f(\wv)_{i-1}}\right| < \tau$.
+            (默认值: <strong>None</strong>)
           </p>
         </td>
       </tr>
       <tr>
-        <td><strong>ConvergenceThreshold</strong></td>
+        <td><strong>学习率方法</strong></td>
         <td>
           <p>
-            When set, iterations stop if the relative change in the value of the objective function $\eqref{eq:objectiveFunc}$ is less than the provided threshold, $\tau$.
-            The convergence criterion is defined as follows: $\left| \frac{f(\wv)_{i-1} - f(\wv)_i}{f(\wv)_{i-1}}\right| < \tau$.
-            (Default value: <strong>None</strong>)
+            (默认值: <strong>LearningRateMethod.Default</strong>)
           </p>
         </td>
       </tr>
       <tr>
-        <td><strong>LearningRateMethod</strong></td>
+        <td><strong>衰退值</strong></td>
         <td>
           <p>
-            (Default value: <strong>LearningRateMethod.Default</strong>)
-          </p>
-        </td>
-      </tr>
-      <tr>
-        <td><strong>Decay</strong></td>
-        <td>
-          <p>
-            (Default value: <strong>0.0</strong>)
+            (默认值: <strong>0.0</strong>)
           </p>
         </td>
       </tr>
     </tbody>
   </table>
 
-### Regularization
+### 正则化
 
-FlinkML supports Stochastic Gradient Descent with L1, L2 and no regularization. The regularization type has to implement the `RegularizationPenalty` interface,
-which calculates the new weights based on the gradient and regularization type.
-The following list contains the supported regularization functions.
+FlinkML 支持含 L1, L2 和无正则化的随机梯度下降。正则化类型必须实现 `RegularizationPenalty` 接口，该接口根据梯度和正则化类型计算新的权重。
+下表包含了支持的正则化函数。
 
 <table class="table table-bordered">
   <thead>
     <tr>
-      <th class="text-left" style="width: 20%">Class Name</th>
-      <th class="text-center">Regularization function $R(\wv)$</th>
+      <th class="text-left" style="width: 20%">类别名称</th>
+      <th class="text-center">正则化函数 $R(\wv)$</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-      <td><strong>NoRegularization</strong></td>
+      <td><strong>无正则化</strong></td>
       <td>$R(\wv) = 0$</td>
     </tr>
     <tr>
-      <td><strong>L1Regularization</strong></td>
+      <td><strong>L1正则化</strong></td>
       <td>$R(\wv) = \norm{\wv}_1$</td>
     </tr>
     <tr>
-      <td><strong>L2Regularization</strong></td>
+      <td><strong>L2正则化</strong></td>
       <td>$R(\wv) = \frac{1}{2}\norm{\wv}_2^2$</td>
     </tr>
   </tbody>
 </table>
 
-### Loss Function
+### 损失函数
 
-The loss function which is minimized has to implement the `LossFunction` interface, which defines methods to compute the loss and the gradient of it.
-Either one defines ones own `LossFunction` or one uses the `GenericLossFunction` class which constructs the loss function from an outer loss function and a prediction function.
-An example can be seen here
+需要被最小化的损失函数需要实现 `LossFunction` 接口，该接口定义了计算损失及其梯度的方法。
+任何一个定义了自己 `LossFunction` 或使用  `GenericLossFunction` 类会从一个偏损失函数和一个预测函数构造损失函数。
+以下是一个实例：
 
 ```Scala
 val lossFunction = GenericLossFunction(SquaredLoss, LinearPrediction)
 ```
+支持的偏损失函数请参阅[此处](#partial-loss-function-values).
+支持的预测函数请参阅[here](#prediction-function-values).
 
-The full list of supported outer loss functions can be found [here](#partial-loss-function-values).
-The full list of supported prediction functions can be found [here](#prediction-function-values).
-
-#### Partial Loss Function Values ##
+#### 偏随机函数 (Partial Loss Function) 值 ##
 
   <table class="table table-bordered">
     <thead>
       <tr>
-        <th class="text-left" style="width: 20%">Function Name</th>
-        <th class="text-center">Description</th>
-        <th class="text-center">Loss</th>
-        <th class="text-center">Loss Derivative</th>
+        <th class="text-left" style="width: 20%">函数名</th>
+        <th class="text-center">描述</th>
+        <th class="text-center">损失</th>
+        <th class="text-center">损失导数</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td><strong>SquaredLoss</strong></td>
+        <td><strong>平方损失</strong></td>
         <td>
           <p>
-            Loss function most commonly used for regression tasks.
+            回归任务中最常用的损失函数.
           </p>
         </td>
         <td class="text-center">$\frac{1}{2} (\wv^T \cdot \x - y)^2$</td>
         <td class="text-center">$\wv^T \cdot \x - y$</td>
       </tr>
       <tr>
-        <td><strong>LogisticLoss</strong></td>
+        <td><strong>逻辑损失</strong></td>
         <td>
           <p>
-            Loss function used for classification tasks.
+            分类任务中最常用的损失函数.
           </p>
         </td>
         <td class="text-center">$\log\left(1+\exp\left( -y ~ \wv^T \cdot \x\right)\right), \quad y \in \{-1, +1\}$</td>
         <td class="text-center">$\frac{-y}{1+\exp\left(y ~ \wv^T \cdot \x\right)}$</td>
       </tr>
       <tr>
-        <td><strong>HingeLoss</strong></td>
+        <td><strong>转折点损失</strong></td>
         <td>
           <p>
-            Loss function used for classification tasks.
+            可用于分类任务的损失函数.
           </p>
         </td>
         <td class="text-center">$\max \left(0, 1 - y ~ \wv^T \cdot \x\right), \quad y \in \{-1, +1\}$</td>
@@ -280,24 +251,23 @@ The full list of supported prediction functions can be found [here](#prediction-
     </tbody>
   </table>
 
-#### Prediction Function Values ##
+#### 预测函数值 ##
 
   <table class="table table-bordered">
       <thead>
         <tr>
-          <th class="text-left" style="width: 20%">Function Name</th>
-          <th class="text-center">Description</th>
-          <th class="text-center">Prediction</th>
-          <th class="text-center">Prediction Gradient</th>
+          <th class="text-left" style="width: 20%">函数名</th>
+          <th class="text-center">描述</th>
+          <th class="text-center">预测</th>
+          <th class="text-center">预测梯度</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td><strong>LinearPrediction</strong></td>
+          <td><strong>线性预测</strong></td>
           <td>
             <p>
-              The function most commonly used for linear models, such as linear regression and
-              linear classifiers.
+              线性模型比如线性回归和线性分类最常用的函数.
             </p>
           </td>
           <td class="text-center">$\x^T \cdot \wv$</td>
@@ -306,80 +276,79 @@ The full list of supported prediction functions can be found [here](#prediction-
       </tbody>
     </table>
 
-#### Effective Learning Rate ##
+#### 有效学习率 ##
 
-Where:
+这里:
 
-- $j$ is the iteration number
+- $j$ 是迭代数
 
-- $\eta_j$ is the step size on step $j$
+- $\eta_j$ 是每一步 $j$ 的步长
 
-- $\eta_0$ is the initial step size
+- $\eta_0$ 是初始学习率
 
-- $\lambda$ is the regularization constant
+- $\lambda$ 是正则化常量
 
-- $\tau$ is the decay constant, which causes the learning rate to be a decreasing function of $j$, that is to say as iterations increase, learning rate decreases. The exact rate of decay is function specific, see **Inverse Scaling** and **Wei Xu's Method** (which is an extension of the **Inverse Scaling** method).
+- $\tau$ 是衰退常量, 该常量会使得学习率变成一个递减函数 $j$，也就是说，随着迭代次数的增加，学习率会衰减。衰减的精准率是由函数特定的，请参阅 **反缩放 (Inverse Scaling) ** 和 **Wei Xu 方法 (Wei Xu's Method)** (该方法是 **反缩放** 方法的一个延伸)。 
 
 <table class="table table-bordered">
     <thead>
       <tr>
-        <th class="text-left" style="width: 20%">Function Name</th>
-        <th class="text-center">Description</th>
-        <th class="text-center">Function</th>
-        <th class="text-center">Called As</th>
+        <th class="text-left" style="width: 20%">函数名</th>
+        <th class="text-center">描述</th>
+        <th class="text-center">函数</th>
+        <th class="text-center">称呼为</th>
       </tr>
     </thead>
     <tbody>
       <tr>
-        <td><strong>Default</strong></td>
+        <td><strong>默认</strong></td>
         <td>
           <p>
-            The function default method used for determining the step size. This is equivalent to the inverse scaling method for $\tau$ = 0.5.  This special case is kept as the default to maintain backwards compatibility.
+            决定步长的默认方法。该方法相当于当 $\tau$ = 0.5 时的 inverse scaling 方法。默认保留该特殊情况来为保持向后兼容性.
           </p>
         </td>
         <td class="text-center">$\eta_j = \eta_0/\sqrt{j}$</td>
         <td class="text-center"><code>LearningRateMethod.Default</code></td>
       </tr>
       <tr>
-        <td><strong>Constant</strong></td>
+        <td><strong>常数</strong></td>
         <td>
           <p>
-            The step size is constant throughout the learning task.
+            步长在整个学习任务中保持不变.
           </p>
         </td>
         <td class="text-center">$\eta_j = \eta_0$</td>
         <td class="text-center"><code>LearningRateMethod.Constant</code></td>
       </tr>
       <tr>
-        <td><strong>Leon Bottou's Method</strong></td>
+        <td><strong>Leon Bottou 方法</strong></td>
         <td>
           <p>
-            This is the <code>'optimal'</code> method of sklearn.
-            The optimal initial value $t_0$ has to be provided.
-            Sklearn uses the following heuristic: $t_0 = \max(1.0, L^\prime(-\beta, 1.0) / (\alpha \cdot \beta)$
-            with $\beta = \sqrt{\frac{1}{\sqrt{\alpha}}}$ and $L^\prime(prediction, truth)$ being the derivative of the loss function.
+            这是 sklearn 中 <code>"最优的"</code> 方法.
+            这个最优初始值必须被提供。
+            Sklearn 使用下列启发法: $t_0 = \max(1.0, L^\prime(-\beta, 1.0) / (\alpha \cdot \beta)$.
+            其中 $\beta = \sqrt{\frac{1}{\sqrt{\alpha}}}$ 且 $L^\prime(prediction, truth)$ 是损失函数的导数.
           </p>
         </td>
         <td class="text-center">$\eta_j = 1 / (\lambda \cdot (t_0 + j -1)) $</td>
         <td class="text-center"><code>LearningRateMethod.Bottou</code></td>
       </tr>
       <tr>
-        <td><strong>Inverse Scaling</strong></td>
+        <td><strong>反缩放</strong></td>
         <td>
           <p>
-            A very common method for determining the step size.
+            一个决定步长的非常常用的方法.
           </p>
         </td>
         <td class="text-center">$\eta_j = \eta_0 / j^{\tau}$</td>
         <td class="text-center"><code>LearningRateMethod.InvScaling</code></td>
       </tr>
       <tr>
-        <td><strong>Wei Xu's Method</strong></td>
+        <td><strong>Wei Xu 方法</strong></td>
         <td>
           <p>
-            Method proposed by Wei Xu in <a href="http://arxiv.org/pdf/1107.2490.pdf">Towards Optimal One Pass Large Scale Learning with
-            Averaged Stochastic Gradient Descent</a>
-          </p>
+            由 Wei Xu 在 <a href="http://arxiv.org/pdf/1107.2490.pdf">Towards Optimal One Pass Large Scale Learning with Averaged Stochastic Gradient Descent</a> 的方法
+          </p>
         </td>
         <td class="text-center">$\eta_j = \eta_0 \cdot (1+ \lambda \cdot \eta_0 \cdot j)^{-\tau} $</td>
         <td class="text-center"><code>LearningRateMethod.Xu</code></td>
@@ -387,21 +356,17 @@ Where:
     </tbody>
   </table>
 
-### Examples
+### 例子
 
-In the Flink implementation of SGD, given a set of examples in a `DataSet[LabeledVector]` and
-optionally some initial weights, we can use `GradientDescent.optimize()` in order to optimize
-the weights for the given data.
+在随机梯度下降的 Flink 实现中，假如在一个 `DataSet[LabeledVector]` 给定一组实例，并选择性地给定一些初始初始权重，我们可以使用 `GradientDescent.optimize()` 来找到给定数据的最优权重。
 
-The user can provide an initial `DataSet[WeightVector]`,
-which contains one `WeightVector` element, or use the default weights which are all set to 0.
-A `WeightVector` is a container class for the weights, which separates the intercept from the
-weight vector. This allows us to avoid applying regularization to the intercept.
+用户能提供一个包含 `WeightVector` 元素的初始的 `DataSet[WeightVector]`，或者使用所有集合均为0的默认权重。
+一个 `WeightVector` 就是一个含权重的容器类 (container class)，这个类把截距从权重向量中分离出来。这允许我们避免把正则化运用到截距上。
 
 
 
 {% highlight scala %}
-// Create stochastic gradient descent solver
+// 创建一个随机梯度下降实例
 val sgd = GradientDescent()
   .setLossFunction(SquaredLoss())
   .setRegularizationPenalty(L1Regularization)
@@ -411,9 +376,9 @@ val sgd = GradientDescent()
   .setLearningRateMethod(LearningRateMethod.Xu(-0.75))
 
 
-// Obtain data
+// 获取数据
 val trainingDS: DataSet[LabeledVector] = ...
 
-// Optimize the weights, according to the provided data
+// 根据所提供的数据优化权重
 val weightDS = sgd.optimize(trainingDS)
 {% endhighlight %}
