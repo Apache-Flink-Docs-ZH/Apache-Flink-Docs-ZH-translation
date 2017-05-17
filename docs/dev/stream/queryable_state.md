@@ -41,7 +41,7 @@ under the License.
 ## 使用可查询状态
   为了使用可查询状态，通过设置配置参数 `query.server.enable` 为 `true`(当前的默认值)，是全局
 激活可查询状态服务的第一步。然后某些的状态需要可查询可以通过
-* `QueryableStateStream`, 可对流入的值进行状态查询，或
+* `QueryableStateStream`, 是一个方便的对象，其行为像一个接收器，可对流入的值进行状态查询，或
 * `StateDescriptor#setQueryable(String queryableStateName)`，使某个算子的键值状态可查询。
 
 下面的段落解释这两种方法的使用。
@@ -171,9 +171,9 @@ public class CountWindowAverage extends RichFlatMapFunction<Tuple2<Long, Long>, 
     public void open(Configuration config) {
         ValueStateDescriptor<Tuple2<Long, Long>> descriptor =
                 new ValueStateDescriptor<>(
-                        "average", // the state name
-                        TypeInformation.of(new TypeHint<Tuple2<Long, Long>>() {}), // type information
-                        Tuple2.of(0L, 0L)); // default value of the state, if nothing was set
+                        "average", // 状态名字
+                        TypeInformation.of(new TypeHint<Tuple2<Long, Long>>() {}), // 类型信息
+                        Tuple2.of(0L, 0L)); // 如果没有，将此值设为默认值。
         descriptor.setQueryable("query-name");
         sum = getRuntimeContext().getState(descriptor);
     }
@@ -202,7 +202,7 @@ final byte[] serializedKey =
 Future<byte[]> serializedResult =
         client.getKvState(jobId, "query-name", key.hashCode(), serializedKey);
 
-// now wait for the result and return it
+//现在等待结果并返回它
 final FiniteDuration duration = new FiniteDuration(1, TimeUnit.SECONDS);
 byte[] serializedValue = Await.result(serializedResult, duration);
 Tuple2<Long, Long> value =
