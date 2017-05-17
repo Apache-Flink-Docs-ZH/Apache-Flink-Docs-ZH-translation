@@ -103,7 +103,7 @@ You can create a `Graph` in the following ways:
 你可以通过如下方法创建一个`Graph`：  
 
 * from a `DataSet` of edges and an optional `DataSet` of vertices:  
-* 根据一个由边组成的`DataSet`和可选的一个由顶点组成的`DataSet`：  
+* 根据一个由边组成的`DataSet`，可选参数是一个由顶点组成的`DataSet`：  
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -156,7 +156,7 @@ val graph = Graph.fromTuple2DataSet(edges, env)
 </div>
 
 * from a `DataSet` of `Tuple3` and an optional `DataSet` of `Tuple2`. In this case, Gelly will convert each `Tuple3` to an `Edge`, where the first field will be the source ID, the second field will be the target ID and the third field will be the edge value. Equivalently, each `Tuple2` will be converted to a `Vertex`, where the first field will be the vertex ID and the second field will be the vertex value:
-* 根据一个由`Tuple3`组成的`DataSet`，以及可选的一个由`Tuple2`组成的`DataSet`。这种情况下，Gelly 将把每个`Tuple3`转换成`Edge`，其中第一个field 将成为源ID，第二个field 将成为目的ID，第三个field 将成为边的value。同样地，每个`Tuple2`将被转换为一个`Vertex`，其中第一个field 将成为端点的ID，第二个field 将成为端点的value。  
+* 根据一个由`Tuple3`组成的`DataSet`，可选参数是一个由`Tuple2`组成的`DataSet`。这种情况下，Gelly 将把每个`Tuple3`转换成`Edge`，其中第一个field 将成为源ID，第二个field 将成为目的ID，第三个field 将成为边的value。同样地，每个`Tuple2`将被转换为一个`Vertex`，其中第一个field 将成为端点的ID，第二个field 将成为端点的value。  
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -171,7 +171,7 @@ Graph<String, Long, Double> graph = Graph.fromTupleDataSet(vertexTuples, edgeTup
 {% endhighlight %}
 
 * from a CSV file of Edge data and an optional CSV file of Vertex data. In this case, Gelly will convert each row from the Edge CSV file to an `Edge`, where the first field will be the source ID, the second field will be the target ID and the third field (if present) will be the edge value. Equivalently, each row from the optional Vertex CSV file will be converted to a `Vertex`, where the first field will be the vertex ID and the second field (if present) will be the vertex value. In order to get a `Graph` from a `GraphCsvReader` one has to specify the types, using one of the following methods:
-* 根据一个包含边数据的CSV文件，以及可选的一个包含端点数据的CSV文件。这种情况下，Gelly 将把边CSV文件的每一行转换成一个`Edge`，其中第一个field 将成为源ID， 第二个field 将成为目的ID， 第三个field (如果存在的话)将成为边的value。同样地，可选端点CSV文件的每一行将被转换成一个`Vertex`，其中第一个field 将成为端点的ID，第二个field（如果存在的话）将成为端点的value。想从`GraphCsvReader`得到`Graph`，必须用下面的某种方法指定类型：  
+* 根据一个包含边数据的CSV文件，可选参数是一个包含端点数据的CSV文件。这种情况下，Gelly 将把边CSV文件的每一行转换成一个`Edge`，其中第一个field 将成为源ID， 第二个field 将成为目的ID， 第三个field (如果存在的话)将成为边的value。同样地，可选端点CSV文件的每一行将被转换成一个`Vertex`，其中第一个field 将成为端点的ID，第二个field（如果存在的话）将成为端点的value。想从`GraphCsvReader`得到`Graph`，必须用下面的某种方法指定类型：  
 
 - `types(Class<K> vertexKey, Class<VV> vertexValue,Class<EV> edgeValue)`: both vertex and edge values are present.
 - `edgeTypes(Class<K> vertexKey, Class<EV> edgeValue)`: the Graph has edge values, but no vertex values.
@@ -208,7 +208,7 @@ val graph = Graph.fromTupleDataSet(vertexTuples, edgeTuples, env)
 In this case, Gelly will convert each row from the Edge CSV file to an `Edge`.
 The first field of the each row will be the source ID, the second field will be the target ID and the third field (if present) will be the edge value.
 If the edges have no associated value, set the edge value type parameter (3rd type argument) to `NullValue`.You can also specify that the vertices are initialized with a vertex value.
-* 根据一个包含边数据的csv文件，以及可选的一个包含端点数据的csv文件。这种情况下，Gelly 将把边CSV文件的每一行转换成一个`Edge`，其中第一个field 将成为源ID， 第二个field 将成为目的ID， 第三个field (如果存在的话)将成为边的value。如果这条边没有关联的value， 将边的类型参数(第三个类型参数)设为`NullValue`。你也可以指定用某个值初始化端点。  
+* 根据一个包含边数据的csv文件，可选参数是一个包含端点数据的csv文件。这种情况下，Gelly 将把边CSV文件的每一行转换成一个`Edge`，其中第一个field 将成为源ID， 第二个field 将成为目的ID， 第三个field (如果存在的话)将成为边的value。如果这条边没有关联的value， 将边的类型参数(第三个类型参数)设为`NullValue`。你也可以指定用某个值初始化端点。  
 If you provide a path to a CSV file via `pathVertices`, each row of this file will be converted to a `Vertex`.
 The first field of each row will be the vertex ID and the second field will be the vertex value.  
 如果通过`pathVertices`提供了CSV 文件的路径，那么文件的每行都会被转换成一个`Vertex`。每行的第一个field 将成为端点的ID， 第二个field 将成为端点的value。  
@@ -249,7 +249,7 @@ val simpleGraph = Graph.fromCsvReader[Long, Double, NullValue](
 
 
 * from a `Collection` of edges and an optional `Collection` of vertices:
-
+* 根据一个由边组成的`Collection`，可选参数是一个由端点组成的`Collection`:  
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
 {% highlight java %}
@@ -263,11 +263,12 @@ Graph<Long, Long, String> graph = Graph.fromCollection(vertexList, edgeList, env
 {% endhighlight %}
 
 If no vertex input is provided during Graph creation, Gelly will automatically produce the `Vertex` `DataSet` from the edge input. In this case, the created vertices will have no values. Alternatively, you can provide a `MapFunction` as an argument to the creation method, in order to initialize the `Vertex` values:
-
+如果创建图时没有提供端点数据，Gelly 会根据边的输入自动生成一个`Vertex`的`DataSet`。这种情况下，生成的端点是没有值的。另外，将`MapFunction` 作为构建函数的一个参数传进去，也可以初始化`Vertex`的:  
 {% highlight java %}
 ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
 // initialize the vertex value to be equal to the vertex ID
+// 初始化时，将端点的值设为端点的ID
 Graph<Long, Long, String> graph = Graph.fromCollection(edgeList,
 				new MapFunction<Long, Long>() {
 					public Long map(Long value) {
@@ -289,11 +290,12 @@ val graph = Graph.fromCollection(vertexList, edgeList, env)
 {% endhighlight %}
 
 If no vertex input is provided during Graph creation, Gelly will automatically produce the `Vertex` `DataSet` from the edge input. In this case, the created vertices will have no values. Alternatively, you can provide a `MapFunction` as an argument to the creation method, in order to initialize the `Vertex` values:
-
+如果创建图时没有提供端点的数据，Gelly 会根据边的输入自动生成一个`Vertex`的`DataSet`。这种情况下，生成的端点是没有值的。另外，将`MapFunction` 作为构建函数的一个参数传进去，也可初始化`Vertex`的值:  
 {% highlight java %}
 val env = ExecutionEnvironment.getExecutionEnvironment
 
 // initialize the vertex value to be equal to the vertex ID
+// 初始化时，将端点的值设为端点的ID
 val graph = Graph.fromCollection(edgeList,
     new MapFunction[Long, Long] {
        def map(id: Long): Long = id
@@ -304,42 +306,53 @@ val graph = Graph.fromCollection(edgeList,
 
 {% top %}
 
-Graph Properties
+Graph Properties 图的属性
 ------------
 
 Gelly includes the following methods for retrieving various Graph properties and metrics:
+Gelly 提供了一些方法获取图的各种属性:  
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
 {% highlight java %}
 // get the Vertex DataSet
+// 获取由端点构成的DataSet
 DataSet<Vertex<K, VV>> getVertices()
 
 // get the Edge DataSet
+// 获取边的DataSet
 DataSet<Edge<K, EV>> getEdges()
 
 // get the IDs of the vertices as a DataSet
+// 获取由端点的ID构成的DataSet
 DataSet<K> getVertexIds()
 
 // get the source-target pairs of the edge IDs as a DataSet
+// 获取由边ID构成的source-target pair组成的DataSet
 DataSet<Tuple2<K, K>> getEdgeIds()
 
 // get a DataSet of <vertex ID, in-degree> pairs for all vertices
+// 获取端点的<端点ID， 入度> pair 组成的DataSet
 DataSet<Tuple2<K, LongValue>> inDegrees()
 
 // get a DataSet of <vertex ID, out-degree> pairs for all vertices
+// 获取端点的<端点ID， 出度> pair 组成的DataSet
 DataSet<Tuple2<K, LongValue>> outDegrees()
 
 // get a DataSet of <vertex ID, degree> pairs for all vertices, where degree is the sum of in- and out- degrees
+// 获取端点的<端点ID， 度> pair 组成的DataSet，这里的度 = 入度 + 出度
 DataSet<Tuple2<K, LongValue>> getDegrees()
 
 // get the number of vertices
+// 获取端点的数量
 long numberOfVertices()
 
 // get the number of edges
+// 获取边的数量
 long numberOfEdges()
 
-// get a DataSet of Triplets<srcVertex, trgVertex, edge>
+// get a DataSet of Triplets<srcVertex, trgVertex, edge>   
+// 获取由三元组<srcVertex, trgVertex, edge> 构成的DataSet  
 DataSet<Triplet<K, VV, EV>> getTriplets()
 
 {% endhighlight %}
@@ -348,33 +361,43 @@ DataSet<Triplet<K, VV, EV>> getTriplets()
 <div data-lang="scala" markdown="1">
 {% highlight scala %}
 // get the Vertex DataSet
+// 获取由端点构成的DataSet
 getVertices: DataSet[Vertex[K, VV]]
 
 // get the Edge DataSet
+// 获取边的DataSet
 getEdges: DataSet[Edge[K, EV]]
 
 // get the IDs of the vertices as a DataSet
+// 获取由端点的ID构成的DataSet
 getVertexIds: DataSet[K]
 
 // get the source-target pairs of the edge IDs as a DataSet
+// 获取由边ID构成的source-target pair组成的DataSet
 getEdgeIds: DataSet[(K, K)]
 
 // get a DataSet of <vertex ID, in-degree> pairs for all vertices
+// 获取端点的<端点ID， 入度> pair 组成的DataSet  
 inDegrees: DataSet[(K, LongValue)]
 
 // get a DataSet of <vertex ID, out-degree> pairs for all vertices
+// 获取端点的<端点ID， 出度> pair 组成的DataSet
 outDegrees: DataSet[(K, LongValue)]
 
 // get a DataSet of <vertex ID, degree> pairs for all vertices, where degree is the sum of in- and out- degrees
+// 获取端点的<端点ID， 度> pair 组成的DataSet，这里的度 = 入度 + 出度
 getDegrees: DataSet[(K, LongValue)]
 
 // get the number of vertices
+// 获取端点的数量 
 numberOfVertices: Long
 
 // get the number of edges
+// 获取边的数量 
 numberOfEdges: Long
 
 // get a DataSet of Triplets<srcVertex, trgVertex, edge>
+// 获取由三元组<srcVertex, trgVertex, edge> 构成的DataSet
 getTriplets: DataSet[Triplet[K, VV, EV]]
 
 {% endhighlight %}
@@ -383,10 +406,11 @@ getTriplets: DataSet[Triplet[K, VV, EV]]
 
 {% top %}
 
-Graph Transformations
+Graph Transformations 图的变换
 -----------------
 
-* <strong>Map</strong>: Gelly provides specialized methods for applying a map transformation on the vertex values or edge values. `mapVertices` and `mapEdges` return a new `Graph`, where the IDs of the vertices (or edges) remain unchanged, while the values are transformed according to the provided user-defined map function. The map functions also allow changing the type of the vertex or edge values.
+* <strong>Map</strong>: Gelly provides specialized methods for applying a map transformation on the vertex values or edge values. `mapVertices` and `mapEdges` return a new `Graph`, where the IDs of the vertices (or edges) remain unchanged, while the values are transformed according to the provided user-defined map function. The map functions also allow changing the type of the vertex or edge values.  
+* <strong>Map</strong>: Gelly 专门提供了一些方法，用来对端点的值和边的值进行map 变换。`mapVertices`和`mapEdges`返回一个新的`Graph`，它的端点(或者边)的ID保持不变，但是值变成了用户自定义的map 函数所提供的对应值。map 函数也允许改变端点或者边的值的类型。  
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -395,6 +419,7 @@ ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 Graph<Long, Long, Long> graph = Graph.fromDataSet(vertices, edges, env);
 
 // increment each vertex value by one
+// 把每个端点的值加1
 Graph<Long, Long, Long> updatedGraph = graph.mapVertices(
 				new MapFunction<Vertex<Long, Long>, Long>() {
 					public Long map(Vertex<Long, Long> value) {
@@ -415,7 +440,8 @@ val updatedGraph = graph.mapVertices(v => v.getValue + 1)
 </div>
 </div>
 
-* <strong>Translate</strong>: Gelly provides specialized methods for translating the value and/or type of vertex and edge IDs (`translateGraphIDs`), vertex values (`translateVertexValues`), or edge values (`translateEdgeValues`). Translation is performed by the user-defined map function, several of which are provided in the `org.apache.flink.graph.asm.translate` package. The same `MapFunction` can be used for all the three translate methods.
+* <strong>Translate</strong>: Gelly provides specialized methods for translating the value and/or type of vertex and edge IDs (`translateGraphIDs`), vertex values (`translateVertexValues`), or edge values (`translateEdgeValues`). Translation is performed by the user-defined map function, several of which are provided in the `org.apache.flink.graph.asm.translate` package. The same `MapFunction` can be used for all the three translate methods.  
+* <strong>Translate</strong>: Gelly 提供专门的方法用来translate 端点和边的ID的类型和值(`translateGraphIDs`)，端点的值(`translateVertexValues`)，或者边的值(`translateEdgeValues`)。Translation 的过程是由用户定义的map 函数完成的，`org.apache.flink.graph.asm.translate` 这个包也提供了一些map 函数。同一个`MapFunction`，在上述三种方法里是通用的。  
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -424,6 +450,7 @@ ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 Graph<Long, Long, Long> graph = Graph.fromDataSet(vertices, edges, env);
 
 // translate each vertex and edge ID to a String
+// 将每个端点和边的ID translate 成String 类型  
 Graph<String, Long, Long> updatedGraph = graph.translateGraphIds(
 				new MapFunction<Long, String>() {
 					public String map(Long id) {
@@ -432,6 +459,7 @@ Graph<String, Long, Long> updatedGraph = graph.translateGraphIds(
 				});
 
 // translate vertex IDs, edge IDs, vertex values, and edge values to LongValue
+// 将端点ID，边ID，端点值，边的值 translage 成LongValue 类型  
 Graph<LongValue, LongValue, LongValue> updatedGraph = graph
                 .translateGraphIds(new LongToLongValue())
                 .translateVertexValues(new LongToLongValue())
@@ -445,13 +473,15 @@ val env = ExecutionEnvironment.getExecutionEnvironment
 val graph = Graph.fromDataSet(vertices, edges, env)
 
 // translate each vertex and edge ID to a String
+// 将每个端点和边的ID translate 成String 类型  
 val updatedGraph = graph.translateGraphIds(id => id.toString)
 {% endhighlight %}
 </div>
 </div>
 
 
-* <strong>Filter</strong>: A filter transformation applies a user-defined filter function on the vertices or edges of the `Graph`. `filterOnEdges` will create a sub-graph of the original graph, keeping only the edges that satisfy the provided predicate. Note that the vertex dataset will not be modified. Respectively, `filterOnVertices` applies a filter on the vertices of the graph. Edges whose source and/or target do not satisfy the vertex predicate are removed from the resulting edge dataset. The `subgraph` method can be used to apply a filter function to the vertices and the edges at the same time.
+* <strong>Filter</strong>: A filter transformation applies a user-defined filter function on the vertices or edges of the `Graph`. `filterOnEdges` will create a sub-graph of the original graph, keeping only the edges that satisfy the provided predicate. Note that the vertex dataset will not be modified. Respectively, `filterOnVertices` applies a filter on the vertices of the graph. Edges whose source and/or target do not satisfy the vertex predicate are removed from the resulting edge dataset. The `subgraph` method can be used to apply a filter function to the vertices and the edges at the same time.  
+* <strong>Filter</strong>: Filter 变换将用户自定义的filter 函数作用于`Graph`中的顶点/边。`filterOnEdges` 生成原始图的一个sub-graph，只留下那些满足预设条件的边。注意，端点的dataset 将不会变动。对应地，`filterOnVertices` 在图的端点上应用filter。那些源/目的端点不满足vertex条件的边，将从最终的边组成的 dataset中删除。可以使用`subgraph` 方法，同时在端点和边上应用filter 函数。  
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -489,9 +519,12 @@ graph.subgraph((vertex => vertex.getValue > 0), (edge => edge.getValue < 0))
     <img alt="Filter Transformations" width="80%" src="{{ site.baseurl }}/fig/gelly-filter.png"/>
 </p>
 
-* <strong>Join</strong>: Gelly provides specialized methods for joining the vertex and edge datasets with other input datasets. `joinWithVertices` joins the vertices with a `Tuple2` input data set. The join is performed using the vertex ID and the first field of the `Tuple2` input as the join keys. The method returns a new `Graph` where the vertex values have been updated according to a provided user-defined transformation function.
+* <strong>Join</strong>: Gelly provides specialized methods for joining the vertex and edge datasets with other input datasets. `joinWithVertices` joins the vertices with a `Tuple2` input data set. The join is performed using the vertex ID and the first field of the `Tuple2` input as the join keys. The method returns a new `Graph` where the vertex values have been updated according to a provided user-defined transformation function.   
+* <strong>Join</strong>: Gelly 提供一些专门的方法，对vertex 和edge 的dataset 与其它输入的dataset 做join 操作。`joinWithVertices` 将端点与输入的一个`Tuple2`组成的dataset 做join。Join 操作使用的key 是端点的ID和`Tuple2` 的第一个field。这个方法返回一个新的`Graph`，其中端点的值已经根据用户定义的转换函数更新过了。  
 Similarly, an input dataset can be joined with the edges, using one of three methods. `joinWithEdges` expects an input `DataSet` of `Tuple3` and joins on the composite key of both source and target vertex IDs. `joinWithEdgesOnSource` expects a `DataSet` of `Tuple2` and joins on the source key of the edges and the first attribute of the input dataset and `joinWithEdgesOnTarget` expects a `DataSet` of `Tuple2` and joins on the target key of the edges and the first attribute of the input dataset. All three methods apply a transformation function on the edge and the input data set values.
-Note that if the input dataset contains a key multiple times, all Gelly join methods will only consider the first value encountered.
+Note that if the input dataset contains a key multiple times, all Gelly join methods will only consider the first value encountered.  
+类似地，使用下面三种方法，输入的dataset 也可以和边做join。`joinWithEdges` 的期望输入是`Tuple3` 组成的 `DataSet`，join 操作发生在源端点和目的端点的ID 形成的组合key 上。`joinWithEdgesOnSource` 的期望输入是`Tuple2` 组成的`DataSet`，join 操作发生在边的源端点和输入的第一个field上。`joinWithEdgesOnTarget` 的期望输入是`Tuple2` 组成的`DataSet`，join 操作发生在边的目的端点和输入的第一个field上。以上的三种方法，都是在边和输入的dataset上应用变换函数。  
+注意，输入的dataset 如果包含重复的key，Gelly 中所有的join 方法都只会处理它遇到的第一个 value。  
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -522,9 +555,11 @@ val networkWithWeights = network.joinWithEdgesOnSource(vertexOutDegrees, (v1: Do
 </div>
 </div>
 
-* <strong>Reverse</strong>: the `reverse()` method returns a new `Graph` where the direction of all edges has been reversed.
+* <strong>Reverse</strong>: the `reverse()` method returns a new `Graph` where the direction of all edges has been reversed.  
+* <strong>Reverse</strong>: `reverse()` 返回一个所有边的方向都反转了的新`Graph`。  
 
-* <strong>Undirected</strong>: In Gelly, a `Graph` is always directed. Undirected graphs can be represented by adding all opposite-direction edges to a graph. For this purpose, Gelly provides the `getUndirected()` method.
+* <strong>Undirected</strong>: In Gelly, a `Graph` is always directed. Undirected graphs can be represented by adding all opposite-direction edges to a graph. For this purpose, Gelly provides the `getUndirected()` method.  
+* <strong>Undirected</strong>: Gelly中，所有的`Graph` 永远是有向的。给图中所有边都加上方向相反的边，这样就可以表示无向图。由此，Gelly提供了`getUndirected()`方法。  
 
 * <strong>Union</strong>: Gelly's `union()` method performs a union operation on the vertex and edge sets of the specified graph and the current graph. Duplicate vertices are removed from the resulting `Graph`, while if duplicate edges exist, these will be preserved.
 
