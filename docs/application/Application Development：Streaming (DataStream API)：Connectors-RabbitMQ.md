@@ -40,16 +40,21 @@ under the License.
 
 该连接器访问流数据来源[RabbitMQ](http://www.rabbitmq.com/)。为使用连接器，请添加如下依赖在你的项目中，
 
+```
 <dependency>
   <groupId>org.apache.flink</groupId>
   <artifactId>flink-connector-rabbitmq_2.10</artifactId>
   <version>1.2.0</version>
 </dependency>
+```
 
 译者注：上述方法是由maven构建项目时使用，当使用sbt构建项目时，需要在build.sbt中的正确子项目中添加如下：
+
+```
 ("org.apache.flink" %% "flink-connector-rabbitmq" % flinkVersion).
               exclude("org.apache.flink","flink-shaded-hadoop1_2.10"),
 如果使用scala2.10，则不需要exclude.
+```
 
 注意的是，流连接器当前都不是二元分布。更多集群执行请看[这里](linking.html)。
 
@@ -65,15 +70,15 @@ under the License.
 
 连接器提供一个类RMQSource，以消费源自于rabbitmq队列里的消息。消费RabbitMQ数据源可有三个不同层级保证，取决于flink的配置如何。
 
-  1， **仅有一次**，为实现保证仅有一次消费rabbitmq数据源，如下是需要的--
+ 1， **仅有一次**，为实现保证仅有一次消费rabbitmq数据源，如下是需要的--
 
    - 可检查点：检查点生效后，在检查点完成后，消息是互相确认的（因此，会把消息从rabbitmq中删除）。
 
    - 使用相关编号：相关编号是rabbitmq应用的特征，当提交一个消息进rabbitmq时，必须得在消息配置中设置一个相关编号。在检查点恢复是，源利用相关编号去重已经被处理过的数据，
          
    - 非并行的源：实现仅有一次，源必须非并行（并行度为1）。这个限制是因为rabbitmq是从一个单一队列存在多个消费者的调度消息方式。
-  2， **至少一次**：当检查点生效，但是没有使用相关编号或者源是并行的，源仅仅提供至少消费一次的保证。
-  3， **没有保证**：如果检查点未生效，源没有任何强分发的保证。这种设置下，替代flink的检查点，一旦接收和处理消息后，消息将自动确认。
+ 2， **至少一次**：当检查点生效，但是没有使用相关编号或者源是并行的，源仅仅提供至少消费一次的保证。
+ 3， **没有保证**：如果检查点未生效，源没有任何强分发的保证。这种设置下，替代flink的检查点，一旦接收和处理消息后，消息将自动确认。
 
     如下代码是设置成仅一次消费的例子。注释内容解释哪部分设置可忽略，以得到更多灵活保证。
     final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
