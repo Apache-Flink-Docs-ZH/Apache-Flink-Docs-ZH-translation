@@ -83,44 +83,45 @@ under the License.
 3， **没有保证**：如果检查点未生效，源没有任何强分发的保证。这种设置下，替代flink的检查点，一旦接收和处理消息后，消息将自动确认。
 
 如下代码是设置成仅一次消费的例子。注释内容解释哪部分设置可忽略，以得到更多灵活保证。
-    final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-    // 仅一次或至少一次，检查点是必须的，
-   env.enableCheckpointing(...);
 
-   final RMQConnectionConfig connectionConfig = new RMQConnectionConfig.Builder()
+```
+final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
+env.enableCheckpointing(...);// 仅一次或至少一次，检查点是必须的
+
+final RMQConnectionConfig connectionConfig = new RMQConnectionConfig.Builder()
     .setHost("localhost")
     .setPort(5000)
     ...
     .build();
     
-   final DataStream<String> stream = env
+final DataStream<String> stream = env
     .addSource(new RMQSource<String>(
         connectionConfig,            // rabbitmq连接的配置
         "queueName",                 // rabbitmq的队列名，消费的队列名
         true,                        // 使用相关编号，至少一次时设置为false
         new SimpleStringSchema()))   // 反序列化成java的对象
     .setParallelism(1);              // 非并行是仅一次所必须的
+```
 
-   in scala
+in scala
+```
+val env = StreamExecutionEnvironment.getExecutionEnvironment
+env.enableCheckpointing(...)
 
-   val env = StreamExecutionEnvironment.getExecutionEnvironment
-   // checkpointing is required for exactly-once or at-least-once guarantees
-   env.enableCheckpointing(...)
-
-   val connectionConfig = new RMQConnectionConfig.Builder()
+val connectionConfig = new RMQConnectionConfig.Builder()
     .setHost("localhost")
     .setPort(5000)
     ...
     .build
     
-   val stream = env
+val stream = env
     .addSource(new RMQSource[String](
         connectionConfig,            // 配置
         "queueName",                 // 队列名
         true,                        // 使用相关编号
         new SimpleStringSchema))     // 反序列化
     .setParallelism(1)               // 非序列化
-
+```
 
 {% top %}
 
@@ -128,7 +129,8 @@ under the License.
 
 连接器提供类RMQSink来发送消息到rabbitmq队列里，以下代码是一个rabbitmq接收的配置例子，
 
- final DataStream<String> stream = ...
+```
+final DataStream<String> stream = ...
 
 final RMQConnectionConfig connectionConfig = new RMQConnectionConfig.Builder()
     .setHost("localhost")
@@ -141,7 +143,9 @@ connectionConfig,
     "queueName",
 new SimpleStringSchema()));  //序列化
 val stream: DataStream[String] = ...
+```
 
+```
 val connectionConfig = new RMQConnectionConfig.Builder()
     .setHost("localhost")
     .setPort(5000)
@@ -152,6 +156,7 @@ stream.addSink(new RMQSink[String](
     connectionConfig,
 "queueName",
     new SimpleStringSchema))
+```
 
 更多rabbitmq可从此[了解](http://www.rabbitmq.com/)。
 
