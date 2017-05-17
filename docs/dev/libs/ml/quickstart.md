@@ -27,36 +27,20 @@ under the License.
 * This will be replaced by the TOC
 {:toc}
 
-## Introduction
+## 介绍
 
-FlinkML is designed to make learning from your data a straight-forward process, abstracting away
-the complexities that usually come with big data learning tasks. In this
-quick-start guide we will show just how easy it is to solve a simple supervised learning problem
-using FlinkML. But first some basics, feel free to skip the next few lines if you're already
-familiar with Machine Learning (ML).
+FlinkML 旨在从您的数据中学习一个简单的过程，抽象出来通常带有大数据学习任务的复杂性。 在这个快速入门指南中，我们将展示使用 FlinkML 解决一个简单的监督学习问题是多么的容易。 但是首先要介绍一些基础知识，如果你已经熟悉机器学习（ML），请随时跳过接下来的几行。
 
-As defined by Murphy [[1]](#murphy) ML deals with detecting patterns in data, and using those
-learned patterns to make predictions about the future. We can categorize most ML algorithms into
-two major categories: Supervised and Unsupervised Learning.
+如 Murphy [[1]](#murphy) 所定义的，机器学习（ML）用于检测数据中的模式，并使用这些学习到的模式来预测未来。 我们可以将大多数机器学习（ML）算法分为两大类：监督学习和无监督学习。
 
-* **Supervised Learning** deals with learning a function (mapping) from a set of inputs
-(features) to a set of outputs. The learning is done using a *training set* of (input,
-output) pairs that we use to approximate the mapping function. Supervised learning problems are
-further divided into classification and regression problems. In classification problems we try to
-predict the *class* that an example belongs to, for example whether a user is going to click on
-an ad or not. Regression problems one the other hand, are about predicting (real) numerical
-values, often called the dependent variable, for example what the temperature will be tomorrow.
+* **监督学习** 涉及从一个输入（特征）集合到一个输出集合学习一个函数（映射）。 学习是使用我们用来近似映射函数的（输入，输出）对训练集来完成的。监督学习问题进一步分为分类问题和回归问题。在分类问题中，我们尝试预测样例属于的类，例如用户是否要点击广告。另一方面，回归问题是要预测（实际的）数值，这个数值通常称为因变量，例如明天的温度是多少。
 
-* **Unsupervised Learning** deals with discovering patterns and regularities in the data. An example
-of this would be *clustering*, where we try to discover groupings of the data from the
-descriptive features. Unsupervised learning can also be used for feature selection, for example
-through [principal components analysis](https://en.wikipedia.org/wiki/Principal_component_analysis).
+* **无监督学习** 用来发现数据中的模式和规律。 一个例子是聚类，我们尝试从描述性的特征中发现数据分组。 无监督学习也可用于特征选择，例如通过 [主成分分析（principal components analysis）](https://en.wikipedia.org/wiki/Principal_component_analysis) 进行特征选择。
 
-## Linking with FlinkML
+## 连接 FlinkML
 
-In order to use FlinkML in your project, first you have to
-[set up a Flink program]({{ site.baseurl }}/dev/linking_with_flink.html).
-Next, you have to add the FlinkML dependency to the `pom.xml` of your project:
+为了在你的项目中使用 FlinkML ，首先你必须建立一个 Flink 程序({{ site.baseurl }}/dev/linking_with_flink.html)。 .
+接下来，您必须将 FlinkML 的依赖添加到项目的 `pom.xml` 中：
 
 {% highlight xml %}
 <dependency>
@@ -66,24 +50,13 @@ Next, you have to add the FlinkML dependency to the `pom.xml` of your project:
 </dependency>
 {% endhighlight %}
 
-## Loading data
+## 加载数据
 
-To load data to be used with FlinkML we can use the ETL capabilities of Flink, or specialized
-functions for formatted data, such as the LibSVM format. For supervised learning problems it is
-common to use the `LabeledVector` class to represent the `(label, features)` examples. A `LabeledVector`
-object will have a FlinkML `Vector` member representing the features of the example and a `Double`
-member which represents the label, which could be the class in a classification problem, or the dependent
-variable for a regression problem.
+要加载与 FlinkML 一起使用的数据，我们可以使用 Flink 的 ETL 功能，或者使用处理诸如 LibSVM 格式的格式化数据的专门方法。 对于监督学习问题，通常使用 `LabeledVector` 类来表示 `（标记，特征）` 样例。 `LabeledVector` 对象将具有表示样例特征的 FlinkML `Vector` 成员，以及表示标记的 `Double` 成员，该标记可能是分类问题中的类，也可以是回归问题的因变量。
 
-As an example, we can use Haberman's Survival Data Set , which you can
-[download from the UCI ML repository](http://archive.ics.uci.edu/ml/machine-learning-databases/haberman/haberman.data).
-This dataset *"contains cases from a study conducted on the survival of patients who had undergone
-surgery for breast cancer"*. The data comes in a comma-separated file, where the first 3 columns
-are the features and last column is the class, and the 4th column indicates whether the patient
-survived 5 years or longer (label 1), or died within 5 years (label 2). You can check the [UCI
-page](https://archive.ics.uci.edu/ml/datasets/Haberman%27s+Survival) for more information on the data.
+例如，我们可以使用 Haberman's Survival 数据集，您可以[从 UCI 机器学习数据库下载这个数据集](http://archive.ics.uci.edu/ml/machine-learning-databases/haberman/haberman.data)。 该数据集“包含了对乳腺癌手术患者的存活进行研究的病例”。 数据来自逗号分隔的文件，前3列是特征，最后一列是类，第4列表示患者是否存活5年以上（标记1），或者5年内死亡（标记2）。 您可以查看[ UCI 页面](https://archive.ics.uci.edu/ml/datasets/Haberman%27s+Survival)了解有关数据的更多信息。
 
-We can load the data as a `DataSet[String]` first:
+我们可以先把数据加载为一个 `DataSet[String]` ：
 
 {% highlight scala %}
 
@@ -95,9 +68,7 @@ val survival = env.readCsvFile[(String, String, String, String)]("/path/to/haber
 
 {% endhighlight %}
 
-We can now transform the data into a `DataSet[LabeledVector]`. This will allow us to use the
-dataset with the FlinkML classification algorithms. We know that the 4th element of the dataset
-is the class label, and the rest are features, so we can build `LabeledVector` elements like this:
+我们现在可以将数据转换成 `DataSet[LabeledVector]` 。 这将允许我们使用 FlinkML 分类算法的数据集。 我们知道数据集的第四个元素是类标记，其余的是特征，所以我们可以像这样构建 `LabeledVector` 元素：
 
 {% highlight scala %}
 
@@ -113,23 +84,13 @@ val survivalLV = survival
 
 {% endhighlight %}
 
-We can then use this data to train a learner. We will however use another dataset to exemplify
-building a learner; that will allow us to show how we can import other dataset formats.
+然后，我们可以使用这些数据来训练一个学习器。然而，我们将使用另一个数据集来示例建立学习器；这将让我们展示如何导入其他数据集格式。
 
-**LibSVM files**
+**LibSVM 文件**
 
-A common format for ML datasets is the LibSVM format and a number of datasets using that format can be
-found [in the LibSVM datasets website](http://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/). FlinkML provides utilities for loading
-datasets using the LibSVM format through the `readLibSVM` function available through the `MLUtils`
-object.
-You can also save datasets in the LibSVM format using the `writeLibSVM` function.
-Let's import the svmguide1 dataset. You can download the
-[training set here](http://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary/svmguide1)
-and the [test set here](http://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary/svmguide1.t).
-This is an astroparticle binary classification dataset, used by Hsu et al. [[3]](#hsu) in their
-practical Support Vector Machine (SVM) guide. It contains 4 numerical features, and the class label.
+机器学习数据集的通用格式是 LibSVM 格式，并且可以在 [LibSVM 数据集网站](http://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/)中找到使用该格式的多个数据集。 FlinkML 提供了通过 `MLUtils` 对象的 `readLibSVM` 函数加载 LibSVM 格式的数据集的实用程序。 您还可以使用 `writeLibSVM` 函数以 LibSVM 格式保存数据集。 我们导入 svmguide1 数据集。 您可以在这里下载[训练集](http://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary/svmguide1)和[测试集](http://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary/svmguide1.t)。 这是一个二进制分类数据集，由 Hsu 等人 [[3]](#hsu) 在他们的实用支持向量机（SVM）指南中使用。 它包含4个数字特征和它的类标记。
 
-We can simply import the dataset then using:
+我们可以简单地使用下面的代码导入数据集：
 
 {% highlight scala %}
 
@@ -141,17 +102,11 @@ val astroTest: DataSet[(Vector, Double)] = MLUtils.readLibSVM(env, "/path/to/svm
 
 {% endhighlight %}
 
-This gives us two `DataSet` objects that we will use in the following section to
-create a classifier.
+它给了我们两个 `DataSet` 对象，我们会在下面的章节中使用这两个对象来生成一个分类器。
 
-## Classification
+## 分类
 
-Once we have imported the dataset we can train a `Predictor` such as a linear SVM classifier.
-We can set a number of parameters for the classifier. Here we set the `Blocks` parameter,
-which is used to split the input by the underlying CoCoA algorithm [[2]](#jaggi) uses. The
-regularization parameter determines the amount of $l_2$ regularization applied, which is used
-to avoid overfitting. The step size determines the contribution of the weight vector updates to
-the next weight vector value. This parameter sets the initial step size.
+一旦我们导入了数据集，我们可以训练一个 `指示器` ，如线性 SVM 分类器。 我们可以为分类器设置多个参数。 这里我们设置 `Blocks` 参数，它用于通过底层CoCoA算法 [[2]](#jaggi) 来分割输入。 正则化参数确定应用的 $l_2$ 正则化值，用于避免过拟合。 步长确定权重向量更新到下一个权重向量值的贡献。 此参数设置初始步长。
 
 {% highlight scala %}
 
@@ -168,7 +123,7 @@ svm.fit(astroTrain)
 
 {% endhighlight %}
 
-We can now make predictions on the test set, and use the `evaluate` function to create (truth, prediction) pairs.
+我们现在可以对测试集进行预测，并使用 `evaluate` 函数创建（真值，预测）对。
 
 {% highlight scala %}
 
@@ -176,21 +131,13 @@ val evaluationPairs: DataSet[(Double, Double)] = svm.evaluate(astroTest)
 
 {% endhighlight %}
 
-Next we will see how we can pre-process our data, and use the ML pipelines capabilities of FlinkML.
+接下来，我们将看到我们如何预处理我们的数据，并使用 FlinkML 的机器学习管道功能。
 
-## Data pre-processing and pipelines
+## 数据预处理和管道
 
-A pre-processing step that is often encouraged [[3]](#hsu) when using SVM classification is scaling
-the input features to the [0, 1] range, in order to avoid features with extreme values
-dominating the rest.
-FlinkML has a number of `Transformers` such as `MinMaxScaler` that are used to pre-process data,
-and a key feature is the ability to chain `Transformers` and `Predictors` together. This allows
-us to run the same pipeline of transformations and make predictions on the train and test data in
-a straight-forward and type-safe manner. You can read more on the pipeline system of FlinkML
-[in the pipelines documentation](pipelines.html).
+在使用 SVM 分类时，经常被鼓励 [[3]](#hsu) 的预处理步骤是将输入特征缩放到 [0,1] 范围，以避免极值特征的影响。 FlinkML 有一些`转换器`，如 `MinMaxScaler` ，用于预处理数据，一个关键特征是将转换器 `转换器` 和`指示器` 链接在一起的能力。 这样我们可以运行相同的转换流程，并且以直接的和类型安全的方式对训练和测试数据进行预测。 您可以在[管道文档](pipelines.html)中阅读更多关于FlinkML管道系统的信息。
 
-Let us first create a normalizing transformer for the features in our dataset, and chain it to a
-new SVM classifier.
+我们首先为数据集中的特征创建一个归一化转换，并将其链接到一个新的 SVM 分类器。
 
 {% highlight scala %}
 
@@ -202,10 +149,9 @@ val scaledSVM = scaler.chainPredictor(svm)
 
 {% endhighlight %}
 
-We can now use our newly created pipeline to make predictions on the test set.
-First we call fit again, to train the scaler and the SVM classifier.
-The data of the test set will then be automatically scaled before being passed on to the SVM to
-make predictions.
+我们现在可以使用我们新创建的管道来对测试集进行预测。
+首先，训练缩放器和SVM分类器。
+然后测试集的数据将被自动缩放，然后传递给SVM进行预测。
 
 {% highlight scala %}
 
@@ -215,23 +161,13 @@ val evaluationPairsScaled: DataSet[(Double, Double)] = scaledSVM.evaluate(astroT
 
 {% endhighlight %}
 
-The scaled inputs should give us better prediction performance.
+被缩放的输入应该会给我们更好的预测表现。
 
-## Where to go from here
+## 下一步
 
-This quickstart guide can act as an introduction to the basic concepts of FlinkML, but there's a lot
-more you can do.
-We recommend going through the [FlinkML documentation]({{ site.baseurl }}/dev/libs/ml/index.html), and trying out the different
-algorithms.
-A very good way to get started is to play around with interesting datasets from the UCI ML
-repository and the LibSVM datasets.
-Tackling an interesting problem from a website like [Kaggle](https://www.kaggle.com) or
-[DrivenData](http://www.drivendata.org/) is also a great way to learn by competing with other
-data scientists.
-If you would like to contribute some new algorithms take a look at our
-[contribution guide](contribution_guide.html).
+这个快速入门指南是一个对于 FlinkML 基础概念的介绍，但是你能做更多的事情。我们建议您查看[ FlinkML 文档]({{ site.baseurl }}/dev/libs/ml/index.html)，尝试不同的算法。一个入门的好方法是用自己喜欢的来自于 UCI 机器学习库的数据集和 LibSVM 数据集进行试验。从 [Kaggle](https://www.kaggle.com) 或 [DrivenData](http://www.drivendata.org/) 这样的网站处理一个有趣的问题也是通过与其他数据科学家的竞争来学习的好方法。如果您想提供一些新的算法，请查看我们的[贡献指南](contribution_guide.html)。
 
-**References**
+**参考文献**
 
 <a name="murphy"></a>[1] Murphy, Kevin P. *Machine learning: a probabilistic perspective.* MIT
 press, 2012.
