@@ -32,7 +32,7 @@ under the License.
 
 ## 创建Maven工程
 
-我们将使用一个Flink Maven 原型来创建工程架构。如果你想了解更多这方面的内容，请参考 [Java API 快速入门]({{ site.baseurl }}/quickstart/java_api_quickstart.html) 。可以运行下面的命令来创建Maven工程：  
+我们将使用一个Flink Maven 原型来创建工程架构。如果你想了解更多这方面的内容，请参考 [Java API Quickstart]({{ site.baseurl }}/quickstart/java_api_quickstart.html) 。可以运行下面的命令来创建Maven工程：  
 
 {% highlight bash %}
 $ mvn archetype:generate \
