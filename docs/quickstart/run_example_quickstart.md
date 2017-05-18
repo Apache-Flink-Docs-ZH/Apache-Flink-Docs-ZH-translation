@@ -102,7 +102,7 @@ $ rm wiki-edits/src/main/java/wikiedits/*.java
 
 ## 编写 Flink 程序  
 
-现在，打开你最喜欢的 IDE，我们要开始写代码了。导入 Maven 工程后，创建`src/main/java/wikiedits/WikipediaAnalysis.java`文件：  
+现在，打开你最喜欢的 IDE，我们要开始写代码了。导入 Maven 工程后，创建 `src/main/java/wikiedits/WikipediaAnalysis.java` 文件：  
 
 {% highlight java %}
 package wikiedits;
