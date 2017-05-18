@@ -22,16 +22,13 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-The logic blocks with which the `Graph` API and top-level algorithms are assembled are accessible in Gelly as graph
-algorithms in the `org.apache.flink.graph.asm` package. These algorithms provide optimization and tuning through
-configuration parameters and may provide implicit runtime reuse when processing the same input with a similar
-configuration.
+在 Gelly 中作为图算法，`Graph` API 和 顶层算法集成的逻辑模块都在 `org.apache.flink.graph.asm` 中。这些算法可用通过配置参数进行优化和调整，并且当用一组相似的配置对相同的输入进行处理时，提供隐式的运行时复用。.
 
 <table class="table table-bordered">
   <thead>
     <tr>
-      <th class="text-left" style="width: 20%">Algorithm</th>
-      <th class="text-center">Description</th>
+      <th class="text-left" style="width: 20%">算法</th>
+      <th class="text-center">描述</th>
     </tr>
   </thead>
 
@@ -45,7 +42,7 @@ DataSet<Vertex<K, LongValue>> inDegree = graph
   .run(new VertexInDegree()
     .setIncludeZeroDegreeVertices(true));
 {% endhighlight %}
-        <p>Optional configuration:</p>
+        <p>可选配置:</p>
         <ul>
           <li><p><strong>setIncludeZeroDegreeVertices</strong>: by default only the edge set is processed for the computation of degree; when this flag is set an additional join is performed against the vertex set in order to output vertices with an in-degree of zero</p></li>
           <li><p><strong>setParallelism</strong>: override the operator parallelism</p></li>
