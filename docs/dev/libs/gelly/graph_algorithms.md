@@ -62,7 +62,7 @@ DataSet<Vertex<K, LongValue>> outDegree = graph
         <p>可选配置:</p>
         <ul>
           <li><p><strong>setIncludeZeroDegreeVertices</strong>: by default only the edge set is processed for the computation of degree; when this flag is set an additional join is performed against the vertex set in order to output vertices with an out-degree of zero</p></li>
-          <li><p><strong>setParallelism</strong>: override the operator parallelism</p></li>
+          <li><p><strong>setParallelism</strong>: 指定算子的并行度</p></li>
         </ul>
       </td>
     </tr>
@@ -79,7 +79,7 @@ DataSet<Vertex<K, Tuple2<LongValue, LongValue>>> degrees = graph
         <p>可选配置:</p>
         <ul>
           <li><p><strong>setIncludeZeroDegreeVertices</strong>: by default only the edge set is processed for the computation of degree; when this flag is set an additional join is performed against the vertex set in order to output vertices with out- and in-degree of zero</p></li>
-          <li><p><strong>setParallelism</strong>: override the operator parallelism</p></li>
+          <li><p><strong>setParallelism</strong>: 指定算子的并行度</p></li>
         </ul>
       </td>
     </tr>
@@ -94,7 +94,7 @@ DataSet<Edge<K, Tuple2<EV, Degrees>>> sourceDegrees = graph
 {% endhighlight %}
         <p>可选配置:</p>
         <ul>
-          <li><p><strong>setParallelism</strong>: override the operator parallelism</p></li>
+          <li><p><strong>setParallelism</strong>: 指定算子的并行度/p></li>
         </ul>
       </td>
     </tr>
@@ -109,7 +109,7 @@ DataSet<Edge<K, Tuple2<EV, Degrees>>> targetDegrees = graph
 {% endhighlight %}
         <p>可选配置:</p>
         <ul>
-          <li><p><strong>setParallelism</strong>: override the operator parallelism</p></li>
+          <li><p><strong>setParallelism</strong>: 指定算子的并行度</p></li>
         </ul>
       </td>
     </tr>
@@ -124,7 +124,7 @@ DataSet<Edge<K, Tuple2<EV, Degrees>>> degrees = graph
 {% endhighlight %}
         <p>可选配置:</p>
         <ul>
-          <li><p><strong>setParallelism</strong>: override the operator parallelism</p></li>
+          <li><p><strong>setParallelism</strong>: 指定算子的并行度</p></li>
         </ul>
       </td>
     </tr>
@@ -142,7 +142,7 @@ DataSet<Vertex<K, LongValue>> degree = graph
         <p>O可选配置:</p>
         <ul>
           <li><p><strong>setIncludeZeroDegreeVertices</strong>: by default only the edge set is processed for the computation of degree; when this flag is set an additional join is performed against the vertex set in order to output vertices with a degree of zero</p></li>
-          <li><p><strong>setParallelism</strong>: override the operator parallelism</p></li>
+          <li><p><strong>setParallelism</strong>: 指定算子的并行度</p></li>
           <li><p><strong>setReduceOnTargetId</strong>: the degree can be counted from either the edge source or target IDs. By default the source IDs are counted. Reducing on target IDs may optimize the algorithm if the input edge list is sorted by target ID.</p></li>
         </ul>
       </td>
@@ -159,7 +159,7 @@ DataSet<Edge<K, Tuple2<EV, LongValue>>> sourceDegree = graph
 {% endhighlight %}
         <p>可选配置:</p>
         <ul>
-          <li><p><strong>setParallelism</strong>: override the operator parallelism</p></li>
+          <li><p><strong>setParallelism</strong>: 指定算子的并行度</p></li>
           <li><p><strong>setReduceOnTargetId</strong>: the degree can be counted from either the edge source or target IDs. By default the source IDs are counted. Reducing on target IDs may optimize the algorithm if the input edge list is sorted by target ID.</p></li>
         </ul>
       </td>
@@ -176,7 +176,7 @@ DataSet<Edge<K, Tuple2<EV, LongValue>>> targetDegree = graph
 {% endhighlight %}
         <p>可选配置:</p>
         <ul>
-          <li><p><strong>setParallelism</strong>: override the operator parallelism</p></li>
+          <li><p><strong>setParallelism</strong>: 指定算子的并行度</p></li>
           <li><p><strong>setReduceOnSourceId</strong>: the degree can be counted from either the edge source or target IDs. By default the target IDs are counted. Reducing on source IDs may optimize the algorithm if the input edge list is sorted by source ID.</p></li>
         </ul>
       </td>
@@ -193,7 +193,7 @@ DataSet<Edge<K, Tuple3<EV, LongValue, LongValue>>> pairDegree = graph
 {% endhighlight %}
         <p>可选配置:</p>
         <ul>
-          <li><p><strong>setParallelism</strong>: override the operator parallelism</p></li>
+          <li><p><strong>setParallelism</strong>: 指定算子的并行度</p></li>
           <li><p><strong>setReduceOnTargetId</strong>: the degree can be counted from either the edge source or target IDs. By default the source IDs are counted. Reducing on target IDs may optimize the algorithm if the input edge list is sorted by target ID.</p></li>
         </ul>
       </td>
@@ -212,7 +212,7 @@ Graph<K, VV, EV> filteredGraph = graph
         <p>可选配置:</p>
         <ul>
           <li><p><strong>setBroadcastHighDegreeVertices</strong>: join high-degree vertices using a broadcast-hash to reduce data shuffling when removing a relatively small number of high-degree vertices.</p></li>
-          <li><p><strong>setParallelism</strong>: override the operator parallelism</p></li>
+          <li><p><strong>setParallelism</strong>: 指定算子的并行度</p></li>
           <li><p><strong>setReduceOnTargetId</strong>: the degree can be counted from either the edge source or target IDs. By default the source IDs are counted. Reducing on target IDs may optimize the algorithm if the input edge list is sorted by target ID.</p></li>
         </ul>
       </td>
@@ -227,7 +227,7 @@ graph.run(new Simplify());
 {% endhighlight %}
         <p>可选配置:</p>
         <ul>
-          <li><p><strong>setParallelism</strong>: override the operator parallelism</p></li>
+          <li><p><strong>setParallelism</strong>: 指定算子的并行度</p></li>
         </ul>
       </td>
     </tr>
@@ -241,7 +241,7 @@ graph.run(new Simplify());
 {% endhighlight %}
         <p>可选配置:</p>
         <ul>
-          <li><p><strong>setParallelism</strong>: override the operator parallelism</p></li>
+          <li><p><strong>setParallelism</strong>: 指定算子的并行度</p></li>
         </ul>
       </td>
     </tr>
@@ -277,7 +277,7 @@ graph.run(new TranslateVertexValues(new LongValueAddOffset(vertexCount)));
         </ul>
         <p>可选配置:</p>
         <ul>
-          <li><p><strong>setParallelism</strong>: override the operator parallelism</p></li>
+          <li><p><strong>setParallelism</strong>: 指定算子的并行度</p></li>
         </ul>
       </td>
     </tr>
@@ -295,7 +295,7 @@ graph.run(new TranslateEdgeValues(new Nullify()));
         </ul>
         <p>可选配置:</p>
         <ul>
-          <li><p><strong>setParallelism</strong>: override the operator parallelism</p></li>
+          <li><p><strong>setParallelism</strong>: 指定算子的并行度</p></li>
         </ul>
       </td>
     </tr>
