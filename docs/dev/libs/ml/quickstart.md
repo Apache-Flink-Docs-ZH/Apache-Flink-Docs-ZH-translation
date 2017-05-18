@@ -33,13 +33,13 @@ FlinkML 旨在从您的数据中学习一个简单的过程，抽象出来通常
 
 如 Murphy [[1]](#murphy) 所定义的，机器学习（ML）用于检测数据中的模式，并使用这些学习到的模式来预测未来。 我们可以将大多数机器学习（ML）算法分为两大类：监督学习和无监督学习。
 
-* **监督学习** 涉及从一个输入（特征）集合到一个输出集合学习一个函数（映射）。 学习是使用我们用来近似映射函数的（输入，输出）对训练集来完成的。监督学习问题进一步分为分类问题和回归问题。在分类问题中，我们尝试预测样例属于的类，例如用户是否要点击广告。另一方面，回归问题是要预测（实际的）数值，这个数值通常称为因变量，例如明天的温度是多少。
+* **监督学习** 涉及从一个输入（特征）集合到一个输出集合学习一个函数（映射）。 学习是通过使用我们用来近似映射函数的（输入，输出）对训练集来完成的。监督学习问题进一步分为分类问题和回归问题。在分类问题中，我们尝试预测样例属于的类，例如用户是否要点击广告。另一方面，回归问题是要预测（实际的）数值，这个数值通常称为因变量，例如明天的温度是多少。
 
 * **无监督学习** 用来发现数据中的模式和规律。 一个例子是聚类，我们尝试从描述性的特征中发现数据分组。 无监督学习也可用于特征选择，例如通过 [主成分分析（principal components analysis）](https://en.wikipedia.org/wiki/Principal_component_analysis) 进行特征选择。
 
 ## 连接 FlinkML
 
-为了在你的项目中使用 FlinkML ，首先你必须建立一个 Flink 程序({{ site.baseurl }}/dev/linking_with_flink.html)。 .
+为了在您的项目中使用 FlinkML ，首先您必须建立一个 Flink 程序({{ site.baseurl }}/dev/linking_with_flink.html)。 .
 接下来，您必须将 FlinkML 的依赖添加到项目的 `pom.xml` 中：
 
 {% highlight xml %}
@@ -88,7 +88,7 @@ val survivalLV = survival
 
 **LibSVM 文件**
 
-机器学习数据集的通用格式是 LibSVM 格式，并且可以在 [LibSVM 数据集网站](http://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/)中找到使用该格式的多个数据集。 FlinkML 提供了通过 `MLUtils` 对象的 `readLibSVM` 函数加载 LibSVM 格式的数据集的实用程序。 您还可以使用 `writeLibSVM` 函数以 LibSVM 格式保存数据集。 我们导入 svmguide1 数据集。 您可以在这里下载[训练集](http://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary/svmguide1)和[测试集](http://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary/svmguide1.t)。 这是一个二进制分类数据集，由 Hsu 等人 [[3]](#hsu) 在他们的实用支持向量机（SVM）指南中使用。 它包含4个数字特征和它的类标记。
+机器学习数据集的通用格式是 LibSVM 格式，并且可以在 [LibSVM 数据集网站](http://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/)中找到使用该格式的多个数据集。 FlinkML 提供了通过 `MLUtils` 对象的 `readLibSVM` 函数加载 LibSVM 格式的数据集的实用程序。 您还可以使用 `writeLibSVM` 函数以 LibSVM 格式保存数据集。 让我们导入 svmguide1 数据集。 您可以在这里下载[训练集](http://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary/svmguide1)和[测试集](http://www.csie.ntu.edu.tw/~cjlin/libsvmtools/datasets/binary/svmguide1.t)。 这是一个二进制分类数据集，由 Hsu 等人 [[3]](#hsu) 在他们的实用支持向量机（SVM）指南中使用。 它包含4个数字特征和它的类标记。
 
 我们可以简单地使用下面的代码导入数据集：
 
@@ -106,7 +106,7 @@ val astroTest: DataSet[(Vector, Double)] = MLUtils.readLibSVM(env, "/path/to/svm
 
 ## 分类
 
-一旦我们导入了数据集，我们可以训练一个 `指示器` ，如线性 SVM 分类器。 我们可以为分类器设置多个参数。 这里我们设置 `Blocks` 参数，它用于通过底层CoCoA算法 [[2]](#jaggi) 来分割输入。 正则化参数确定应用的 $l_2$ 正则化值，用于避免过拟合。 步长确定权重向量更新到下一个权重向量值的贡献。 此参数设置初始步长。
+一旦我们导入了数据集，我们可以训练一个 `预测模型` ，如线性 SVM 分类器。 我们可以为分类器设置多个参数。 这里我们设置 `Blocks` 参数，它用于通过底层CoCoA算法 [[2]](#jaggi) 来分割输入。 正则化参数确定应用的 $l_2$ 正则化值，用于避免过拟合。 步长确定权重向量更新到下一个权重向量值的贡献。 此参数设置初始步长。
 
 {% highlight scala %}
 
@@ -135,7 +135,7 @@ val evaluationPairs: DataSet[(Double, Double)] = svm.evaluate(astroTest)
 
 ## 数据预处理和管道
 
-在使用 SVM 分类时，经常被鼓励 [[3]](#hsu) 的预处理步骤是将输入特征缩放到 [0,1] 范围，以避免极值特征的影响。 FlinkML 有一些`转换器`，如 `MinMaxScaler` ，用于预处理数据，一个关键特征是将转换器 `转换器` 和`指示器` 链接在一起的能力。 这样我们可以运行相同的转换流程，并且以直接的和类型安全的方式对训练和测试数据进行预测。 您可以在[管道文档](pipelines.html)中阅读更多关于FlinkML管道系统的信息。
+在使用 SVM 分类时，经常被鼓励 [[3]](#hsu) 的预处理步骤是将输入特征缩放到 [0,1] 范围，以避免极值特征的影响。 FlinkML 有一些`转换器`，例如被用于预处理数据的 `MinMaxScaler` 。 FlinkML 的一个关键特征是将 `转换器` 和`预测模型` 链接在一起的能力。 这样我们可以运行相同的转换流程，并且以直接的和类型安全的方式对训练和测试数据进行预测。您可以在[管道文档](pipelines.html)中阅读更多关于FlinkML管道系统的信息。
 
 我们首先为数据集中的特征创建一个归一化转换，并将其链接到一个新的 SVM 分类器。
 
@@ -150,8 +150,8 @@ val scaledSVM = scaler.chainPredictor(svm)
 {% endhighlight %}
 
 我们现在可以使用我们新创建的管道来对测试集进行预测。
-首先，训练缩放器和SVM分类器。
-然后测试集的数据将被自动缩放，然后传递给SVM进行预测。
+首先我们再次调用 fit 函数来训练缩放器和 SVM 分类器。
+然后测试集的数据将被自动收敛，之后传递给 SVM 进行预测。
 
 {% highlight scala %}
 
@@ -161,11 +161,11 @@ val evaluationPairsScaled: DataSet[(Double, Double)] = scaledSVM.evaluate(astroT
 
 {% endhighlight %}
 
-被缩放的输入应该会给我们更好的预测表现。
+收敛的输入应该会给我们更好的预测表现。
 
 ## 下一步
 
-这个快速入门指南是一个对于 FlinkML 基础概念的介绍，但是你能做更多的事情。我们建议您查看[ FlinkML 文档]({{ site.baseurl }}/dev/libs/ml/index.html)，尝试不同的算法。一个入门的好方法是用自己喜欢的来自于 UCI 机器学习库的数据集和 LibSVM 数据集进行试验。从 [Kaggle](https://www.kaggle.com) 或 [DrivenData](http://www.drivendata.org/) 这样的网站处理一个有趣的问题也是通过与其他数据科学家的竞争来学习的好方法。如果您想提供一些新的算法，请查看我们的[贡献指南](contribution_guide.html)。
+这个快速入门指南是一个对于 FlinkML 基础概念的介绍，但是你能做更多的事情。我们建议您查看[ FlinkML 文档]({{ site.baseurl }}/dev/libs/ml/index.html)，尝试不同的算法。一个入门的好方法是用自己喜欢的来自于 UCI 机器学习库的数据集和 LibSVM 数据集进行试验。通过与其他数据科学家竞赛，从 [Kaggle](https://www.kaggle.com) 或 [DrivenData](http://www.drivendata.org/) 这样的网站处理一个有趣的问题也是一种极好的学习方式。如果您想提供一些新的算法，请查看我们的[贡献指南](contribution_guide.html)。
 
 **参考文献**
 
