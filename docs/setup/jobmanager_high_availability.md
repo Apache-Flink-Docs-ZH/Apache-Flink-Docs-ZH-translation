@@ -228,7 +228,7 @@ zookeeper.sasl.login-context-name: Client  # 默认是 "Client". 这个参数需
 
 如果您没有安装正在运行的ZooKeeper，可以使用Flink附带的帮助脚本。
 
-在`conf / zoo.cfg`中有一个ZooKeeper配置模板。 可以使用通过把hosts配置到`server.X`参数中来运行ZooKeeper，其中X是每个服务器的唯一ID： 
+在`conf/zoo.cfg`中有一个ZooKeeper配置模板。 可以使用通过把hosts配置到`server.X`参数中来运行ZooKeeper，其中X是每个服务器的唯一ID： 
 
 <pre>
 server.X=addressX:peerPort:leaderPort
@@ -236,6 +236,6 @@ server.X=addressX:peerPort:leaderPort
 server.Y=addressY:peerPort:leaderPort
 </pre>
 
-脚本`bin / start-zookeeper-quorum.sh`将在每个配置的主机上启动一个ZooKeeper服务器。 启动的进程通过Flink包装器启动ZooKeeper服务器，Flink包装器从`conf / zoo.cfg'读取配置，并确保设置一些所需的参数。 
+脚本`bin / start-zookeeper-quorum.sh`将在每个配置的主机上启动一个ZooKeeper服务器。 启动的进程通过Flink包装器启动ZooKeeper服务器，Flink包装器从`conf / zoo.cfg`读取配置，并确保设置一些所需的参数。 
 在生产环境中，建议自己管理ZooKeeper安装。
 
