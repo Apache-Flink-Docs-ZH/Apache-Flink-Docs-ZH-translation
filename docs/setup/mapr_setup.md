@@ -1,5 +1,5 @@
 ---
-title:  "MapR Setup"
+title:  "MapR 安装"
 nav-title: MapR
 nav-parent_id: deployment
 nav-pos: 7
@@ -22,56 +22,47 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 -->
-
-This documentation provides instructions on how to prepare Flink for YARN
-executions on a [MapR](https://mapr.com/) cluster.
+本文档提供了有关在[MapR](https://mapr.com/)集群中YARN平台上Flink的相关指导。 
 
 * This will be replaced by the TOC
 {:toc}
 
-## Running Flink on YARN with MapR
+## 在YARN([MapR](https://mapr.com/)版本)上运行Flink 
 
-The instructions below assume MapR version 5.2.0. They will guide you
-to be able to start submitting [Flink on YARN]({{ site.baseurl }}/setup/yarn_setup.html)
-jobs or sessions to a MapR cluster.
+以下文档基于MapR v5.2.0版本. 
+该文档将指导你如何向 [Flink on YARN]({{ site.baseurl }}/setup/yarn_setup.html) 集群(MapR)中提交任务或启动Flink会话.
 
-### Building Flink for MapR
+### MapR上编译Flink
 
-In order to run Flink on MapR, Flink needs to be built with MapR's own
-Hadoop and Zookeeper distribution. Simply build Flink using Maven with
-the following command from the project root directory:
+在MapR上运行Flink之前，需要在MapR的Hadoop 和 Zookeeper 版本的上编译.
+可以用 [Maven](https://maven.apache.org/) 在项目根目录以下命令编译Flink:
 
 ```
 mvn clean install -DskipTests -Pvendor-repos,mapr \
     -Dhadoop.version=2.7.0-mapr-1607 \
     -Dzookeeper.version=3.4.5-mapr-1604
 ```
+编译参数 `vendor-repos` 将添加MapR的类库以便编译过程中提取Hadoop / Zookeeper依赖包。 
+编译参数 `mapr` 另外解决了编译过程中Flink与MapR之间的一些依赖包冲突。同时，保证原本MapR类库依然在MapR节点上被使用. 
+两个配置文件必须先被激活。
 
-The `vendor-repos` build profile adds MapR's repository to the build so that
-MapR's Hadoop / Zookeeper dependencies can be fetched. The `mapr` build
-profile additionally resolves some dependency clashes between MapR and
-Flink, as well as ensuring that the native MapR libraries on the cluster
-nodes are used. Both profiles must be activated.
-
-By default the `mapr` profile builds with Hadoop / Zookeeper dependencies
-for MapR version 5.2.0, so you don't need to explicitly override
-the `hadoop.version` and `zookeeper.version` properties.
-For different MapR versions, simply override these properties to appropriate
-values. The corresponding Hadoop / Zookeeper distributions for each MapR version
-can be found on MapR documentations such as
+默认情况下，`mapr`配置文件使用Hadoop / Zookeeper依赖关系构建
+基于MapR版本5.2.0，所以不需要覆盖
+`hadoop.version`和`zookeeper.version`属性。
+对于不同的MapR版本，只需覆盖这些属性即可。
+对应不同MapR发行版的Hadoop / Zookeeper可以在MapR文档中找到：
 [here](http://maprdocs.mapr.com/home/DevelopmentGuide/MavenArtifacts.html).
 
-### Job Submission Client Setup
+### 任务提交客户端设置
 
-The client submitting Flink jobs to MapR also needs to be prepared with the below setups.
+向MapR提交Flink任务的客户端需要通过以下设置。
 
-Ensure that MapR's JAAS config file is picked up to avoid login failures:
-
+确保MapR的JAAS配置文件被加载而避免登录失败：
 ```
 export JVM_ARGS=-Djava.security.auth.login.config=/opt/mapr/conf/mapr.login.conf
 ```
 
-Make sure that the `yarn.nodemanager.resource.cpu-vcores` property is set in `yarn-site.xml`:
+确保`yarn.nodemanager.resource.cpu-vcores`属性设置在`yarn-site.xml`中被设置:
 
 ~~~xml
 <!-- in /opt/mapr/hadoop/hadoop-2.7.0/etc/hadoop/yarn-site.xml -->
@@ -88,43 +79,37 @@ Make sure that the `yarn.nodemanager.resource.cpu-vcores` property is set in `ya
 </configuration>
 ~~~
 
-Also remember to set the `YARN_CONF_DIR` or `HADOOP_CONF_DIR` environment
-variables to the path where `yarn-site.xml` is located:
+同时记住设置环境变量 “YARN_CONF_DIR”或“HADOOP_CONF_DIR” 指定“yarn-site.xml”文件所在路径：
 
 ```
 export YARN_CONF_DIR=/opt/mapr/hadoop/hadoop-2.7.0/etc/hadoop/
 export HADOOP_CONF_DIR=/opt/mapr/hadoop/hadoop-2.7.0/etc/hadoop/
 ```
-
-Make sure that the MapR native libraries are picked up in the classpath:
+ 
+确保设置MapR类库所在的路径classpath：
 
 ```
 export FLINK_CLASSPATH=/opt/mapr/lib/*
 ```
-
-If you'll be starting Flink on YARN sessions with `yarn-session.sh`, the
-below is also required:
+如果使用`yarn-session.sh`在YARN上启动Flink会话，那么必需的做以下设置：
 
 ```
 export CC_CLASSPATH=/opt/mapr/lib/*
 ```
 
-## Running Flink with a Secured MapR Cluster
+## MapR集群上安全的运行Flink
 
-*Note: In Flink 1.2.0, Flink's Kerberos authentication for YARN execution has
-a bug that forbids it to work with MapR Security. Please upgrade to later Flink
-versions in order to use Flink with a secured MapR cluster. For more details,
-please see [FLINK-5949](https://issues.apache.org/jira/browse/FLINK-5949).*
+在Flink 1.2.0版本中，Flink的Kerberos身份验证有个漏洞，导致它无法MapR的安全系统兼容。
+请升级到更新的Flink版本，以便将Flink与安全的MapR群集一起使用。 
+更多细节，请查阅 [FLINK-5949](https://issues.apache.org/jira/browse/FLINK-5949).*
 
-Flink's [Kerberos authentication]({{ site.baseurl }}/ops/security-kerberos.html) is independent of
-[MapR's Security authentication](http://maprdocs.mapr.com/home/SecurityGuide/Configuring-MapR-Security.html).
-With the above build procedures and environment variable setups, Flink
-does not require any additional configuration to work with MapR Security.
+Flink 的 [Kerberos 身份验证]({{ site.baseurl }}/ops/security-kerberos.html) 和
+[MapR 身份验证](http://maprdocs.mapr.com/home/SecurityGuide/Configuring-MapR-Security.html)是独立的.
+有了上述编译过程和环境变量设置，Flink不需要任何其他配置与MapR Security配合使用.
 
-Users simply need to login by using MapR's `maprlogin` authentication
-utility. Users that haven't acquired MapR login credentials would not be
-able to submit Flink jobs, erroring with:
-
+用户只需要使用MapR的“maprlogin”身份验证即可登录。
+没有通过MapR认证登录的用户将不会
+能够提交Flink工作，错误如下：
 ```
 java.lang.Exception: unable to establish the security context
 Caused by: o.a.f.r.security.modules.SecurityModule$SecurityInstallException: Unable to set the Hadoop login user
