@@ -1,5 +1,5 @@
 ---
-title: "JobManager High Availability (HA)"
+title: "JobManager的高可用 (HA)"
 nav-title: High Availability (HA)
 nav-parent_id: setup
 nav-pos: 6
@@ -22,35 +22,42 @@ KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
 -->
+JobManager协调每个Flink部署。 它负责 *调度* 和 *资源管理*。 
 
-The JobManager coordinates every Flink deployment. It is responsible for both *scheduling* and *resource management*.
+默认情况下，每个Flink集群都只一个JobManager节点。 
+这样的架构会有*单点故障*（SPOF）：如果JobManager挂了，则不能提交新的程序，且运行中的程序会失败。 
 
-By default, there is a single JobManager instance per Flink cluster. This creates a *single point of failure* (SPOF): if the JobManager crashes, no new programs can be submitted and running programs fail.
-
-With JobManager High Availability, you can recover from JobManager failures and thereby eliminate the *SPOF*. You can configure high availability for both **standalone** and **YARN clusters**.
+使用JobManager高可用性，集群可以从JobManager故障中恢复，从而避免* SPOF *。 
+用户在**standalone**或** YARN集群**模式下，配置高可用性。 
 
 * Toc
 {:toc}
 
-## Standalone Cluster High Availability
+## Standalone模式下集群的高可用
 
-The general idea of JobManager high availability for standalone clusters is that there is a **single leading JobManager** at any time and **multiple standby JobManagers** to take over leadership in case the leader fails. This guarantees that there is **no single point of failure** and programs can make progress as soon as a standby JobManager has taken leadership. There is no explicit distinction between standby and master JobManager instances. Each JobManager can take the role of master or standby.
+Standalone模式（独立模式）下JobManager的高可用性的基本思想是，任何时候都有一个**一个 Master JobManager **，并且**多个Standby JobManagers **。
+Standby JobManagers可以在Master JobManager 挂掉的情况下接管集群成为Master JobManager。 
+这样保证了**没有单点故障**，一旦某一个Standby JobManager接管集群，程序就可以继续运行。 
+Standby JobManager和Master JobManager实例之间没有明确区别。 每个JobManager可以成为Master或Standby节点。
 
-As an example, consider the following setup with three JobManager instances:
+举例，使用三个JobManager节点的情况下，进行以下设置:
 
 <img src="{{ site.baseurl }}/fig/jobmanager_ha_overview.png" class="center" />
 
-### Configuration
+### 配置
 
-To enable JobManager High Availability you have to set the **high-availability mode** to *zookeeper*, configure a **ZooKeeper quorum** and set up a **masters file** with all JobManagers hosts and their web UI ports.
+要启用JobManager高可用性，必须将**高可用性模式**设置为* zookeeper *，
+配置一个** ZooKeeper quorum**，并配置一个**主文件** 存储所有JobManager hostname 及其Web UI端口号。 
 
-Flink leverages **[ZooKeeper](http://zookeeper.apache.org)** for *distributed coordination* between all running JobManager instances. ZooKeeper is a separate service from Flink, which provides highly reliable distributed coordination via leader election and light-weight consistent state storage. Check out [ZooKeeper's Getting Started Guide](http://zookeeper.apache.org/doc/trunk/zookeeperStarted.html) for more information about ZooKeeper. Flink includes scripts to [bootstrap a simple ZooKeeper](#bootstrap-zookeeper) installation.
-
+Flink利用** [ZooKeeper]（http://zookeeper.apache.org）** 实现运行中的JobManager节点之间的*分布式协调*。 ZooKeeper是独立于Flink的服务，它通过领导选举制和轻量级状态一致性存储 来提供高度可靠的分布式协调。 
+有关ZooKeeper的更多信息，请查看“ZooKeeper入门指南”（http://zookeeper.apache.org/doc/trunk/zookeeperStarted.html）。 
+Flink包含[安装简单ZooKeeper]（＃bootstrap-zookeeper）的bootstrap脚本。
+ 
 #### Masters File (masters)
 
-In order to start an HA-cluster configure the *masters* file in `conf/masters`:
+为了启动集群的高可用（HA），需要配置`conf/masters`中的* masters *文件  :
 
-- **masters file**: The *masters file* contains all hosts, on which JobManagers are started, and the ports to which the web user interface binds.
+- **masters file**: *masters file* 文件中包含所有启动JobManager节点的hosts，以及对应Web UI的端口号 
 
   <pre>
 jobManagerAddress1:webUIPort1
@@ -58,13 +65,13 @@ jobManagerAddress1:webUIPort1
 jobManagerAddressX:webUIPortX
   </pre>
 
-By default, the job manager will pick a *random port* for inter process communication. You can change this via the **`high-availability.jobmanager.port`** key. This key accepts single ports (e.g. `50010`), ranges (`50000-50025`), or a combination of both (`50010,50011,50020-50025,50050-50075`).
+默认情况下，JobManager会选择 *随机端口号* 作为内部进程通信。我们可以通过修改参数**recovery.jobmanager.port**的值来修改。这个参数的配置接受为单个端口号（比如50010），也可以设置一段范围比如 50000~50025，或者端口号组合（比如50010，50011，50020~50025,50050~50075）。
 
-#### Config File (flink-conf.yaml)
+#### 配置文件(flink-conf.yaml)
 
-In order to start an HA-cluster add the following configuration keys to `conf/flink-conf.yaml`:
+为了启动集群的高可用（HA），需要对文件`conf/flink-conf.yaml`做一下配置： 
 
-- **high-availability mode** (required): The *high-availability mode* has to be set in `conf/flink-conf.yaml` to *zookeeper* in order to enable high availability mode.
+- **高可用模式** (必须的): 要启用高可用，需要配置文件 `conf/flink-conf.yaml` 中的 *high-availability mode* 必须设置为 *zookeeper*。
 
   <pre>high-availability: zookeeper</pre>
 
