@@ -22,24 +22,20 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-Flink exposes a metric system that allows gathering and exposing metrics to external systems.
-
+Flink公开了一种指标系统，可以收集和暴露指标给外部系统.
 * This will be replaced by the TOC
 {:toc}
 
 ## Registering metrics
-
-You can access the metric system from any user function that extends [RichFunction]({{ site.baseurl }}/dev/api_concepts.html#rich-functions) by calling `getRuntimeContext().getMetricGroup()`.
-This method returns a `MetricGroup` object on which you can create and register new metrics.
+你可以调用 `getRuntimeContext().getMetricGroup()`方法来访问任何继承自[RichFunction]({{ site.baseurl }}/dev/api_concepts.html#rich-functions)函数的用户函数的指标系统.这个方法返回一个`MetricGroup`对象，通过这个对象可以创建和注册新的指标.
 
 ### Metric types
 
-Flink supports `Counters`, `Gauges`, `Histograms` and `Meters`.
+Flink支持的指标类型：`Counters`,`Gauges`,`Histograms`和`Meters`.
 
 #### Counter
-
-A `Counter` is used to count something. The current value can be in- or decremented using `inc()/inc(long n)` or `dec()/dec(long n)`.
-You can create and register a `Counter` by calling `counter(String name)` on a `MetricGroup`.
+`Counter`用作某方面计数，通过调用`inc()/inc(long n) `或者 `dec()/dec(long n)`方法来使当前的值增加或者减少. 
+ 通过调用`MetricGroup`的`counter(String name)`方法可以创建和注册一个`Counter`.
 
 {% highlight java %}
 
@@ -60,7 +56,7 @@ public class MyMapper extends RichMapFunction<String, Integer> {
 
 {% endhighlight %}
 
-Alternatively you can also use your own `Counter` implementation:
+或者你也可以使用自己实现的`Counter`：
 
 {% highlight java %}
 
@@ -79,9 +75,9 @@ public class MyMapper extends RichMapFunction<String, Integer> {
 
 #### Gauge
 
-A `Gauge` provides a value of any type on demand. In order to use a `Gauge` you must first create a class that implements the `org.apache.flink.metrics.Gauge` interface.
-There is no restriction for the type of the returned value.
-You can register a gauge by calling `gauge(String name, Gauge gauge)` on a `MetricGroup`.
+`Gauge`按需提供任意类型的值，要使用`Gauge`，你必须首先创建一个类并实现`org.apache.flink.metrics.Gauge`接口。
+这里对返回值的类型没有限制。
+可以调用`MetricGroup`的`gauge(String name,Gauge gauge)`方法来注册一个gauge。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -125,12 +121,11 @@ public class MyMapper extends RichMapFunction[String,Int] {
 
 </div>
 
-Note that reporters will turn the exposed object into a `String`, which means that a meaningful `toString()` implementation is required.
+请注意reporters会将暴露的对象转化成`String`型，这意味着需要去实现一个有意义的`toString（）`方法
 
 #### Histogram
-
-A `Histogram` measures the distribution of long values.
-You can register one by calling `histogram(String name, Histogram histogram)` on a `MetricGroup`.
+`Histogram`用于度量长值分布情况，
+你可以通过调用`MetricGroup`的`histogram(String name, Histogram histogram)`方法来注册一个Histogram
 
 {% highlight java %}
 public class MyMapper extends RichMapFunction<Long, Integer> {
@@ -149,8 +144,8 @@ public class MyMapper extends RichMapFunction<Long, Integer> {
 }
 {% endhighlight %}
 
-Flink does not provide a default implementation for `Histogram`, but offers a {% gh_link flink-metrics/flink-metrics-dropwizard/src/main/java/org/apache/flink/dropwizard/metrics/DropwizardHistogramWrapper.java "Wrapper" %} that allows usage of Codahale/DropWizard histograms.
-To use this wrapper add the following dependency in your `pom.xml`:
+ Flink没有提供一个默认的`Histogram`实现。但是提供了一个{% gh_link flink-metrics/flink-metrics-dropwizard/src/main/java/org/apache/flink/dropwizard/metrics/DropwizardHistogramWrapper.java "Wrapper" %}来允许使用 Codahale/DropWizard 直方图。
+ 如需使用此包装器，请在您的`pom.xml`中添加以下依赖：
 {% highlight xml %}
 <dependency>
       <groupId>org.apache.flink</groupId>
@@ -158,8 +153,7 @@ To use this wrapper add the following dependency in your `pom.xml`:
       <version>{{site.version}}</version>
 </dependency>
 {% endhighlight %}
-
-You can then register a Codahale/DropWizard histogram like this:
+你可以注册一个Codahale/DropWizard 直方图类似于：
 
 {% highlight java %}
 public class MyMapper extends RichMapFunction<Long, Integer> {
@@ -179,8 +173,8 @@ public class MyMapper extends RichMapFunction<Long, Integer> {
 
 #### Meter
 
-A `Meter` measures an average throughput. An occurrence of an event can be registered with the `markEvent()` method. Occurrence of multiple events at the same time can be registered with `markEvent(long n)` method.
-You can register a meter by calling `meter(String name, Meter meter)` on a `MetricGroup`.
+`Meter`用于度量平均吞吐量，使用`markEvent（）`方法可以注册一个发生的事件。同时发生的多个事件可以使用`markEvent(long n)`方法来进行注册。
+通过调用`MetricGroup`的`meter(String name, Meter meter)`方法来注册一个meter
 
 {% highlight java %}
 public class MyMapper extends RichMapFunction<Long, Integer> {
@@ -199,8 +193,9 @@ public class MyMapper extends RichMapFunction<Long, Integer> {
 }
 {% endhighlight %}
 
-Flink offers a {% gh_link flink-metrics/flink-metrics-dropwizard/src/main/java/org/apache/flink/dropwizard/metrics/DropwizardMeterWrapper.java "Wrapper" %} that allows usage of Codahale/DropWizard meters.
-To use this wrapper add the following dependency in your `pom.xml`:
+Flink提供了一个 {% gh_link flink-metrics/flink-metrics-dropwizard/src/main/java/org/apache/flink/dropwizard/metrics/DropwizardMeterWrapper.java "Wrapper" %}来允许使用 Codahale/DropWizard meters. 
+要使用此包装器，请在您的`pom.xml`中添加以下依赖：
+
 {% highlight xml %}
 <dependency>
       <groupId>org.apache.flink</groupId>
@@ -209,7 +204,7 @@ To use this wrapper add the following dependency in your `pom.xml`:
 </dependency>
 {% endhighlight %}
 
-You can then register a Codahale/DropWizard meter like this:
+您可以注册Codahale / DropWizard meter类似于这样：
 
 {% highlight java %}
 public class MyMapper extends RichMapFunction<Long, Integer> {
@@ -228,14 +223,12 @@ public class MyMapper extends RichMapFunction<Long, Integer> {
 
 ## Scope
 
-Every metric is assigned an identifier under which it will be reported that is based on 3 components: the user-provided name when registering the metric, an optional user-defined scope and a system-provided scope.
-For example, if `A.B` is the sytem scope, `C.D` the user scope and `E` the name, then the identifier for the metric will be `A.B.C.D.E`.
-
-You can configure which delimiter to use for the identifier (default: `.`) by setting the `metrics.scope.delimiter` key in `conf/flink-conf.yaml`.
+每个指标被分配一个标识符，根据该标识符，它将基于3个组件进行报告：注册指标时用户提供的名称，可选的用户自定义域和系统提供的域。例如，如果`A.B`是系统域，`C.D`是用户域，`E`是名称，那么指标的标识符将是`A.B.C.D.E`.
+你可以配置标识符的分隔符（默认:`.`）,通过设置`conf/flink-conf.yam`里面的`metrics.scope.delimiter`参数
 
 ### User Scope
 
-You can define a user scope by calling either `MetricGroup#addGroup(String name)` or `MetricGroup#addGroup(int name)`.
+你可以通过调用`MetricGroup#addGroup(String name)`和`MetricGroup#addGroup(int name)`来定义一个用户域
 
 {% highlight java %}
 
@@ -253,38 +246,44 @@ The system scope contains context information about the metric, for example in w
 Which context information should be included can be configured by setting the following keys in `conf/flink-conf.yaml`.
 Each of these keys expect a format string that may contain constants (e.g. "taskmanager") and variables (e.g. "&lt;task_id&gt;") which will be replaced at runtime.
 
+系统域包含关于这个指标的上下文信息，例如其注册的任务或该任务属于哪个作业.
+可以通过在`conf/flink-conf.yaml`中设置以下关键字来配置它的上下文信息。
+这些关键字的每一个都期望可以包含常量的格式字符串（例如:“taskmanager”）和将在运行时被替换的变量（例如:"&lt;task_id&gt;"）
+
 - `metrics.scope.jm`
-  - Default: &lt;host&gt;.jobmanager
-  - Applied to all metrics that were scoped to a job manager.
+  - 默认: &lt;host&gt;.jobmanager
+  - 适用于属于一个job manager的所有指标.
 - `metrics.scope.jm.job`
-  - Default: &lt;host&gt;.jobmanager.&lt;job_name&gt;
-  - Applied to all metrics that were scoped to a job manager and job.
+  - 默认: &lt;host&gt;.jobmanager.&lt;job_name&gt;
+  - 适用于属于一个job manager和job的所有指标.
 - `metrics.scope.tm`
-  - Default: &lt;host&gt;.taskmanager.&lt;tm_id&gt;
-  - Applied to all metrics that were scoped to a task manager.
+  - 默认: &lt;host&gt;.taskmanager.&lt;tm_id&gt;
+  - 适用于属于一个task manager的所有指标.
 - `metrics.scope.tm.job`
-  - Default: &lt;host&gt;.taskmanager.&lt;tm_id&gt;.&lt;job_name&gt;
-  - Applied to all metrics that were scoped to a task manager and job.
+  - 默认: &lt;host&gt;.taskmanager.&lt;tm_id&gt;.&lt;job_name&gt;
+  - 适用于属于一个task manager或者job的所有指标.
 - `metrics.scope.task`
-  - Default: &lt;host&gt;.taskmanager.&lt;tm_id&gt;.&lt;job_name&gt;.&lt;task_name&gt;.&lt;subtask_index&gt;
-   - Applied to all metrics that were scoped to a task.
+  - 默认: &lt;host&gt;.taskmanager.&lt;tm_id&gt;.&lt;job_name&gt;.&lt;task_name&gt;.&lt;subtask_index&gt;
+   - 适用于属于一个task的所有指标.
 - `metrics.scope.operator`
-  - Default: &lt;host&gt;.taskmanager.&lt;tm_id&gt;.&lt;job_name&gt;.&lt;operator_name&gt;.&lt;subtask_index&gt;
-  - Applied to all metrics that were scoped to an operator.
+  - 默认: &lt;host&gt;.taskmanager.&lt;tm_id&gt;.&lt;job_name&gt;.&lt;operator_name&gt;.&lt;subtask_index&gt;
+  - 适用于属于一个operator的所有指标.
 
-There are no restrictions on the number or order of variables. Variables are case sensitive.
+这里对变量的数量和顺序没有限制，变量区分大小写.
 
-The default scope for operator metrics will result in an identifier akin to `localhost.taskmanager.1234.MyJob.MyOperator.0.MyMetric`
+运算指标的默认域将导致类似的标识符：
 
-If you also want to include the task name but omit the task manager information you can specify the following format:
+`localhost.taskmanager.1234.MyJob.MyOperator.0.MyMetric`
+
+如果你想包含任务名称，但省略task manager信息，你可以指定以下格式：
 
 `metrics.scope.operator: <host>.<job_name>.<task_name>.<operator_name>.<subtask_index>`
 
-This could create the identifier `localhost.MyJob.MySource_->_MyOperator.MyOperator.0.MyMetric`.
+这可以创建标识符`localhost.MyJob.MySource_->_MyOperator.MyOperator.0.MyMetric`.
 
-Note that for this format string an identifier clash can occur should the same job be run multiple times concurrently, which can lead to inconsistent metric data.
-As such it is advised to either use format strings that provide a certain degree of uniqueness by including IDs (e.g &lt;job_id&gt;)
-or by assigning unique names to jobs and operators.
+注意对于此格式字符串，如果同一作业同时运行多次，则可能会发生标识符冲突，导致指标标准数据不一致。
+因此，建议使用格式字符串，通过包括ID（例如 &lt;job_id&gt;）
+或通过为作业和操作符分配唯一的名称来提供一定程度的唯一性.
 
 ### List of all Variables
 
@@ -296,19 +295,19 @@ or by assigning unique names to jobs and operators.
 
 ## Reporter
 
-Metrics can be exposed to an external system by configuring one or several reporters in `conf/flink-conf.yaml`. These
-reporters will be instantiated on each job and task manager when they are started.
+指标能够暴露给一个外部系统，通过在`conf/flink-conf.yaml`中配置一个或者一些reporters.
+这些reporters将在每个job和task manager启动时被实例化.
 
-- `metrics.reporters`: The list of named reporters.
-- `metrics.reporter.<name>.<config>`: Generic setting `<config>` for the reporter named `<name>`.
-- `metrics.reporter.<name>.class`: The reporter class to use for the reporter named `<name>`.
-- `metrics.reporter.<name>.interval`: The reporter interval to use for the reporter named `<name>`.
-- `metrics.reporter.<name>.scope.delimiter`: The delimiter to use for the identifier (default value use `metrics.scope.delimiter`) for the reporter named `<name>`.
+- `metrics.reporters`: reporters的名称列表.
+- `metrics.reporter.<name>.<config>`: 给定reporter名称`<name>`的通用设置.
+- `metrics.reporter.<name>.class`: 给定reporter名称`<name>`的reporter类 .
+- `metrics.reporter.<name>.interval`: 给定reporter名称`<name>`的reporter间隔.
+- `metrics.reporter.<name>.scope.delimiter`: 给定reporter名称`<name>`所使用的分割分标识(默认值用：`metrics.scope.delimiter`)
 
-All reporters must at least have the `class` property, some allow specifying a reporting `interval`. Below,
-we will list more settings specific to each reporter.
 
-Example reporter configuration that specifies multiple reporters:
+所有的reporters必须至少具备`class`属性，有些允许指定一个reporting的`interval`，以下，我们将列举更多针对每个reporter的设置.
+
+举例说明指定多个reporters的配置
 
 ```
 metrics.reporters: my_jmx_reporter,my_other_reporter
@@ -322,26 +321,22 @@ metrics.reporter.my_other_reporter.port: 10000
 
 ```
 
-**Important:** The jar containing the reporter must be accessible when Flink is started by placing it in the /lib folder.
+**重要提示：**当Flink启动的时候，通过放入到/lib目录下包含reporter的jar文件必须可访问.
+你可以通过实现`org.apache.flink.metrics.reporter.MetricReporter`接口来定义你自己的`Reporter`， 如果这个Reporter必须定期发送报告，那你也必须同时实现`Scheduled`接口.
 
-You can write your own `Reporter` by implementing the `org.apache.flink.metrics.reporter.MetricReporter` interface.
-If the Reporter should send out reports regularly you have to implement the `Scheduled` interface as well.
-
-The following sections list the supported reporters.
+下面的章节列举了支持的reporters.
 
 ### JMX (org.apache.flink.metrics.jmx.JMXReporter)
 
 You don't have to include an additional dependency since the JMX reporter is available by default
 but not activated.
 
-Parameters:
+参数:
 
-- `port` - (optional) the port on which JMX listens for connections. This can also be a port range. When a
-range is specified the actual port is shown in the relevant job or task manager log. If this setting is set
-Flink will start an extra JMX connector for the given port/range. Metrics are always available on the default
-local JMX interface.
+- `port` - (可选) JMX侦听连接的端口，也可以是端口范围。当指定范围时，相关job或者task manager 日志将显示实际端口。如果设置了此设置，Flink将为给定的端口/范围启动一个额外的JMX连接器。默认本地JMX接口始终可以使用指标
+你不必包含其他依赖关系，因为JMX reporter默认可用，但是没有被激活
 
-Example configuration:
+示例配置：
 
 {% highlight yaml %}
 
@@ -365,19 +360,18 @@ The domain thus identifies a metric class, while the key-property list identifie
 
 ### Ganglia (org.apache.flink.metrics.ganglia.GangliaReporter)
 
-In order to use this reporter you must copy `/opt/flink-metrics-ganglia-{{site.version}}.jar` into the `/lib` folder
-of your Flink distribution.
+为了使用这个reporter，你必须将`/opt/flink-metrics-ganglia-{{site.version}}.jar`拷贝到Flink的`/lib`文件夹中
 
-Parameters:
+参数:
 
-- `host` - the gmond host address configured under `udp_recv_channel.bind` in `gmond.conf`
-- `port` - the gmond port configured under `udp_recv_channel.port` in `gmond.conf`
-- `tmax` - soft limit for how long an old metric should be retained
-- `dmax` - hard limit for how long an old metric should be retained
-- `ttl` - time-to-live for transmitted UDP packets
-- `addressingMode` - UDP addressing mode to use (UNICAST/MULTICAST)
+- `host` - 在`gmond.conf`中的`udp_recv_channel.bind`下配置的gmond主机地址
+- `port` - 在`gmond.conf`中的`udp_recv_channel.port`下配置的gmond端口
+- `tmax` - 旧指标能够保留软性限制的最长时间
+- `dmax` - 旧指标能够保留硬性限制的最长时间
+- `ttl` - 传输UDP包的生存时间
+- `addressingMode` - UDP使用的寻址模式(UNICAST/MULTICAST)  
 
-Example configuration:
+示例配置:
 
 {% highlight yaml %}
 
@@ -394,16 +388,15 @@ metrics.reporter.gang.addressingMode: MULTICAST
 
 ### Graphite (org.apache.flink.metrics.graphite.GraphiteReporter)
 
-In order to use this reporter you must copy `/opt/flink-metrics-graphite-{{site.version}}.jar` into the `/lib` folder
-of your Flink distribution.
+为了使用这个reporter，你必须将`/opt/flink-metrics-graphite-{{site.version}}.jar`拷贝到Flink的`/lib`文件夹中
 
-Parameters:
+参数:
 
-- `host` - the Graphite server host
-- `port` - the Graphite server port
-- `protocol` - protocol to use (TCP/UDP)
+- `host` - Graphite 服务器地址
+- `port` - Graphite 服务器端口
+- `protocol` - 使用的协议 (TCP/UDP)
 
-Example configuration:
+示例配置：
 
 {% highlight yaml %}
 
@@ -417,15 +410,14 @@ metrics.reporter.grph.protocol: TCP
 
 ### StatsD (org.apache.flink.metrics.statsd.StatsDReporter)
 
-In order to use this reporter you must copy `/opt/flink-metrics-statsd-{{site.version}}.jar` into the `/lib` folder
-of your Flink distribution.
+为了使用reporter，你必须将`/opt/flink-metrics-statsd-{{site.version}}.jar` 拷贝到Flink的`/lib`文件夹中
 
-Parameters:
+参数:
 
-- `host` - the StatsD server host
-- `port` - the StatsD server port
+- `host` - the StatsD 服务器地址
+- `port` - the StatsD 服务器端口
 
-Example configuration:
+示例配置
 
 {% highlight yaml %}
 
@@ -438,29 +430,22 @@ metrics.reporter.stsd.port: 8125
 
 ## System metrics
 
-By default Flink gathers several metrics that provide deep insights on the current state.
-This section is a reference of all these metrics.
+默认情况下，Flink收集了几个能够深入了解当前状态的指标，本章节是所有这些指标的一个参考
+以下表格通常有4列：
 
-The tables below generally feature 4 columns:
+* "Scope"列表述了用于生成系统域的域格式，例如，如果单元格包含“Operator”，则使用“metric.scope.operator”的作用域格式，如果单元格包含以斜杠分割的多个值，则会根据不同的实体报告多个指标，例如job-和askmanagers。
 
-* The "Scope" column describes which scope format is used to generate the system scope.
-  For example, if the cell contains "Operator" then the scope format for "metrics.scope.operator" is used.
-  If the cell contains multiple values, separated by a slash, then the metrics are reported multiple
-  times for different entities, like for both job- and taskmanagers.
+* "Infix"（可选） 列描述了哪些中缀附加到系统域中.
 
-* The (optional)"Infix" column describes which infix is appended to the system scope.
+* "Metrics" 列中列出了给定域和中缀的所有注册指标的名称.
 
-* The "Metrics" column lists the names of all metrics that are registered for the given scope and infix.
+* "Description" 列提供有关给定指标度量的相关信息.
 
-* The "Description" column provides information as to what a given metric is measuring.
+请注意，中缀/指标名称列中的所有点仍然遵循“metrics.delimiter”设置，因此，为了推断指标标识符：
 
-Note that all dots in the infix/metric name columns are still subject to the "metrics.delimiter" setting.
-
-Thus, in order to infer the metric identifier:
-
-1. Take the scope-format based on the "Scope" column
-2. Append the value in the "Infix" column if present, and account for the "metrics.delimiter" setting
-3. Append metric name.
+1. 根据域列选择域格式
+2. 添加这个值在中缀列，如果存在，则表示“metrics.delimiter”设置
+3. 添加指标名称
 
 #### CPU:
 <table class="table table-bordered">
@@ -477,11 +462,11 @@ Thus, in order to infer the metric identifier:
       <th rowspan="2"><strong>Job-/TaskManager</strong></th>
       <td rowspan="2">Status.JVM.CPU</td>
       <td>Load</td>
-      <td>The recent CPU usage of the JVM.</td>
+      <td>JVM最近CPU使用情况.</td>
     </tr>
     <tr>
       <td>Time</td>
-      <td>The CPU time used by the JVM.</td>
+      <td>JVM使用的CPU时间.</td>
     </tr>
   </tbody>
 </table>
@@ -501,51 +486,51 @@ Thus, in order to infer the metric identifier:
       <th rowspan="12"><strong>Job-/TaskManager</strong></th>
       <td rowspan="12">Status.JVM.Memory</td>
       <td>Memory.Heap.Used</td>
-      <td>The amount of heap memory currently used.</td>
+      <td>T当前使用的堆内存大小.</td>
     </tr>
     <tr>
       <td>Heap.Committed</td>
-      <td>The amount of heap memory guaranteed to be available to the JVM.</td>
+      <td>保证JVM可用的堆内存大小.</td>
     </tr>
     <tr>
       <td>Heap.Max</td>
-      <td>The maximum amount of heap memory that can be used for memory management.</td>
+      <td>可用于内存管理的堆内存最大值.</td>
     </tr>
     <tr>
       <td>NonHeap.Used</td>
-      <td>The amount of non-heap memory currently used.</td>
+      <td>当前使用的非堆内存大小.</td>
     </tr>
     <tr>
       <td>NonHeap.Committed</td>
-      <td>The amount of non-heap memory guaranteed to be available to the JVM.</td>
+      <td>保证JVM可用的非堆内存大小.</td>
     </tr>
     <tr>
       <td>NonHeap.Max</td>
-      <td>The maximum amount of non-heap memory that can be used for memory management.</td>
+      <td>可用于内存管理的非堆内存最大值.</td>
     </tr>
     <tr>
       <td>Direct.Count</td>
-      <td>The number of buffers in the direct buffer pool.</td>
+      <td>直接缓冲池中的缓冲区数量.</td>
     </tr>
     <tr>
       <td>Direct.MemoryUsed</td>
-      <td>The amount of memory used by the JVM for the direct buffer pool.</td>
+      <td>JVM中用于直接缓冲池的内存大小.</td>
     </tr>
     <tr>
       <td>Direct.TotalCapacity</td>
-      <td>The total capacity of all buffers in the direct buffer pool.</td>
+      <td>直接缓冲池中所有缓冲区的总容量.</td>
     </tr>
     <tr>
       <td>Mapped.Count</td>
-      <td>The number of buffers in the mapped buffer pool.</td>
+      <td>映射缓冲池中缓冲区的数量.</td>
     </tr>
     <tr>
       <td>Mapped.MemoryUsed</td>
-      <td>The amount of memory used by the JVM for the mapped buffer pool.</td>
+      <td>JVM中用于映射缓冲池的内存大小.</td>
     </tr>
     <tr>
       <td>Mapped.TotalCapacity</td>
-      <td>The number of buffers in the mapped buffer pool.</td>
+      <td>映射缓冲池中缓冲区的数量.</td>
     </tr>                                                         
   </tbody>                                                         
 </table>
@@ -565,7 +550,7 @@ Thus, in order to infer the metric identifier:
       <th rowspan="1"><strong>Job-/TaskManager</strong></th>
       <td rowspan="1">Status.JVM.ClassLoader</td>
       <td>Threads.Count</td>
-      <td>The total number of live threads.</td>
+      <td>存活线程总数.</td>
     </tr>
   </tbody>
 </table>
@@ -585,11 +570,11 @@ Thus, in order to infer the metric identifier:
       <th rowspan="2"><strong>Job-/TaskManager</strong></th>
       <td rowspan="2">Status.JVM.GarbageCollector</td>
       <td>&lt;GarbageCollector&gt;.Count</td>
-      <td>The total number of collections that have occurred.</td>
+      <td>已发生的回收总数.</td>
     </tr>
     <tr>
       <td>&lt;GarbageCollector&gt;.Time</td>
-      <td>The total time spent performing garbage collection.</td>
+      <td>执行垃圾回收花费的总时间.</td>
     </tr>
   </tbody>
 </table>
@@ -609,11 +594,11 @@ Thus, in order to infer the metric identifier:
       <th rowspan="2"><strong>Job-/TaskManager</strong></th>
       <td rowspan="2">Status.JVM.ClassLoader</td>
       <td>ClassesLoaded</td>
-      <td>The total number of classes loaded since the start of the JVM.</td>
+      <td>自JVM启动以来加载类的总数.</td>
     </tr>
     <tr>
       <td>ClassesUnloaded</td>
-      <td>The total number of classes unloaded since the start of the JVM.</td>
+      <td>自JVM启动以来卸载类的总数.</td>
     </tr>
   </tbody>
 </table>
@@ -633,47 +618,47 @@ Thus, in order to infer the metric identifier:
       <th rowspan="2"><strong>TaskManager</strong></th>
       <td rowspan="2">Status.Network</td>
       <td>AvailableMemorySegments</td>
-      <td>The number of unused memory segments.</td>
+      <td>未使用的内存段数.</td>
     </tr>
     <tr>
       <td>TotalMemorySegments</td>
-      <td>The number of allocated memory segments.</td>
+      <td>已分配的内存段数.</td>
     </tr>
     <tr>
       <th rowspan="8">Task</th>
       <td rowspan="4">buffers</td>
       <td>inputQueueLength</td>
-      <td>The number of queued input buffers.</td>
+      <td>队列输入缓冲区的数量.</td>
     </tr>
     <tr>
       <td>outputQueueLength</td>
-      <td>The number of queued output buffers.</td>
+      <td>队列输出缓冲区的数量.</td>
     </tr>
     <tr>
       <td>inPoolUsage</td>
-      <td>An estimate of the input buffers usage.</td>
+      <td>输入缓冲区使用情况评估.</td>
     </tr>
     <tr>
       <td>outPoolUsage</td>
-      <td>An estimate of the output buffers usage.</td>
+      <td>输出缓冲区使用情况评估.</td>
     </tr>
     <tr>
       <td rowspan="4">Network.&lt;Input|Output&gt;.&lt;gate&gt;<br />
         <strong>(only available if <tt>taskmanager.net.detailed-metrics</tt> config option is set)</strong></td>
       <td>totalQueueLen</td>
-      <td>Total number of queued buffers in all input/output channels.</td>
+      <td>所有输入/输出通道中队列缓冲区的总数.</td>
     </tr>
     <tr>
       <td>minQueueLen</td>
-      <td>Minimum number of queued buffers in all input/output channels.</td>
+      <td>所有输入/输出通道中队列缓冲区的最小数目.</td>
     </tr>
     <tr>
       <td>maxQueueLen</td>
-      <td>Maximum number of queued buffers in all input/output channels.</td>
+      <td>所有输入/输出通道中队列缓冲区的最大数目.</td>
     </tr>
     <tr>
       <td>avgQueueLen</td>
-      <td>Average number of queued buffers in all input/output channels.</td>
+      <td>所有输入/输出通道中队列缓冲区的平均数目.</td>
     </tr>
   </tbody>
 </table>
@@ -691,19 +676,19 @@ Thus, in order to infer the metric identifier:
     <tr>
       <th rowspan="4"><strong>JobManager</strong></th>
       <td>numRegisteredTaskManagers</td>
-      <td>The number of registered taskmanagers.</td>
+      <td>已注册taskmanagers的数量.</td>
     </tr>
     <tr>
       <td>numRunningJobs</td>
-      <td>The number of running jobs.</td>
+      <td>正在运行jobs的数量.</td>
     </tr>
     <tr>
       <td>taskSlotsAvailable</td>
-      <td>The number of available task slots.</td>
+      <td>可用task slots的数量</td>
     </tr>
     <tr>
       <td>taskSlotsTotal</td>
-      <td>The total number of task slots.</td>
+      <td>task slots总数.</td>
     </tr>
   </tbody>
 </table>
@@ -721,20 +706,20 @@ Thus, in order to infer the metric identifier:
     <tr>
       <th rowspan="3"><strong>Job (only available on JobManager)</strong></th>
       <td>lastCheckpointDuration</td>
-      <td>The time it took to complete the last checkpoint.</td>
+      <td>T完成上一次检测点所花费的时间.</td>
     </tr>
     <tr>
       <td>lastCheckpointSize</td>
-      <td>The total size of the last checkpoint.</td>
+      <td>上一次检测点的总大小.</td>
     </tr>
     <tr>
       <td>lastCheckpointExternalPath</td>
-      <td>The path where the last checkpoint was stored.</td>
+      <td>上一个检测点存储的路径.</td>
     </tr>
     <tr>
       <th rowspan="1">Task</th>
       <td>checkpointAlignmentTime</td>
-      <td>The time in nanoseconds that the last barrier alignment took to complete, or how long the current alignment has taken so far.</td>
+      <td>最后一个障碍对齐所需的纳秒时间，或者当前对齐已经花费了多长时间.</td>
     </tr>
   </tbody>
 </table>
@@ -752,57 +737,57 @@ Thus, in order to infer the metric identifier:
     <tr>
       <th rowspan="7"><strong>Task</strong></th>
       <td>currentLowWatermark</td>
-      <td>The lowest watermark this task has received.</td>
+      <td>该任务已经获得的最低水位.</td>
     </tr>
     <tr>
       <td>numBytesInLocal</td>
-      <td>The total number of bytes this task has read from a local source.</td>
+      <td>该任务从本地源读取的字节总数.</td>
     </tr>
     <tr>
       <td>numBytesInLocalPerSecond</td>
-      <td>The number of bytes this task reads from a local source per second.</td>
+      <td>该任务从本地源每秒读取的字节数.</td>
     </tr>
     <tr>
       <td>numBytesInRemote</td>
-      <td>The total number of bytes this task has read from a remote source.</td>
+      <td>该任务从远端读取的字节总数.</td>
     </tr>
     <tr>
       <td>numBytesInRemotePerSecond</td>
-      <td>The number of bytes this task reads from a remote source per second.</td>
+      <td>该任务从远端每秒读取的字节数.</td>
     </tr>
     <tr>
       <td>numBytesOut</td>
-      <td>The total number of bytes this task has emitted.</td>
+      <td>该任务已发出的字节总数.</td>
     </tr>
     <tr>
       <td>numBytesOutPerSecond</td>
-      <td>The number of bytes this task emits per second.</td>
+      <td>该任务每秒发出的字节数.</td>
     </tr>
     <tr>
       <th rowspan="4"><strong>Task/Operator</strong></th>
       <td>numRecordsIn</td>
-      <td>The total number of records this operator/task has received.</td>
+      <td>该任务/操作已收到的条目总数.</td>
     </tr>
     <tr>
       <td>numRecordsInPerSecond</td>
-      <td>The number of records this operator/task receives per second.</td>
+      <td>该任务/操作每秒收到的条目数.</td>
     </tr>
     <tr>
       <td>numRecordsOut</td>
-      <td>The total number of records this operator/task has emitted.</td>
+      <td>该操作/任务已发出的条目总数.</td>
     </tr>
     <tr>
       <td>numRecordsOutPerSecond</td>
-      <td>The number of records this operator/task sends per second.</td>
+      <td>该操作/任务每秒发出的条目数.</td>
     </tr>
     <tr>
       <th rowspan="2"><strong>Operator</strong></th>
       <td>latency</td>
-      <td>The latency distributions from all incoming sources.</td>
+      <td>所有输入源的延迟分布.</td>
     </tr>
     <tr>
       <td>numSplitsProcessed</td>
-      <td>The total number of InputSplits this data source has processed (if the operator is a data source).</td>
+      <td>数据源已经处理的输入分片总数（如果操作是一个数据源).</td>
     </tr>
   </tbody>
 </table>
@@ -810,39 +795,23 @@ Thus, in order to infer the metric identifier:
 
 ### Latency tracking
 
-Flink allows to track the latency of records traveling through the system. To enable the latency tracking
-a `latencyTrackingInterval` (in milliseconds) has to be set to a positive value in the `ExecutionConfig`.
+Flink允许去跟踪条目在整个系统中运行的延迟，为了开启延迟跟踪，`latencyTrackingInterval `(毫秒)必须在`ExecutionConfig`中设置为一个正值.
+在`latencyTrackingInterval`，源端将周期性的发送一个特殊条目，叫做`LatencyMarker`，这个标记包含一个从源端发出记录时的时间戳。延迟标记不能超过常规的用户条目，因此如果条目在一个操作的前面排队，将会通过这个标记添加延迟跟踪.
 
-At the `latencyTrackingInterval`, the sources will periodically emit a special record, called a `LatencyMarker`.
-The marker contains a timestamp from the time when the record has been emitted at the sources.
-Latency markers can not overtake regular user records, thus if records are queuing up in front of an operator, 
-it will add to the latency tracked by the marker.
+请注意延迟标记是不记录用户条目在操作中所花费的时间，而是绕过它们。特别是这个标记是不用于记录在窗口缓冲区中的时间条目。只有当操作不能够接受新的条目，它们才会排队。用这个标记测量的延迟将会反映出这一点.
 
-Note that the latency markers are not accounting for the time user records spend in operators as they are
-bypassing them. In particular the markers are not accounting for the time records spend for example in window buffers.
-Only if operators are not able to accept new records, thus they are queuing up, the latency measured using
-the markers will reflect that.
+所有中间操作通过保留每个源的最后`n`个延迟的列表，来计算一个延迟的分布。落地操作保留每个源的列表，然后每个并行源实例允许检测由单个机器所引起的延迟问题.
 
-All intermediate operators keep a list of the last `n` latencies from each source to compute 
-a latency distribution.
-The sink operators keep a list from each source, and each parallel source instance to allow detecting 
-latency issues caused by individual machines.
-
-Currently, Flink assumes that the clocks of all machines in the cluster are in sync. We recommend setting
-up an automated clock synchronisation service (like NTP) to avoid false latency results.
+目前，Flink认为集群中所有机器的时钟是同步的。我们建议建立一个自动时钟同步服务（类似于NTP），以避免虚假的延迟结果.
 
 ### Dashboard integration
 
-Metrics that were gathered for each task or operator can also be visualized in the Dashboard. On the main page for a
-job, select the `Metrics` tab. After selecting one of the tasks in the top graph you can select metrics to display using
-the `Add Metric` drop-down menu.
+为每个任务或者操作所收集到的指标也可以在仪表盘上进行可视化。在一个作业的主页面，选择`Metrics`选项卡，在顶部图选择一个任务后，可以使用`Add Metrics`下拉菜单选择要展示的指标值
+  * 任务指标被列为 `<subtask_index>.<metric_name>`.
+  * 操作指标被列为 `<subtask_index>.<operator_name>.<metric_name>`.
+每个指标被可视化为一个单独的图形，用x轴表示时间和y轴表示测量值。
+所有的图表每10秒自动更新一次，并在导航到另一页时继续执行.
 
-* Task metrics are listed as `<subtask_index>.<metric_name>`.
-* Operator metrics are listed as `<subtask_index>.<operator_name>.<metric_name>`.
-
-Each metric will be visualized as a separate graph, with the x-axis representing time and the y-axis the measured value.
-All graphs are automatically updated every 10 seconds, and continue to do so when navigating to another page.
-
-There is no limit as to the number of visualized metrics; however only numeric metrics can be visualized.
+这里对可视化指标的数量没有限制；但是只有数值型指标可以可视化。
 
 {% top %}
