@@ -25,84 +25,84 @@ under the License.
 * This will be replaced by the TOC
 {:toc}
 
-## Description
+## 描述
 
-The polynomial features transformer maps a vector into the polynomial feature space of degree $d$.
-The dimension of the input vector determines the number of polynomial factors whose values are the respective vector entries.
-Given a vector $(x, y, z, \ldots)^T$ the resulting feature vector looks like:
+多项式特征转换器 (polynomial features transformer)  能把一个向量映射到一个自由度为 $d$ 的多项式特征空间。
+输入特征的维度决定了多项式因子的个数，多项式因子的值就是每个向量的项。
+给定一个向量 $(x, y, z, \ldots)^T$，那么被映射的特征向量为：
 
 $$\left(x, y, z, x^2, xy, y^2, yz, z^2, x^3, x^2y, x^2z, xy^2, xyz, xz^2, y^3, \ldots\right)^T$$
 
-Flink's implementation orders the polynomials in decreasing order of their degree.
+Flink 的实现以自由度降序的方式给多项式排序。
 
-Given the vector $\left(3,2\right)^T$, the polynomial features vector of degree 3 would look like
+如果一个向量为 $\left(3,2\right)^T$，自由度为 3 的多项式特征向量为：
 
  $$\left(3^3, 3^2\cdot2, 3\cdot2^2, 2^3, 3^2, 3\cdot2, 2^2, 3, 2\right)^T$$
 
-This transformer can be prepended to all `Transformer` and `Predictor` implementations which expect an input of type `LabeledVector` or any sub-type of `Vector`.
+该转换器能够前置于所有 `Transformer` 和 `Predictor` 的实现，这些实现的输入需要是 `LabeledVector` 类或者 `Vector` 的子类。
 
-## Operations
+## 操作
 
-`PolynomialFeatures` is a `Transformer`.
-As such, it supports the `fit` and `transform` operation.
+`PolynomialFeatures` 是一个 `Transformer` (转换器)。
+因此，它支持 `fit` (拟合) 和 `transform` (转换) 操作。
 
-### Fit
+### 拟合
 
-PolynomialFeatures is not trained on data and, thus, supports all types of input data.
+PolynomialFeatures 并不对数据进行训练，因此它支持所有类型的输入数据。
 
-### Transform
+### 转换
 
-PolynomialFeatures transforms all subtypes of `Vector` and `LabeledVector` into their respective types:
+PolynomialFeatures 把所有 `Vector` 和 `LabeledVector` 的子类转换成各自的类型，如下所示：
 
 * `transform[T <: Vector]: DataSet[T] => DataSet[T]`
 * `transform: DataSet[LabeledVector] => DataSet[LabeledVector]`
 
-## Parameters
+## 参数
 
-The polynomial features transformer can be controlled by the following parameters:
+多项式特征转换器可以由以下参数控制：
 
 <table class="table table-bordered">
     <thead>
       <tr>
-        <th class="text-left" style="width: 20%">Parameters</th>
-        <th class="text-center">Description</th>
+        <th class="text-left" style="width: 20%">参数</th>
+        <th class="text-center">描述</th>
       </tr>
     </thead>
 
     <tbody>
       <tr>
-        <td><strong>Degree</strong></td>
+        <td><strong>自由度</strong></td>
         <td>
           <p>
-            The maximum polynomial degree.
-            (Default value: <strong>10</strong>)
+            最大多项式自由度.
+            (默认值: <strong>10</strong>)
           </p>
         </td>
       </tr>
     </tbody>
   </table>
 
-## Examples
+## 例子
 
 {% highlight scala %}
-// Obtain the training data set
+// 获取训练数据集
 val trainingDS: DataSet[LabeledVector] = ...
 
-// Setup polynomial feature transformer of degree 3
+// 设置一个自由度为 3 的多项式特征转换器
 val polyFeatures = PolynomialFeatures()
 .setDegree(3)
 
-// Setup the multiple linear regression learner
+// 设置一个复线性回归学习器
 val mlr = MultipleLinearRegression()
 
-// Control the learner via the parameter map
+// 通过参数映射 (ParameterMap) 控制学习器
 val parameters = ParameterMap()
 .add(MultipleLinearRegression.Iterations, 20)
 .add(MultipleLinearRegression.Stepsize, 0.5)
 
-// Create pipeline PolynomialFeatures -> MultipleLinearRegression
+// 创建管道 (pipeline) PolynomialFeatures -> MultipleLinearRegression
 val pipeline = polyFeatures.chainPredictor(mlr)
 
-// train the model
+// 训练模型
 pipeline.fit(trainingDS)
 {% endhighlight %}
