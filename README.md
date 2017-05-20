@@ -65,6 +65,7 @@ Apache Flink官网：[http://flink.apache.org](http://flink.apache.org/index.htm
  - [HuangZhenyang](https://github.com/HuangZhenyang)
  - [Jay357089](https://github.com/Jay357089)
  - [fanzhidongyzby](https://github.com/fanzhidongyzby)
+ - [Cluluxiu](https://github.com/Cluluxiu)
 
 ---
 
