@@ -22,7 +22,7 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-Flink公开了一种指标系统，可以收集和暴露指标给外部系统.
+Flink公开了一个指标系统，可以收集和暴露指标给外部系统.
 * This will be replaced by the TOC
 {:toc}
 
