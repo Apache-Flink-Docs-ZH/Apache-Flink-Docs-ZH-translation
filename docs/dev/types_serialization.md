@@ -1,5 +1,5 @@
 ---
-title: "数据类型与序列化"
+title: "数据类型和序列化"
 nav-id: types
 nav-parent_id: dev
 nav-show_overview: true
@@ -24,34 +24,32 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-Apache Flink 以一种独特的方式处理数据类型和序列化，包括自带的类型描述符，泛型类型提取，和自带的类型序列化框架。本文档描述基本概念及其背后的基本原理。
+Apache Flink 处理数据类型和序列化的方式较特别，包括自带的类型描述，一般类型提取和类型序列化框架。本文档描述这些基本概念并解释背后的相关原理。
 
 * This will be replaced by the TOC
 {:toc}
 
-## Flink 类型处理
+## Flink 中的类型处理
 
-Flink会尝试推断出在分布式计算过程中被交换和存储的数据类型的大量信息，你可以想想就像数据库推断表的模式一样。在大多数情况下，Flink能够完美地推断出所有必须的信息，这些类型信息使得Flink可以做一些很酷的事情： 
+Flink会尝试推断出在分布式计算过程中被交换和存储的数据类型的大量信息，你可以想想就像数据库推断表的模式(schema)一样。在大多数情况下，Flink能够完美地推断出所有必须的信息，这些类型信息使得Flink可以做一些很酷的事情： 
+
 * 使用POJOs类型并通过推断的字段名字(如：`dataSet.keyBy("username")`)完成分组(group)/连接(join)/
-聚合(aggregate)操作。这些类型信息使得Flink能够提前校验(如拼写错误和类型兼容性)避免运行时失败。
-*
+聚合(aggregate)操作。这些类型信息使得Flink能够提前检查(如拼写错误和类型兼容性)，避免运行时才发现错误。
 
-* Using POJOs types and grouping / joining / aggregating them by referring to field names (like `dataSet.keyBy("username")`).
-  The type information allows Flink to check (for typos and type compatibility) early rather than failing later ar runtime.
+* Flink知道的数据类型信息越多，序列化和数据布局方案(data layout scheme) 就越好。这对Flink的内存使用范式（memory usage paradigm）非常重要(memory usage paradigm 用于序列化出入堆中的数据，使得序列化的开销非常低)
 
-* The more Flink knows about data types, the better the serialization and data layout schemes are.
-  That is quite important for the memory usage paradigm in Flink (work on serialized data inside/outside the heap where ever possible
-  and make serialization very cheap).
-
-* Finally, it also spares users in the majority of cases from worrying about serialization frameworks and having to register types.
-
-In general, the information about data types is needed during the *pre-flight phase* - that is, when the program's calls on `DataStream`
-and `DataSet` are made, and before any call to `execute()`, `print()`, `count()`, or `collect()`.
+* 最后，这些信息可以将用户从考虑序列化框架的选择，以及如何类型注册到这些框架中解脱。
 
 
-## Most Frequent Issues
+一般而言，数据类型的相关信息是在预处理阶段（pre-flight phase）需要，此时程序刚刚调用了 DataStream 和 DataSet，但是还没调用 execute(), print(), count(), 或 collect()方法.
 
+ 
+
+## 常见问题
+用户在对Flink的数据类型处理进行交互时，最常见问题是
 The most frequent issues where users need to interact with Flink's data type handling are:
+
+* **注册子类:**
 
 * **Registering subtypes:** If the function signatures describe only the supertypes, but they actually use subtypes of those during execution,
   it may increase performance a lot to make Flink aware of these subtypes.
