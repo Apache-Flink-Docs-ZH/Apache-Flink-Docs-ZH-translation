@@ -556,27 +556,32 @@ val networkWithWeights = network.joinWithEdgesOnSource(vertexOutDegrees, (v1: Do
 </div>
 
 * <strong>Reverse</strong>: the `reverse()` method returns a new `Graph` where the direction of all edges has been reversed.  
-* <strong>Reverse</strong>: `reverse()` 返回一个所有边的方向都反转了的新`Graph`。  
+* <strong>Reverse</strong>: `reverse()` 反转所有边，然后返回一个新的`Graph`。  
 
 * <strong>Undirected</strong>: In Gelly, a `Graph` is always directed. Undirected graphs can be represented by adding all opposite-direction edges to a graph. For this purpose, Gelly provides the `getUndirected()` method.  
-* <strong>Undirected</strong>: Gelly中，所有的`Graph` 永远是有向的。给图中所有边都加上方向相反的边，这样就可以表示无向图。由此，Gelly提供了`getUndirected()`方法。  
+* <strong>Undirected</strong>: Gelly中，所有的`Graph` 永远是有向的。给图中所有边都加上方向相反的边，这样就可以表示无向图。因此，Gelly提供了`getUndirected()`方法。  
 
 * <strong>Union</strong>: Gelly's `union()` method performs a union operation on the vertex and edge sets of the specified graph and the current graph. Duplicate vertices are removed from the resulting `Graph`, while if duplicate edges exist, these will be preserved.
+* <strong>Union</strong>: Gelly 的`union()` 方法在指定图和当前图的端点和边的集合上取并集。在得到的`Graph` 中，重复的端点会被删除；如果存在重复边，重复的端点会被保留。  
 
 <p class="text-center">
     <img alt="Union Transformation" width="50%" src="{{ site.baseurl }}/fig/gelly-union.png"/>
 </p>
 
-* <strong>Difference</strong>: Gelly's `difference()` method performs a difference on the vertex and edge sets of the current graph and the specified graph.
+* <strong>Difference</strong>: Gelly's `difference()` method performs a difference on the vertex and edge sets of the current graph and the specified graph.  
+* <strong>Difference</strong>：Gelly 的`difference()` 方法在指定图和当前图的端点和边的集合上取差异。  
+
 
 * <strong>Intersect</strong>: Gelly's `intersect()` method performs an intersect on the edge
  sets of the current graph and the specified graph. The result is a new `Graph` that contains all
  edges that exist in both input graphs. Two edges are considered equal, if they have the same source
  identifier, target identifier and edge value. Vertices in the resulting graph have no
  value. If vertex values are required, one can for example retrieve them from one of the input graphs using
- the `joinWithVertices()` method.
+ the `joinWithVertices()` method.  
+ * <strong>Intersect</strong>: Gelly 的`intersect()` 方法在指定图和当前图的端点和边的集合上取交集。结果是生成一个新的`Graph`, 包含两个图中都存在的所有边。如果两条边的源 identifier, 目的 identifier，value 都相同，那么就认为它们是相等的。生成的图中，所有的端点都没有value。 如果需要端点的value， 可以通过`joinWithVertices()` 方法从输入图中获取。  
  Depending on the parameter `distinct`, equal edges are either contained once in the resulting
- `Graph` or as often as there are pairs of equal edges in the input graphs.
+ `Graph` or as often as there are pairs of equal edges in the input graphs.  
+ 根据`distinct` 参数存在与否，相等边在生成的`Graph` 中出现的次数要么是一次，要么是输入的图中存在的相等边的pair 的数量。  
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -624,83 +629,103 @@ val intersect2 = graph1.intersect(graph2, false)
 
 -{% top %}
 
-Graph Mutations
+Graph Mutations 图的变化
 -----------
 
-Gelly includes the following methods for adding and removing vertices and edges from an input `Graph`:
-
+Gelly includes the following methods for adding and removing vertices and edges from an input `Graph`:  
+Gelly 提供如下方法，增加、删除输入`Graph`的端点或者边:   
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
 {% highlight java %}
 // adds a Vertex to the Graph. If the Vertex already exists, it will not be added again.
+// 添加一个端点。如果端点已经存在，不会重复添加。  
 Graph<K, VV, EV> addVertex(final Vertex<K, VV> vertex)
 
 // adds a list of vertices to the Graph. If the vertices already exist in the graph, they will not be added once more.
+// 添加一个端点的list。 如果图中已经存在端点，它们最多会被添加一次。  
 Graph<K, VV, EV> addVertices(List<Vertex<K, VV>> verticesToAdd)
 
 // adds an Edge to the Graph. If the source and target vertices do not exist in the graph, they will also be added.
+// 添加一条边。如果源端点和目的端点在图中不存在，它们也会被添加。  
 Graph<K, VV, EV> addEdge(Vertex<K, VV> source, Vertex<K, VV> target, EV edgeValue)
 
 // adds a list of edges to the Graph. When adding an edge for a non-existing set of vertices, the edge is considered invalid and ignored.
+// 添加一个边的list。如果在一个不存在的端点集合上添加边，边将被视为不合法，而且会被忽略。  
 Graph<K, VV, EV> addEdges(List<Edge<K, EV>> newEdges)
 
-// removes the given Vertex and its edges from the Graph.
+// removes the given Vertex and its edges from the Graph.  
+// 从图中移除指定的端点，以及它的边。  
 Graph<K, VV, EV> removeVertex(Vertex<K, VV> vertex)
 
 // removes the given list of vertices and their edges from the Graph
+// 从图中移除指定的端点的集合，以及它们的边。  
 Graph<K, VV, EV> removeVertices(List<Vertex<K, VV>> verticesToBeRemoved)
 
-// removes *all* edges that match the given Edge from the Graph.
+// removes *all* edges that match the given Edge from the Graph.  
+// 移除图中*所有* 与某条给定边match 的边。  
 Graph<K, VV, EV> removeEdge(Edge<K, EV> edge)
 
 // removes *all* edges that match the edges in the given list
+// 给定一个边的list，移除图中*所有* 与list中的边match 的边。  
 Graph<K, VV, EV> removeEdges(List<Edge<K, EV>> edgesToBeRemoved)
 {% endhighlight %}
 </div>
 
 <div data-lang="scala" markdown="1">
 {% highlight scala %}
-// adds a Vertex to the Graph. If the Vertex already exists, it will not be added again.
+// adds a Vertex to the Graph. If the Vertex already exists, it will not be added again.  
+// 添加一个端点。如果端点已经存在，不会重复添加。  
 addVertex(vertex: Vertex[K, VV])
 
 // adds a list of vertices to the Graph. If the vertices already exist in the graph, they will not be added once more.
+// 添加一个端点的list。 如果图中已经存在端点，它们最多会被添加一次。  
 addVertices(verticesToAdd: List[Vertex[K, VV]])
 
-// adds an Edge to the Graph. If the source and target vertices do not exist in the graph, they will also be added.
+// adds an Edge to the Graph. If the source and target vertices do not exist in the graph, they will also be added.  
+// 添加一条边。如果源端点和目的端点在图中不存在，它们也会被添加。  
 addEdge(source: Vertex[K, VV], target: Vertex[K, VV], edgeValue: EV)
 
-// adds a list of edges to the Graph. When adding an edge for a non-existing set of vertices, the edge is considered invalid and ignored.
+// adds a list of edges to the Graph. When adding an edge for a non-existing set of vertices, the edge is considered invalid and ignored.  
+// 添加一个边的list。如果在一个不存在的端点集合上添加边，边将被视为不合法，而且会被忽略。  
 addEdges(edges: List[Edge[K, EV]])
 
-// removes the given Vertex and its edges from the Graph.
+// removes the given Vertex and its edges from the Graph.  
+// 从图中移除指定的端点，以及它的边。  
 removeVertex(vertex: Vertex[K, VV])
 
 // removes the given list of vertices and their edges from the Graph
+// 从图中移除指定的端点的集合，以及它们的边。  
 removeVertices(verticesToBeRemoved: List[Vertex[K, VV]])
 
-// removes *all* edges that match the given Edge from the Graph.
+// removes *all* edges that match the given Edge from the Graph.  
+// 移除图中*所有* 与某条给定边match 的边。  
 removeEdge(edge: Edge[K, EV])
 
-// removes *all* edges that match the edges in the given list
+// removes *all* edges that match the edges in the given list  
+// 给定一个边的list，移除图中*所有* 与list中的边match 的边。  
 removeEdges(edgesToBeRemoved: List[Edge[K, EV]])
 {% endhighlight %}
 </div>
 </div>
 
-Neighborhood Methods
+Neighborhood Methods 邻域方法
 -----------
 
 Neighborhood methods allow vertices to perform an aggregation on their first-hop neighborhood.
-`reduceOnEdges()` can be used to compute an aggregation on the values of the neighboring edges of a vertex and `reduceOnNeighbors()` can be used to compute an aggregation on the values of the neighboring vertices. These methods assume associative and commutative aggregations and exploit combiners internally, significantly improving performance.
-The neighborhood scope is defined by the `EdgeDirection` parameter, which takes the values `IN`, `OUT` or `ALL`. `IN` will gather all in-coming edges (neighbors) of a vertex, `OUT` will gather all out-going edges (neighbors), while `ALL` will gather all edges (neighbors).
+`reduceOnEdges()` can be used to compute an aggregation on the values of the neighboring edges of a vertex and `reduceOnNeighbors()` can be used to compute an aggregation on the values of the neighboring vertices. These methods assume associative and commutative aggregations and exploit combiners internally, significantly improving performance.  
+邻域方法让端点可以在它们first-hop 的邻居上进行聚合。`reduceOnEdges()`方法可以对一个端点的相邻边的值进行聚合，`reduceOnNeighbors()` 方法可以对一个端点的相邻点的值进行聚合。这些方法的聚合具有结合性和交换性，利用了内部的组合，因此极大提升了性能。  
+The neighborhood scope is defined by the `EdgeDirection` parameter, which takes the values `IN`, `OUT` or `ALL`. `IN` will gather all in-coming edges (neighbors) of a vertex, `OUT` will gather all out-going edges (neighbors), while `ALL` will gather all edges (neighbors).  
+邻域的范围由`EdgeDirection` 这个参数指定，可选值包括`IN`,`OUT`,`ALL`。`IN` 聚合一个端点所有的入边， `OUT` 聚合一个端点所有的出边， `ALL` 聚合一个端点所有的边。  
 
-For example, assume that you want to select the minimum weight of all out-edges for each vertex in the following graph:
+For example, assume that you want to select the minimum weight of all out-edges for each vertex in the following graph:  
+例如，假设你想从图中每个的端点的所有出边中选出最小weight：  
 
 <p class="text-center">
     <img alt="reduceOnEdges Example" width="50%" src="{{ site.baseurl }}/fig/gelly-example-graph.png"/>
 </p>
 
-The following code will collect the out-edges for each vertex and apply the `SelectMinWeight()` user-defined function on each of the resulting neighborhoods:
+The following code will collect the out-edges for each vertex and apply the `SelectMinWeight()` user-defined function on each of the resulting neighborhoods:  
+下面的代码将计算每个端点的出边，并对得到的每个邻域应用自定义的`SelectMinWeight()`函数：  
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -710,6 +735,7 @@ Graph<Long, Long, Double> graph = ...
 DataSet<Tuple2<Long, Double>> minWeights = graph.reduceOnEdges(new SelectMinWeight(), EdgeDirection.OUT);
 
 // user-defined function to select the minimum weight
+// 用户自定义函数，选择最小weight
 static final class SelectMinWeight implements ReduceEdgesFunction<Double> {
 
 		@Override
@@ -727,6 +753,7 @@ val graph: Graph[Long, Long, Double] = ...
 val minWeights = graph.reduceOnEdges(new SelectMinWeight, EdgeDirection.OUT)
 
 // user-defined function to select the minimum weight
+// 用户自定义函数，选择最小weight
 final class SelectMinWeight extends ReduceEdgesFunction[Double] {
 	override def reduceEdges(firstEdgeValue: Double, secondEdgeValue: Double): Double = {
 		Math.min(firstEdgeValue, secondEdgeValue)
