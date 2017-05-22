@@ -25,34 +25,34 @@ under the License.
 * ToC
 {:toc}
 
-Stateful函数与操作符可以在处理单个元素/事件的时候存储数据，使“state"成为任何类型的复杂操作的的关键组成部分。例如：
+带有状态的（Stateful）函数与操作符可以在处理单个元素/事件的时候存储数据，使“状态（state）"成为任何类型的复杂操作的的关键组成部分。例如：
 Stateful functions and operators store data across the processing of individual elements/events, making state a critical building block for
 any type of more elaborate operation. For example:
 
-  - 当我们需要建立一个搜索固定事件模式(events patterns)的应用时，state将可以存储至今为止所有事件的序列。When an application searches for certain event patterns, the state will store the sequence of events encountered so far.
+  - 当我们需要建立一个搜索固定事件模式(events patterns)的应用时，状态（state）将可以存储至今为止所有事件的序列。When an application searches for certain event patterns, the state will store the sequence of events encountered so far.
   - 当需要每分钟聚合一次事件（events）的时候，state将会hold住那些未被处理的聚合。When aggregating events per minute, the state holds the pending aggregates.
   - 当为数据流训练一个机器学习模型的时候，state会存储当前时刻模型的参数。When training a machine learning model over a stream of data points, the state holds the current version of the model parameters.
 
-为了使state具有容错性，Flink需要知道state的状态并对他做[检查点(checkpoint)](checkpointing.html).In order to make state fault tolerant, Flink needs to be aware of the state and [checkpoint](checkpointing.html) it.
+为了使状态（state）具有容错性，Flink需要知道state的状态并对他做[检查点(checkpoint)](checkpointing.html).In order to make state fault tolerant, Flink needs to be aware of the state and [checkpoint](checkpointing.html) it.
 在许多情况下，Flink还支持在应用中*管理*state,这就意味着Flink需要用到内存管理（或者内存不够时写入磁盘）来存储特别大的state。In many cases, Flink can also *manage* the state for the application, meaning Flink deals with the memory management (possibly spilling to disk
 if necessary) to allow applications to hold very large state.
 
 这篇文档解释了如何在应用中使用Flink的state抽象。This document explains how to use Flink's state abstractions when developing an application.
 
 
-## Keyed State and Operator State
+## 带有键值的状态（Keyed State） and 算子状态（Operator State）
 
-Flink中共有两类state:`Keyed State` 和 `Operator State`。 There are two basic kinds of state in Flink: `Keyed State` and `Operator State`.
+Flink中共有两类状态（state）:`带有键值的状态（Keyed State）` 和 `算子状态（Operator State）`。 There are two basic kinds of state in Flink: `Keyed State` and `Operator State`.
 
-### Keyed State
+### 带有键值的状态（Keyed State）
 
-*Keyed State*总是和键（keys）有关并且只能用在`KeyedStream`的函数和操作符中。*Keyed State* is always relative to keys and can only be used in functions and operators on a `KeyedStream`.
+*带有键值的状态（Keyed State）*总是和键（keys）有关并且只能用在`带有键值的流（KeyedStream）`的函数和操作符中。*Keyed State* is always relative to keys and can only be used in functions and operators on a `KeyedStream`.
 
-你可以认为带有键值的State(Keyed State)像操作符State(Operator State)一样已经被
-分区或者分片过了，每一个键值有唯一的一个state划分。每一个Keyed-state逻辑上与
+你可以认为带有键值的状态(Keyed State)像算子状态(Operator State)一样已经被
+分区或者分片过了，每一个键值有唯一的一个状态（state）划分。每一个带有键值的状态（Keyed-state）逻辑上与
 唯一的一对<并行的操作符实例，键值>(<parallel-operator-instance,key>)相连接，
-并且由于每一个键又属于唯一的一个并行的keyed operator的实例，我们可以简单的
-认为Keyed-state逻辑上与唯一的一对<操作符，键值>相连。
+并且由于每一个键又属于唯一的一个并行的带有键值的算子（keyed operator）的实例，我们可以简单的
+认为带有键值的状态（Keyed-state）逻辑上与唯一的一对<操作符，键值>相连。
 You can think of Keyed State as Operator State that has been partitioned,
 or sharded, with exactly one state-partition per key.
 Each keyed-state is logically bound to a unique
@@ -60,8 +60,8 @@ composite of <parallel-operator-instance, key>, and since each key
 "belongs" to exactly one parallel instance of a keyed operator, we can
 think of this simply as <operator, key>.
 
-Keyed State接着被放在*键组(Key Groups)*中进行管理。键组是Flink用来
-重新分布Keyed State的原子单元；并行化被设为了多少，就实际上有多少个键值组。
+带有键值的状态（Keyed State）接着被放在*键组(Key Groups)*中进行管理。键组是Flink用来
+重新分布带有键值的状态（Keyed State）的原子单元；并行化被设为了多少，就实际上有多少个键值组。
 在执行过程中每一个并行的带有键值的操作符实例对应一个或多个键值组中的键值。
 .Keyed State is further organized into so-called *Key Groups*. Key Groups are the
 atomic unit by which Flink can redistribute Keyed State;
@@ -69,49 +69,52 @@ there are exactly as many Key Groups as the defined maximum parallelism.
 During execution each parallel instance of a keyed operator works with the keys
 for one or more Key Groups.
 
-### Operator State
+### 算子状态（Operator State）
 
-用*操作符State*(或者叫做*Operator State*)的时候，每一个操作符state对
+用*算子状态*(或者叫做*Operator State*)的时候，每一个算子状态（operator state）对
 应一个并行的操作符实例。
 With *Operator State* (or *non-keyed state*), each operator state is
 bound to one parallel operator instance.
 
-Kafka 连接器[Kafka Connector](../connectors/kafka.html) 是在Flink中使用操作符State的一个很好的
+Kafka 连接器[Kafka Connector](../connectors/kafka.html) 是在Flink中使用算子状态（operator state）的一个很好的
 实例。每一个并行的Kafka消费组(Kafka consumer)里存储着那些主题分片的map和偏移量来作为操作符state.
  is a good motivating example for the use of Operator State
 in Flink. Each parallel instance of the Kafka consumer maintains a map
 of topic partitions and offsets as its Operator State.
 
-操作符state接口支持在并行化情况改变的时候对并行操作符实例重分布state。做这样的重分布有很多中方案。
+算子状态(Operator state）接口支持在并行化情况改变的时候对并行算子实例重分布状态（state）。做这样的重分布有很多中方案。
 The Operator State interfaces support redistributing state among
 parallel operator instances when the parallelism is changed. There can be different schemes for doing this redistribution.
 
-## Raw and Managed State
+## 原生的与管理的状态（Raw and Managed State） 
 
-*键值 State(Keyed State)* 和 *操作符state(Operator State)* 存在两种形式： *管理的（managed)* and *原生的(raw)*.
+*键值状态 (Keyed State)* 和 *算子状态(Operator State)* 存在两种形式： *管理的（managed)* and *原生的(raw)*.
 *Keyed State* and *Operator State* exist in two forms: *managed* and *raw*.
 
-在数据结构中存在的*管理的 State*(managed state)是由Flink内部运行来控制的，例如内部的哈希表，或者 RocksDB。像"ValueState"和"Liststate"等等都属于这种类型。 Flink 内部运行对这些State进行编码，然后把它们写到检查点中。
+在数据结构中存在的*管理的状态*(managed state)是由Flink内部运行来控制的，例如内部的哈希表，或者 RocksDB。像"值状态（ValueState）"和"列表状态（Liststate）"等等都属于这种类型。 Flink 内部运行对这些状态（State）进行编码，然后把它们写到检查点中。
  is represented in data structures controlled by the Flink runtime, such as internal hash tables, or RocksDB.
 Examples are "ValueState", "ListState", etc. Flink's runtime encodes
 the states and writes them into the checkpoints.
 
-*原生的 State (Raw state)* 指的是那些保存着它们自己的数据结构的操作符(算子)。当被写成检查点的时候，它们只写入一些比特序列串，Flink对这些State的内部数据结构一无所知，只能看到那些原生的比特序列。
+*原生的状态 (Raw state)* 指的是那些保存着它们自己的数据结构的操作符(算子)。当被写成检查点的时候，它们只写入一些比特序列串，Flink对这些状态（State）的内部数据结构一无所知，只能看到那些原生的比特序列。
 is state that operators keep in their own data structures. When checkpointed, they only write a sequence of bytes into
 the checkpoint. Flink knows nothing about the state's data structures and sees only the raw bytes.
 
-Flink提供的所有的数据流函数都可以运用管理的state(managed state)，但是原生的state(raw state)接口只能在实现操作符的时候使用。比起原生的state(raw state)，我们更加推荐使用管理的state(managed state)，因为在并行化的情况改变的时候，Flink可以自动的重新分布管理的state(managed state)，并且也能够更好的做到内存管理。
+Flink提供的所有的数据流函数都可以运用管理的状态(managed state)，但是原生的状态(raw state)接口只能在实现算子的时候使用。比起原生的状态(raw state)，我们更加推荐使用管理的状态(managed state)，因为在并行化的情况改变的时候，Flink可以自动的重新分布管理的状态(managed state)，并且也能够更好的做到内存管理。
 All datastream functions can use managed state, but the raw state interfaces can only be used when implementing operators.
 Using managed state (rather than raw state) is recommended, since with
 managed state Flink is able to automatically redistribute state when the parallelism is
 changed, and also do better memory management.
 
-## Using Managed Keyed State
+## 运用管理的键值状态（Using Managed Keyed State）
 
+管理的键值状态（Managed Keyed State）接口提供了通过当前输入元素的键值来存取使用各种不同类型的状态（state)的方法。
+这就意味着这种类型的状态（state)只能用在`带有键值的流（KeyedStream）`中，我们可以通过`stream.keyBy(…)`来创建它。
 The managed keyed state interface provides access to different types of state that are all scoped to
 the key of the current input element. This means that this type of state can only be used
 on a `KeyedStream`, which can be created via `stream.keyBy(…)`.
 
+现在，我们先来看看有哪些可供我们使用的不同类型的状态（state），然后再看如何在程序中使用它们。可以使用的状态（state)主要有以下几种：
 Now, we will first look at the different types of state available and then we will see
 how they can be used in a program. The available state primitives are:
 
