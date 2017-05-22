@@ -1,5 +1,5 @@
 ---
-title: "Data Types & Serialization"
+title: "数据类型与序列化"
 nav-id: types
 nav-parent_id: dev
 nav-show_overview: true
@@ -24,18 +24,17 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-Apache Flink handles data types and serialization in a unique way, containing its own type descriptors,
-generic type extraction, and type serialization framework. This document describes the concepts and the rationale behind them.
+Apache Flink 以一种独特的方式处理数据类型和序列化，包括自带的类型描述符，泛型类型提取，和自带的类型序列化框架。本文档描述基本概念及其背后的基本原理。
 
 * This will be replaced by the TOC
 {:toc}
 
+## Flink 类型处理
 
-## Type handling in Flink
-
-Flink tries to infer a lot of information about the data types that are exchanged and stored during the distributed computation.
-Think about it like a database that infers the schema of tables. In most cases, Flink infers all necessary information seamlessly
-by itself. Having the type information allows Flink to do some cool things:
+Flink会尝试推断出在分布式计算过程中被交换和存储的数据类型的大量信息，你可以想想就像数据库推断表的模式一样。在大多数情况下，Flink能够完美地推断出所有必须的信息，这些类型信息使得Flink可以做一些很酷的事情： 
+* 使用POJOs类型并通过推断的字段名字(如：`dataSet.keyBy("username")`)完成分组(group)/连接(join)/
+聚合(aggregate)操作。这些类型信息使得Flink能够提前校验(如拼写错误和类型兼容性)避免运行时失败。
+*
 
 * Using POJOs types and grouping / joining / aggregating them by referring to field names (like `dataSet.keyBy("username")`).
   The type information allows Flink to check (for typos and type compatibility) early rather than failing later ar runtime.
