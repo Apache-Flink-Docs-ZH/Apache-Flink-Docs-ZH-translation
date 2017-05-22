@@ -36,7 +36,7 @@ under the License.
     <tr>
       <td>degree.annotate.directed.<br/><strong>VertexInDegree</strong></td>
       <td>
-        <p>把一个<a href="#graph-representation">有向图</a>的点标注为入边 (in-degree)点.</p>
+        <p>用入边 (in-degree) 标注一个<a href="#graph-representation">有向图</a>的点.</p>
 {% highlight java %}
 DataSet<Vertex<K, LongValue>> inDegree = graph
   .run(new VertexInDegree()
@@ -53,7 +53,7 @@ DataSet<Vertex<K, LongValue>> inDegree = graph
     <tr>
       <td>degree.annotate.directed.<br/><strong>VertexOutDegree</strong></td>
       <td>
-        <p>把一个<a href="#graph-representation">有向图</a>的点标注为出边 (out-degree)点.</p>
+        <p>用出边 (out-degree) 标注一个<a href="#graph-representation">有向图</a>的点.</p>
 {% highlight java %}
 DataSet<Vertex<K, LongValue>> outDegree = graph
   .run(new VertexOutDegree()
@@ -61,7 +61,7 @@ DataSet<Vertex<K, LongValue>> outDegree = graph
 {% endhighlight %}
         <p>可选配置:</p>
         <ul>
-          <li><p><strong>setIncludeZeroDegreeVertices</strong>: by default only the edge set is processed for the computation of degree; when this flag is set an additional join is performed against the vertex set in order to output vertices with an out-degree of zero</p></li>
+          <li><p><strong>setIncludeZeroDegreeVertices</strong>: 默认情况下为了自由度的计算，只有边集 (edge set) 需要被处理；当该参数被设置时，对点集 (vertex set) 会进行一个额外的 join 操作来输出出边数 (out-degree) 为 0 的点</p></li>
           <li><p><strong>setParallelism</strong>: 指定算子的并行度</p></li>
         </ul>
       </td>
@@ -70,7 +70,7 @@ DataSet<Vertex<K, LongValue>> outDegree = graph
     <tr>
       <td>degree.annotate.directed.<br/><strong>VertexDegrees</strong></td>
       <td>
-        <p>Annotate vertices of a <a href="#graph-representation">directed graph</a> with the degree, out-degree, and in-degree.</p>
+        <p>用自由度（degree）, 出边（out-degree）, 和入边（in-degree）标注一个<a href="#graph-representation">有向图</a>的点.</p>
 {% highlight java %}
 DataSet<Vertex<K, Tuple2<LongValue, LongValue>>> degrees = graph
   .run(new VertexDegrees()
@@ -78,7 +78,7 @@ DataSet<Vertex<K, Tuple2<LongValue, LongValue>>> degrees = graph
 {% endhighlight %}
         <p>可选配置:</p>
         <ul>
-          <li><p><strong>setIncludeZeroDegreeVertices</strong>: by default only the edge set is processed for the computation of degree; when this flag is set an additional join is performed against the vertex set in order to output vertices with out- and in-degree of zero</p></li>
+          <li><p><strong>setIncludeZeroDegreeVertices</strong>: 默认情况下为了自由度的计算，只有边集 (edge set) 需要被处理；当该参数被设置时，对点集 (vertex set) 会进行一个额外的 join 操作来输出出边数 (out-degree) 和入边数 (in-degree) 为 0 的点</p></li>
           <li><p><strong>setParallelism</strong>: 指定算子的并行度</p></li>
         </ul>
       </td>
@@ -87,7 +87,7 @@ DataSet<Vertex<K, Tuple2<LongValue, LongValue>>> degrees = graph
     <tr>
       <td>degree.annotate.directed.<br/><strong>EdgeSourceDegrees</strong></td>
       <td>
-        <p>Annotate edges of a <a href="#graph-representation">directed graph</a> with the degree, out-degree, and in-degree of the source ID.</p>
+        <p>用源点的自由度（degree），出边（out-degree）和入边（in-degree）标注一个<a href="#graph-representation">有向图</a>的边.</p>
 {% highlight java %}
 DataSet<Edge<K, Tuple2<EV, Degrees>>> sourceDegrees = graph
   .run(new EdgeSourceDegrees());
@@ -102,7 +102,7 @@ DataSet<Edge<K, Tuple2<EV, Degrees>>> sourceDegrees = graph
     <tr>
       <td>degree.annotate.directed.<br/><strong>EdgeTargetDegrees</strong></td>
       <td>
-        <p>Annotate edges of a <a href="#graph-representation">directed graph</a> with the degree, out-degree, and in-degree of the target ID.</p>
+        <p>用源点的自由度（degree），出边（out-degree）和入边（in-degree）标注一个<a href="#graph-representation">有向图</a>的边.</p>
 {% highlight java %}
 DataSet<Edge<K, Tuple2<EV, Degrees>>> targetDegrees = graph
   .run(new EdgeTargetDegrees();
