@@ -25,15 +25,17 @@ under the License.
 为了保持 Scala 和 Java API 的一致性，对于批处理和流处理从标准的API中忽视了一些在 Scala 中允许的高级表达方式。
 
 
-如果你想体验全部的 Scala 表达你可以选择通过使用 Scala 的加强 API 隐式转化。
+如果你想体验全部的 Scala 表达功能，你可以选择通过隐式转化来加强 Scala API。
 
-你可以通过简单的导入数据集 API 来使用所有可用的扩展
+
+
+你可以通过简单的导入 DataSet API 来使用所有可用的扩展
 
 {% highlight scala %}
 import org.apache.flink.api.scala.extensions._
 {% endhighlight %}
 
-或者导入数据流 API。
+或者导入 DataStream API。
 
 {% highlight scala %}
 import org.apache.flink.streaming.api.scala.extensions._
@@ -56,7 +58,7 @@ data.map {
 
 这个扩展介绍了在数据集和数据流Scala 的扩展API 中有一对一关系的新的方法。这些授权方法不支持匿名形式的匹配函数。
 
-#### 数据集 API
+#### DataSet API
 
 <table class="table table-bordered">
   <thead>
@@ -203,7 +205,7 @@ data1.coGroup(data2).
   </tbody>
 </table>
 
-#### 数据流 API
+#### DataStream API
 
 <table class="table table-bordered">
   <thead>
