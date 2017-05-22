@@ -117,8 +117,9 @@ on a `KeyedStream`, which can be created via `stream.keyBy(…)`.
 现在，我们先来看看有哪些可供我们使用的不同类型的状态（state），然后再看如何在程序中使用它们。可以使用的状态（state)主要有以下几种：
 Now, we will first look at the different types of state available and then we will see
 how they can be used in a program. The available state primitives are:
-
-* `ValueState<T>`: This keeps a value that can be updated and
+ 
+* `ValueState<T>`: 这里面存储着一个可以被更新被恢复的状态（与之前提过的输入元素的键值相关，所以根据实际的情况，对于每一个键值都有可能有一个相应的值），这个值可以用`update（T）`来设置，用`T value()`来恢复。
+This keeps a value that can be updated and
 retrieved (scoped to key of the input element as mentioned above, so there will possibly be one value
 for each key that the operation sees). The value can be set using `update(T)` and retrieved using
 `T value()`.
