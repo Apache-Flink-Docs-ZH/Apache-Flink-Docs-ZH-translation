@@ -102,7 +102,7 @@ DataSet<Edge<K, Tuple2<EV, Degrees>>> sourceDegrees = graph
     <tr>
       <td>degree.annotate.directed.<br/><strong>EdgeTargetDegrees</strong></td>
       <td>
-        <p>用源点的自由度（degree），出边（out-degree）和入边（in-degree）标注一个<a href="#graph-representation">有向图</a>的边.</p>
+        <p>用目标点的自由度（degree），出边（out-degree）和入边（in-degree）标注一个<a href="#graph-representation">有向图</a>的边.</p>
 {% highlight java %}
 DataSet<Edge<K, Tuple2<EV, Degrees>>> targetDegrees = graph
   .run(new EdgeTargetDegrees();
@@ -117,7 +117,7 @@ DataSet<Edge<K, Tuple2<EV, Degrees>>> targetDegrees = graph
     <tr>
       <td>degree.annotate.directed.<br/><strong>EdgeDegreesPair</strong></td>
       <td>
-        <p>Annotate edges of a <a href="#graph-representation">directed graph</a> with the degree, out-degree, and in-degree of both the source and target vertices.</p>
+        <p>用源点目标点的自由度（degree），出边（out-degree）和入边（in-degree）标注一个<a href="#graph-representation">有向图</a>的边.</p>
 {% highlight java %}
 DataSet<Edge<K, Tuple2<EV, Degrees>>> degrees = graph
   .run(new EdgeDegreesPair());
@@ -132,18 +132,18 @@ DataSet<Edge<K, Tuple2<EV, Degrees>>> degrees = graph
     <tr>
       <td>degree.annotate.undirected.<br/><strong>VertexDegree</strong></td>
       <td>
-        <p>Annotate vertices of an <a href="#graph-representation">undirected graph</a> with the degree.</p>
+        <p>用自由度（degree）标注一个<a href="#graph-representation">无向图</a>的点.</p>
 {% highlight java %}
 DataSet<Vertex<K, LongValue>> degree = graph
   .run(new VertexDegree()
     .setIncludeZeroDegreeVertices(true)
     .setReduceOnTargetId(true));
 {% endhighlight %}
-        <p>O可选配置:</p>
+        <p>可选配置:</p>
         <ul>
-          <li><p><strong>setIncludeZeroDegreeVertices</strong>: by default only the edge set is processed for the computation of degree; when this flag is set an additional join is performed against the vertex set in order to output vertices with a degree of zero</p></li>
+          <li><p><strong>setIncludeZeroDegreeVertices</strong>: 默认情况下为了自由度的计算，只有边集 (edge set) 需要被处理；当该参数被设置时，对点集 (vertex set) 会进行一个额外的 join 操作来输出自由度 (degree) 为 0 的点</p></li>
           <li><p><strong>setParallelism</strong>: 指定算子的并行度</p></li>
-          <li><p><strong>setReduceOnTargetId</strong>: the degree can be counted from either the edge source or target IDs. By default the source IDs are counted. Reducing on target IDs may optimize the algorithm if the input edge list is sorted by target ID.</p></li>
+          <li><p><strong>setReduceOnTargetId</strong>: 自由度能够用边的源点和终点计算. 默认情况下用源点计算. 如果用目标点对输入边列 (edge list) 排序，对终点的归约可能优化该算法.</p></li>
         </ul>
       </td>
     </tr>
@@ -151,7 +151,7 @@ DataSet<Vertex<K, LongValue>> degree = graph
     <tr>
       <td>degree.annotate.undirected.<br/><strong>EdgeSourceDegree</strong></td>
       <td>
-        <p>Annotate edges of an <a href="#graph-representation">undirected graph</a> with degree of the source ID.</p>
+        <p>用源点的自由度（degree）标注一个<a href="#graph-representation">无向图</a>的点.</p>
 {% highlight java %}
 DataSet<Edge<K, Tuple2<EV, LongValue>>> sourceDegree = graph
   .run(new EdgeSourceDegree()
@@ -160,7 +160,7 @@ DataSet<Edge<K, Tuple2<EV, LongValue>>> sourceDegree = graph
         <p>可选配置:</p>
         <ul>
           <li><p><strong>setParallelism</strong>: 指定算子的并行度</p></li>
-          <li><p><strong>setReduceOnTargetId</strong>: the degree can be counted from either the edge source or target IDs. By default the source IDs are counted. Reducing on target IDs may optimize the algorithm if the input edge list is sorted by target ID.</p></li>
+          <li><p><strong>setReduceOnTargetId</strong>: 自由度能够用边的源点和终点计算. 默认情况下用源点计算. 如果用目标点对输入边列 (edge list) 排序，对终点的归约可能优化该算法.</p></li>
         </ul>
       </td>
     </tr>
@@ -168,7 +168,7 @@ DataSet<Edge<K, Tuple2<EV, LongValue>>> sourceDegree = graph
     <tr>
       <td>degree.annotate.undirected.<br/><strong>EdgeTargetDegree</strong></td>
       <td>
-        <p>Annotate edges of an <a href="#graph-representation">undirected graph</a> with degree of the target ID.</p>
+        <p>Annotate edges of an <a href="#graph-representation">无向图</a> with degree of the target ID.</p>
 {% highlight java %}
 DataSet<Edge<K, Tuple2<EV, LongValue>>> targetDegree = graph
   .run(new EdgeTargetDegree()
@@ -177,7 +177,7 @@ DataSet<Edge<K, Tuple2<EV, LongValue>>> targetDegree = graph
         <p>可选配置:</p>
         <ul>
           <li><p><strong>setParallelism</strong>: 指定算子的并行度</p></li>
-          <li><p><strong>setReduceOnSourceId</strong>: the degree can be counted from either the edge source or target IDs. By default the target IDs are counted. Reducing on source IDs may optimize the algorithm if the input edge list is sorted by source ID.</p></li>
+          <li><p><strong>setReduceOnSourceId</strong>: 自由度能够用边的源点和终点计算. 默认情况下用源点计算. 如果用目标点对输入边列 (edge list) 排序，对终点的归约可能优化该算法.</p></li>
         </ul>
       </td>
     </tr>
@@ -185,7 +185,7 @@ DataSet<Edge<K, Tuple2<EV, LongValue>>> targetDegree = graph
     <tr>
       <td>degree.annotate.undirected.<br/><strong>EdgeDegreePair</strong></td>
       <td>
-        <p>Annotate edges of an <a href="#graph-representation">undirected graph</a> with the degree of both the source and target vertices.</p>
+        <p>Annotate edges of an <a href="#graph-representation">无向图</a> with the degree of both the source and target vertices.</p>
 {% highlight java %}
 DataSet<Edge<K, Tuple3<EV, LongValue, LongValue>>> pairDegree = graph
   .run(new EdgeDegreePair()
@@ -194,7 +194,7 @@ DataSet<Edge<K, Tuple3<EV, LongValue, LongValue>>> pairDegree = graph
         <p>可选配置:</p>
         <ul>
           <li><p><strong>setParallelism</strong>: 指定算子的并行度</p></li>
-          <li><p><strong>setReduceOnTargetId</strong>: the degree can be counted from either the edge source or target IDs. By default the source IDs are counted. Reducing on target IDs may optimize the algorithm if the input edge list is sorted by target ID.</p></li>
+          <li><p><strong>setReduceOnTargetId</strong>: 自由度能够用边的源点和终点计算. 默认情况下用源点计算. 如果用目标点对输入边列 (edge list) 排序，对终点的归约可能优化该算法.</p></li>
         </ul>
       </td>
     </tr>
@@ -202,7 +202,7 @@ DataSet<Edge<K, Tuple3<EV, LongValue, LongValue>>> pairDegree = graph
     <tr>
       <td>degree.filter.undirected.<br/><strong>MaximumDegree</strong></td>
       <td>
-        <p>Filter an <a href="#graph-representation">undirected graph</a> by maximum degree.</p>
+        <p>Filter an <a href="#graph-representation">无向图</a> by maximum degree.</p>
 {% highlight java %}
 Graph<K, VV, EV> filteredGraph = graph
   .run(new MaximumDegree(5000)
@@ -213,7 +213,7 @@ Graph<K, VV, EV> filteredGraph = graph
         <ul>
           <li><p><strong>setBroadcastHighDegreeVertices</strong>: join high-degree vertices using a broadcast-hash to reduce data shuffling when removing a relatively small number of high-degree vertices.</p></li>
           <li><p><strong>setParallelism</strong>: 指定算子的并行度</p></li>
-          <li><p><strong>setReduceOnTargetId</strong>: the degree can be counted from either the edge source or target IDs. By default the source IDs are counted. Reducing on target IDs may optimize the algorithm if the input edge list is sorted by target ID.</p></li>
+          <li><p><strong>setReduceOnTargetId</strong>: 自由度能够用边的源点和终点计算. 默认情况下用源点计算. 如果用目标点对输入边列 (edge list) 排序，对终点的归约可能优化该算法.</p></li>
         </ul>
       </td>
     </tr>
@@ -221,7 +221,7 @@ Graph<K, VV, EV> filteredGraph = graph
     <tr>
       <td>simple.directed.<br/><strong>Simplify</strong></td>
       <td>
-        <p>Remove self-loops and duplicate edges from a <a href="#graph-representation">directed graph</a>.</p>
+        <p>Remove self-loops and duplicate edges from a <a href="#graph-representation">有向图</a>.</p>
 {% highlight java %}
 graph.run(new Simplify());
 {% endhighlight %}
@@ -259,7 +259,7 @@ graph.run(new TranslateGraphIds(new LongValueToStringValue()));
         </ul>
         <p>可选配置:</p>
         <ul>
-          <li><p><strong>setParallelism</strong>: override the operator parallelism</p></li>
+          <li><p><strong>setParallelism</strong>: 指定算子的并行度</p></li>
         </ul>
       </td>
     </tr>
