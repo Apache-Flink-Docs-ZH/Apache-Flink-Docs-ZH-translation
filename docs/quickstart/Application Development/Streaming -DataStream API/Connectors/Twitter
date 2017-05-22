@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Twitter连接器</title>
+</head>
+<!--
+path:  Application Development/Streaming (DataStream API)/Connectors/Twitter
+link: https://ci.apache.org/projects/flink/flink-docs-release-1.2/dev/connectors/twitter.html -->
+<body>
+
+<div>
+	<p>
+	Twitter Streaming API 提供了,Twitter提供的对Twitter流的访问。Flink Streaming自带一个内置TwitterSource类, 来建立一个到这个Twitter流的连接。
+	若要使用此连接器，请将下列依赖项添加到项目中：
+	</p>
+</div>
+
+<div>
+	<p>
+	 <span class="nc"><dependency></span>
+	  <span class="nc"><groupId></span>org.apache.flink <span class="nc"></groupId></span>
+	  <span class="nc"><artifactId></span>flink-connector-twitter_2.10 <span class="nc"></artifactId></span>
+	  <span class="nc"><version></span>1.2.0 <span class="nc"></version></span> 
+	 <span class="nc"></dependency></span>
+	</p>
+</div>
+
+<div>
+	<p>
+	注意，流连接器目前不是二进制发布包的一部分。在集群中执行时,请看链接，<a href="twitter_here.html">这里。</a>
+
+	认证
+	为了连接到Twitter流，用户必须在应用程序中注册他们，并获得必要的信息进行身份验证。该过程如下所述。
+
+	获取认证信息
+	首先，需要一个Twitter帐户。免费注册在<a href="https://twitter.com/signup">twitter.com/signup</a>或在Twitter的
+	<a href="https://apps.twitter.com">应用管理里登录</a>和登记程序通过点击“创建新的应用程序”按钮。填写一份关于你的计划的表格,并接受条款和条件。
+	在选择这个应用之后，API密钥和API的机密（在TwitterSource里分别称为twitter-source.consumerKey和twitter-source.consumerSecret）位于“API密钥”选项卡。
+	必要的OAuth访问令牌的数据（TwitterSource包含 twitter-source.token和twitter-source.tokenSecret）可以产生和获得,在“密钥和访问令牌”选项卡。
+	记住把这些信息保密，不要把它们推送到公共仓库。
+
+	用法
+	对比其他连接器，该TwitterSource不依赖于额外的服务。例如下面的代码应该运行优雅：
+	</p>
+</div>
+
+<div class="codetabs">
+  <div data-lang="java">
+    <figure class="highlight">
+       <pre>
+        <code class="language-java" data-lang="java">
+			Properties props = new Properties();
+			props.<span class="na">setProperty</span>(TwitterSource.CONSUMER_KEY, "");
+			props.<span class="na">setProperty</span>(TwitterSource.CONSUMER_SECRET, "");
+			props.<span class="na">setProperty</span>(TwitterSource.TOKEN, "");
+			props.<span class="na">setProperty</span>(TwitterSource.TOKEN_SECRET, "");
+			DataStream<String> streamSource = env.addSource(new TwitterSource(props));
+		</code>
+	    </pre>
+	 </figure>
+	</div>
+</div>
+
+<div class="codetabs">
+  <div data-lang="scala">
+    <figure class="highlight">
+       <pre>
+        <code class="language-java" data-lang="java">
+			val props = new Properties();
+			props.<span class="na">setProperty</span>(TwitterSource.CONSUMER_KEY, "");
+			props.<span class="na">setProperty</span>(TwitterSource.CONSUMER_SECRET, "");
+			props.<span class="na">setProperty</span>(TwitterSource.TOKEN, "");
+			props.<span class="na">setProperty</span>(TwitterSource.TOKEN_SECRET, "");
+			DataStream<String> streamSource = env.addSource(new TwitterSource(props));
+		</code>
+	    </pre>
+	 </figure>
+	</div>
+</div>
+
+<div>
+	<p>
+	TwitterSource发射字符串,包含一个JSON对象，代表一个Tweet。
+	TwitterExample类在flink-examples-streaming包里,展示了一个如何使用TwitterSource完整的例子。
+	默认情况下，该TwitterSource采用StatusesSampleEndpoint。这个端点返回一个随机样本的Tweets。有一个TwitterSource.EndpointInitializer接口,允许用户提供自定义的终点。	
+	</p>
+</div>
+
+</body>
+</html>
