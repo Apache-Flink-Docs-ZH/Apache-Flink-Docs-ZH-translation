@@ -713,7 +713,7 @@ Neighborhood Methods 邻域方法
 
 Neighborhood methods allow vertices to perform an aggregation on their first-hop neighborhood.
 `reduceOnEdges()` can be used to compute an aggregation on the values of the neighboring edges of a vertex and `reduceOnNeighbors()` can be used to compute an aggregation on the values of the neighboring vertices. These methods assume associative and commutative aggregations and exploit combiners internally, significantly improving performance.  
-邻域方法让端点可以在它们first-hop 的邻居上进行聚合。`reduceOnEdges()`方法可以对一个端点的相邻边的值进行聚合，`reduceOnNeighbors()` 方法可以对一个端点的相邻点的值进行聚合。这些方法的聚合具有结合性和交换性，利用了内部的组合，因此极大提升了性能。  
+邻域方法可以在端点的first-hop 的邻居上进行聚合。`reduceOnEdges()`方法可以对一个端点的相邻边的值进行聚合，`reduceOnNeighbors()` 方法可以对一个端点的相邻点的值进行聚合。这些方法的聚合具有结合性和交换性，利用了内部的组合，因此极大提升了性能。  
 The neighborhood scope is defined by the `EdgeDirection` parameter, which takes the values `IN`, `OUT` or `ALL`. `IN` will gather all in-coming edges (neighbors) of a vertex, `OUT` will gather all out-going edges (neighbors), while `ALL` will gather all edges (neighbors).  
 邻域的范围由`EdgeDirection` 这个参数指定，可选值包括`IN`,`OUT`,`ALL`。`IN` 聚合一个端点所有的入边， `OUT` 聚合一个端点所有的出边， `ALL` 聚合一个端点所有的边。  
 
@@ -735,7 +735,7 @@ Graph<Long, Long, Double> graph = ...
 DataSet<Tuple2<Long, Double>> minWeights = graph.reduceOnEdges(new SelectMinWeight(), EdgeDirection.OUT);
 
 // user-defined function to select the minimum weight
-// 用户自定义函数，选择最小weight
+// 用户自定义函数，用来选择最小weight
 static final class SelectMinWeight implements ReduceEdgesFunction<Double> {
 
 		@Override
@@ -753,7 +753,7 @@ val graph: Graph[Long, Long, Double] = ...
 val minWeights = graph.reduceOnEdges(new SelectMinWeight, EdgeDirection.OUT)
 
 // user-defined function to select the minimum weight
-// 用户自定义函数，选择最小weight
+// 用户自定义函数，用来选择最小weight
 final class SelectMinWeight extends ReduceEdgesFunction[Double] {
 	override def reduceEdges(firstEdgeValue: Double, secondEdgeValue: Double): Double = {
 		Math.min(firstEdgeValue, secondEdgeValue)
@@ -767,7 +767,8 @@ final class SelectMinWeight extends ReduceEdgesFunction[Double] {
     <img alt="reduceOnEdges Example" width="50%" src="{{ site.baseurl }}/fig/gelly-reduceOnEdges.png"/>
 </p>
 
-Similarly, assume that you would like to compute the sum of the values of all in-coming neighbors, for every vertex. The following code will collect the in-coming neighbors for each vertex and apply the `SumValues()` user-defined function on each neighborhood:
+Similarly, assume that you would like to compute the sum of the values of all in-coming neighbors, for every vertex. The following code will collect the in-coming neighbors for each vertex and apply the `SumValues()` user-defined function on each neighborhood:  
+与之类似，假设你想计算每个端点的所有in-coming 邻居端点的value之和。下面的代码计算了每个端点的in-coming 邻居，并对每个邻居端点应用自定义的`SumValues()` 函数。  
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -777,6 +778,7 @@ Graph<Long, Long, Double> graph = ...
 DataSet<Tuple2<Long, Long>> verticesWithSum = graph.reduceOnNeighbors(new SumValues(), EdgeDirection.IN);
 
 // user-defined function to sum the neighbor values
+// 自定义函数，用于计算邻居端点的value之和  
 static final class SumValues implements ReduceNeighborsFunction<Long> {
 
 	    	@Override
@@ -794,6 +796,7 @@ val graph: Graph[Long, Long, Double] = ...
 val verticesWithSum = graph.reduceOnNeighbors(new SumValues, EdgeDirection.IN)
 
 // user-defined function to sum the neighbor values
+// 自定义函数，用于计算邻居端点的value之和  
 final class SumValues extends ReduceNeighborsFunction[Long] {
    	override def reduceNeighbors(firstNeighbor: Long, secondNeighbor: Long): Long = {
     	firstNeighbor + secondNeighbor
@@ -810,8 +813,10 @@ final class SumValues extends ReduceNeighborsFunction[Long] {
 When the aggregation function is not associative and commutative or when it is desirable to return more than one values per vertex, one can use the more general
 `groupReduceOnEdges()` and `groupReduceOnNeighbors()` methods.
 These methods return zero, one or more values per vertex and provide access to the whole neighborhood.
+如果聚合函数不具有结合性和交换性，或者想从每个端点返回不止一个值，可以使用`groupReduceOnEdges()`和 `groupReduceOnNeighbors()` 这两个更一般性的方法。这些方法对每个端点返回0个，1个或者多个value，而且提供对所有邻居的访问。  
 
-For example, the following code will output all the vertex pairs which are connected with an edge having a weight of 0.5 or more:
+For example, the following code will output all the vertex pairs which are connected with an edge having a weight of 0.5 or more:  
+例如，下面的代码将输出所有端点的pair，条件是连接它们的边的weight大于或者等于0.5：   
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -820,7 +825,8 @@ Graph<Long, Long, Double> graph = ...
 
 DataSet<Tuple2<Vertex<Long, Long>, Vertex<Long, Long>>> vertexPairs = graph.groupReduceOnNeighbors(new SelectLargeWeightNeighbors(), EdgeDirection.OUT);
 
-// user-defined function to select the neighbors which have edges with weight > 0.5
+// user-defined function to select the neighbors which have edges with weight > 0.5  
+// 用户自定函数，用来筛选用邻居端点，条件是连接它们的边的weight大于或者等于0.5  
 static final class SelectLargeWeightNeighbors implements NeighborsFunctionWithVertexValue<Long, Long, Double,
 		Tuple2<Vertex<Long, Long>, Vertex<Long, Long>>> {
 
@@ -846,6 +852,7 @@ val graph: Graph[Long, Long, Double] = ...
 val vertexPairs = graph.groupReduceOnNeighbors(new SelectLargeWeightNeighbors, EdgeDirection.OUT)
 
 // user-defined function to select the neighbors which have edges with weight > 0.5
+// 用户自定函数，用来筛选用邻居端点，条件是连接它们的边的weight大于或者等于0.5  
 final class SelectLargeWeightNeighbors extends NeighborsFunctionWithVertexValue[Long, Long, Double,
   (Vertex[Long, Long], Vertex[Long, Long])] {
 
@@ -864,15 +871,17 @@ final class SelectLargeWeightNeighbors extends NeighborsFunctionWithVertexValue[
 </div>
 </div>
 
-When the aggregation computation does not require access to the vertex value (for which the aggregation is performed), it is advised to use the more efficient `EdgesFunction` and `NeighborsFunction` for the user-defined functions. When access to the vertex value is required, one should use `EdgesFunctionWithVertexValue` and `NeighborsFunctionWithVertexValue` instead.
+When the aggregation computation does not require access to the vertex value (for which the aggregation is performed), it is advised to use the more efficient `EdgesFunction` and `NeighborsFunction` for the user-defined functions. When access to the vertex value is required, one should use `EdgesFunctionWithVertexValue` and `NeighborsFunctionWithVertexValue` instead.  
+如果计算聚合值不需要访问端点的value （聚合计算应用在它身上），推荐使用两个效率更高的函数`EdgesFunction` 和 `NeighborsFunction`，或者是用户自定义的函数。如果需要访问端点的value，那么就应该使用`EdgesFunctionWithVertexValue` 和 `NeighborsFunctionWithVertexValue`。  
 
 {% top %}
 
-Graph Validation
+Graph Validation 图的校验
 -----------
 
 Gelly provides a simple utility for performing validation checks on input graphs. Depending on the application context, a graph may or may not be valid according to certain criteria. For example, a user might need to validate whether their graph contains duplicate edges or whether its structure is bipartite. In order to validate a graph, one can define a custom `GraphValidator` and implement its `validate()` method. `InvalidVertexIdsValidator` is Gelly's pre-defined validator. It checks that the edge set contains valid vertex IDs, i.e. that all edge IDs
-also exist in the vertex IDs set.
+also exist in the vertex IDs set.  
+Gelly 提供一种简单的工具来检测输入的图形的合法性。随着应用语境的变化，以某个标准衡量，一个图形既可能合法也可能不合法。例如，用户可能需要检查图形是否包含重复边，或者图的结构是否是二分的。要检查图的合法性，可以自己定义 `GraphValidator`并实现它的`validate()`方法。`InvalidVertexIdsValidator`是Gelly 中预定义的validator。它检测边的集合包含了合法的端点ID，换言之，所有边的ID 都同时存在于端点的ID 集合。  
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
