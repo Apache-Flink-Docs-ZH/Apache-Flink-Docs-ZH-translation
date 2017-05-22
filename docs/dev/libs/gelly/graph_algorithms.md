@@ -151,7 +151,7 @@ DataSet<Vertex<K, LongValue>> degree = graph
     <tr>
       <td>degree.annotate.undirected.<br/><strong>EdgeSourceDegree</strong></td>
       <td>
-        <p>用源点的自由度（degree）标注一个<a href="#graph-representation">无向图</a>的点.</p>
+        <p>用源点的自由度（degree）标注一个<a href="#graph-representation">无向图</a>的边.</p>
 {% highlight java %}
 DataSet<Edge<K, Tuple2<EV, LongValue>>> sourceDegree = graph
   .run(new EdgeSourceDegree()
@@ -168,7 +168,7 @@ DataSet<Edge<K, Tuple2<EV, LongValue>>> sourceDegree = graph
     <tr>
       <td>degree.annotate.undirected.<br/><strong>EdgeTargetDegree</strong></td>
       <td>
-        <p>Annotate edges of an <a href="#graph-representation">无向图</a> with degree of the target ID.</p>
+        <p>用目标点的自由度（degree）标注一个<a href="#graph-representation">无向图</a>的边.</p>
 {% highlight java %}
 DataSet<Edge<K, Tuple2<EV, LongValue>>> targetDegree = graph
   .run(new EdgeTargetDegree()
@@ -185,7 +185,7 @@ DataSet<Edge<K, Tuple2<EV, LongValue>>> targetDegree = graph
     <tr>
       <td>degree.annotate.undirected.<br/><strong>EdgeDegreePair</strong></td>
       <td>
-        <p>Annotate edges of an <a href="#graph-representation">无向图</a> with the degree of both the source and target vertices.</p>
+        <p>用源点和目标点的自由度（degree）标注一个<a href="#graph-representation">无向图</a>的边.</p>
 {% highlight java %}
 DataSet<Edge<K, Tuple3<EV, LongValue, LongValue>>> pairDegree = graph
   .run(new EdgeDegreePair()
@@ -202,7 +202,7 @@ DataSet<Edge<K, Tuple3<EV, LongValue, LongValue>>> pairDegree = graph
     <tr>
       <td>degree.filter.undirected.<br/><strong>MaximumDegree</strong></td>
       <td>
-        <p>Filter an <a href="#graph-representation">无向图</a> by maximum degree.</p>
+        <p>用最大自由度过滤一个<a href="#graph-representation">无向图</a>.</p>
 {% highlight java %}
 Graph<K, VV, EV> filteredGraph = graph
   .run(new MaximumDegree(5000)
@@ -211,7 +211,7 @@ Graph<K, VV, EV> filteredGraph = graph
 {% endhighlight %}
         <p>可选配置:</p>
         <ul>
-          <li><p><strong>setBroadcastHighDegreeVertices</strong>: join high-degree vertices using a broadcast-hash to reduce data shuffling when removing a relatively small number of high-degree vertices.</p></li>
+          <li><p><strong>setBroadcastHighDegreeVertices</strong>: 当移除少量高自由度 (high-degree) 的点时，用一个广播哈希 (broadcast-hash) 合并 (join) 高自由度的点来减少数据洗牌 (shuffle).</p></li>
           <li><p><strong>setParallelism</strong>: 指定算子的并行度</p></li>
           <li><p><strong>setReduceOnTargetId</strong>: 自由度能够用边的源点和终点计算. 默认情况下用源点计算. 如果用目标点对输入边列 (edge list) 排序，对终点的归约可能优化该算法.</p></li>
         </ul>
@@ -221,7 +221,7 @@ Graph<K, VV, EV> filteredGraph = graph
     <tr>
       <td>simple.directed.<br/><strong>Simplify</strong></td>
       <td>
-        <p>Remove self-loops and duplicate edges from a <a href="#graph-representation">有向图</a>.</p>
+        <p>移除一个<a href="#graph-representation">有向图</a>的自环 (self-loops) 和相同的边.</p>
 {% highlight java %}
 graph.run(new Simplify());
 {% endhighlight %}
@@ -235,7 +235,7 @@ graph.run(new Simplify());
     <tr>
       <td>simple.undirected.<br/><strong>Simplify</strong></td>
       <td>
-        <p>Add symmetric edges and remove self-loops and duplicate edges from an <a href="#graph-representation">undirected graph</a>.</p>
+        <p>从一个<a href="#graph-representation">无向图</a>中添加对称边并移除自环 (self-loops).</p>
 {% highlight java %}
 graph.run(new Simplify());
 {% endhighlight %}
@@ -249,13 +249,13 @@ graph.run(new Simplify());
     <tr>
       <td>translate.<br/><strong>TranslateGraphIds</strong></td>
       <td>
-        <p>Translate vertex and edge IDs using the given <code>TranslateFunction</code>.</p>
+        <p>用给定的 <code>TranslateFunction</code> 转换 (translate) 点和边的 ID.</p>
 {% highlight java %}
 graph.run(new TranslateGraphIds(new LongValueToStringValue()));
 {% endhighlight %}
-        <p>Required configuration:</p>
+        <p>必要配置:</p>
         <ul>
-          <li><p><strong>translator</strong>: implements type or value conversion</p></li>
+          <li><p><strong>translator</strong>: 实现类型或值转换</p></li>
         </ul>
         <p>可选配置:</p>
         <ul>
@@ -267,13 +267,13 @@ graph.run(new TranslateGraphIds(new LongValueToStringValue()));
     <tr>
       <td>translate.<br/><strong>TranslateVertexValues</strong></td>
       <td>
-        <p>Translate vertex values using the given <code>TranslateFunction</code>.</p>
+        <p>用给定的 <code>TranslateFunction</code> 转换 (translate) 点的值.</p>
 {% highlight java %}
 graph.run(new TranslateVertexValues(new LongValueAddOffset(vertexCount)));
 {% endhighlight %}
-        <p>Required configuration:</p>
+        <p>必要配置:</p>
         <ul>
-          <li><p><strong>translator</strong>: implements type or value conversion</p></li>
+          <li><p><strong>translator</strong>: 实现类型或值转换</p></li>
         </ul>
         <p>可选配置:</p>
         <ul>
@@ -285,13 +285,13 @@ graph.run(new TranslateVertexValues(new LongValueAddOffset(vertexCount)));
     <tr>
       <td>translate.<br/><strong>TranslateEdgeValues</strong></td>
       <td>
-        <p>Translate edge values using the given <code>TranslateFunction</code>.</p>
+        <p>用给定的 <code>TranslateFunction</code> 转换 (translate) 边的值.</p>
 {% highlight java %}
 graph.run(new TranslateEdgeValues(new Nullify()));
 {% endhighlight %}
-        <p>Required configuration:</p>
+        <p>必要配置:</p>
         <ul>
-          <li><p><strong>translator</strong>: implements type or value conversion</p></li>
+          <li><p><strong>translator</strong>: 实现类型或值转换</p></li>
         </ul>
         <p>可选配置:</p>
         <ul>
