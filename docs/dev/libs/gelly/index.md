@@ -79,7 +79,7 @@ cp opt/flink-gelly_*.jar lib/
 cp opt/flink-gelly-scala_*.jar lib/
 ~~~
 
-Gelly 的示例jar 文件包含对每个库方法的驱动(driver)， 可以在**examples** 目录中找到。配置完cluster 并启动，列出可用的算法类:  
+Gelly 的示例jar 文件包含对每个库方法的驱动(driver)， 可以在**examples** 目录中找到。配置完集群并启动，列出可用的算法类:  
 
 
 ~~~bash
@@ -87,7 +87,7 @@ Gelly 的示例jar 文件包含对每个库方法的驱动(driver)， 可以在*
 ./bin/flink run examples/flink-gelly-examples_*.jar
 ~~~
 
-Gelly 驱动可以生成图形数据，或者从CSV 文件中读取边列表(cluster的每个node都必须拥有输入文件的权限)。 如果选择了某个算法，算法描述、支持的输入输出、相关配置会显示出来。打印[JaccardIndex](./library_methods.html#jaccard-index) 的用法：  
+Gelly 驱动可以生成图形数据，或者从CSV 文件中读取边列表(集群的每个节点都必须拥有输入文件的权限)。 如果选择了某个算法，算法描述、支持的输入输出、相关配置会显示出来。打印[JaccardIndex](./library_methods.html#jaccard-index) 的用法：  
 
 ~~~bash
 ./bin/flink run examples/flink-gelly-examples_*.jar --algorithm JaccardIndex
@@ -105,7 +105,6 @@ Gelly 驱动可以生成图形数据，或者从CSV 文件中读取边列表(clu
 可以用 *\-\-scale* 和 *\-\-edge_factor* 参数调整图形的size。[library generator](./graph_generators.html#rmat-graph) 还提供对额外配置项的访问，用来调整幂律分布的偏度(power-law skew) 和随机噪声。  
 
 [Stanford Network Analysis Project](http://snap.stanford.edu/data/index.html) 提供了社交网络数据的样本。对入门者而言，数据集[com-lj](http://snap.stanford.edu/data/bigdata/communities/com-lj.ungraph.txt.gz) 的数据量比较适合。  
-Run a few algorithms and monitor the job progress in Flink's Web UI:   
 通过Flink 的Web UI，运行一些算法，并监视job 的进度：  
 
 ~~~bash
