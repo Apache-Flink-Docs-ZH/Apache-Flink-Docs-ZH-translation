@@ -118,17 +118,21 @@ on a `KeyedStream`, which can be created via `stream.keyBy(…)`.
 Now, we will first look at the different types of state available and then we will see
 how they can be used in a program. The available state primitives are:
  
-* `ValueState<T>`: 这里面存储着一个可以被更新被恢复的状态（与之前提过的输入元素的键值相关，所以根据实际的情况，对于每一个键值都有可能有一个相应的值），这个值可以用`update（T）`来设置，用`T value()`来恢复。
+* `ValueState<T>`: 这里面存储着一个可以被更新检索的状态(state)（与之前提过的输入元素的键值相关，所以根据实际的情况，对于每一个键值都有可能有一个相应的值），这个值可以用`update（T）`来设置，用`T value()`来检索。
 This keeps a value that can be updated and
 retrieved (scoped to key of the input element as mentioned above, so there will possibly be one value
 for each key that the operation sees). The value can be set using `update(T)` and retrieved using
 `T value()`.
 
-* `ListState<T>`: This keeps a list of elements. You can append elements and retrieve an `Iterable`
+* `ListState<T>`: 这里存储着一个元素的列表。您可以向列表中增补元素，也可以用一个`Iterable`来检索当前所有的元素。
+增补元素您可以使用`add(T)`, 迭代的检索元素您可以使用`Iterable<T> get()`。 
+This keeps a list of elements. You can append elements and retrieve an `Iterable`
 over all currently stored elements. Elements are added using `add(T)`, the Iterable can
 be retrieved using `Iterable<T> get()`.
 
-* `ReducingState<T>`: This keeps a single value that represents the aggregation of all values
+* `ReducingState<T>`: 这里面存储着一个单一的数值，它代表了所有被加到这个状态(state)里面的值共同聚合后的值。
+它的接口和`ListState`是一样的，只是元素用`add(T)`加进状态（state)，用 `ReduceFunction`来做具体的聚合操作。
+This keeps a single value that represents the aggregation of all values
 added to the state. The interface is the same as for `ListState` but elements added using
 `add(T)` are reduced to an aggregate using a specified `ReduceFunction`.
 
