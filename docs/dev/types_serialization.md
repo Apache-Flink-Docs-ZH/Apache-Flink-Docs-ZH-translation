@@ -46,27 +46,16 @@ Flink会尝试推断出在分布式计算过程中被交换和存储的数据类
  
 
 ## 常见问题
-用户在对Flink的数据类型处理进行交互时，最常见问题是
-The most frequent issues where users need to interact with Flink's data type handling are:
+用户在需要使用Flink的数据类型处理时，最常见问题是:
+ 
+* **注册子类型：** 如果函数签名只在父类型中申明，但实际执行中使用的是这些类型的子类型，让Fink知道这些子类型能够提升不少性能。因此，在`StreamExecutionEnvironment`或`ExecutionEnvironment`中应当为每个子类型调用`.registerType(clazz)`方法。
 
-* **注册子类:**
-
-* **Registering subtypes:** If the function signatures describe only the supertypes, but they actually use subtypes of those during execution,
-  it may increase performance a lot to make Flink aware of these subtypes.
-  For that, call `.registerType(clazz)` on the `StreamExecutionEnvironment` or `ExecutionEnvironment` for each subtype.
-
-* **Registering custom serializers:** Flink falls back to [Kryo](https://github.com/EsotericSoftware/kryo) for the types that it does not handle transparently
-  by itself. Not all types are seamlessly handled by Kryo (and thus by Flink). For example, many Google Guava collection types do not work well
-  by default. The solution is to register additional serializers for the types that cause problems.
-  Call `.getConfig().addDefaultKryoSerializer(clazz, serializer)` on the `StreamExecutionEnvironment` or `ExecutionEnvironment`.
-  Additional Kryo serializers are available in many libraries. See [Custom Serializers]({{ site.baseurl }}/dev/custom_serializers.html) for more details on working with custom serializers.
-
-* **Adding Type Hints:** Sometimes, when Flink cannot infer the generic types despits all tricks, a user must pass a *type hint*. That is generally
-  only necessary in the Java API. The [Type Hints Section](#type-hints-in-the-java-api) describes that in more detail.
-
-* **Manually creating a `TypeInformation`:** This may be necessary for some API calls where it is not possible for Flink to infer
-  the data types due to Java's generic type erasure. See [Creating a TypeInformation or TypeSerializer](#creating-a-typeinformation-or-typeserializer)
-  for details.
+* **注册自定义序列化构造器：** Flink会将自己不能处理的类型转交给[Kryo](https://github.com/EsotericSoftware/kryo),但并不是所有的类型都能被Kryo完美处理（也就是说：不是所有类型都能被Flink处理），比如，许多 Google Guava 的集合类型默认情况下是不能正常工作的。针对存在这个问题的这些类型，其解决方案
+是通过在`StreamExecutionEnvironment` 或 `ExecutionEnvironment`中调用`.getConfig().addDefaultKryoSerializer(clazz, serializer)`方法，注册辅助的序列化构造器。许多库都提供了Kryo序列化构造器，关于自定义序列化构造器的更多细节请参考[Custom Serializers]({{ site.baseurl }}/dev/custom_serializers.html)。
+* **添加Type Hints：** 有时，Flink尝试了各种办法仍不能推断出泛型，这时用户就必须通过添加`type hint`来推断泛型，一般这种情况只是在Java API中需要添加的。[Type Hints Section(#type-hints-in-the-java-api) 中讲解更为详细。
+ 
+ * **手动创建一个 `TypeInformation`类：** 在某些API中，手动创建一个`TypeInformation`类可能是必须的，因为Java泛型类型的擦除特性会使得Flink无法推断数据类型。更多详细信息可以参考[Creating a TypeInformation or TypeSerializer](#creating-a-typeinformation-or-typeserializer)
+ 
 
 
 ## Flink's TypeInformation class
