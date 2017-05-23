@@ -26,16 +26,17 @@ under the License.
 * This will be replaced by the TOC
 {:toc}
 
-Start working on your Flink Java program in a few simple steps.
+通过简单地几步来开始编写你的 Flink Java 程序。
 
 
-## Requirements
+## 要求
 
-The only requirements are working __Maven 3.0.4__ (or higher) and __Java 7.x__ (or higher) installations.
+唯一的要求是需要安装 Maven 3.0.4 (或者更高)和 Java 7.x (或者更高)
 
-## Create Project
 
-Use one of the following commands to __create a project__:
+## 创建工程
+
+使用下面其中一个命令来创建Flink Java工程
 
 <ul class="nav nav-tabs" style="border-bottom: none;">
     <li class="active"><a href="#maven-archetype" data-toggle="tab">Use <strong>Maven archetypes</strong></a></li>
@@ -50,7 +51,7 @@ Use one of the following commands to __create a project__:
       -DarchetypeCatalog=https://repository.apache.org/content/repositories/snapshots/ \{% endunless %}
       -DarchetypeVersion={{site.version}}
     {% endhighlight %}
-        This allows you to <strong>name your newly created project</strong>. It will interactively ask you for the groupId, artifactId, and package name.
+        这种方式允许你<strong>为新创建的工程命名</strong>。而且会以交互式地方式询问你为 groupId, artifactId 以及 package 命名。
     </div>
     <div class="tab-pane" id="quickstart-script">
     {% highlight bash %}
@@ -63,11 +64,10 @@ Use one of the following commands to __create a project__:
     </div>
 </div>
 
-## Inspect Project
+## 检查工程
 
-There will be a new directory in your working directory. If you've used
-the _curl_ approach, the directory is called `quickstart`. Otherwise,
-it has the name of your `artifactId`:
+
+运行完上面的命令会在当前工作目录下创建一个新目录。如果你使用了 curl 命令来创建 Flink Java 工程，这个目录的名称是 `quickstart`。否则，就是你输入的 `artifactId` 名字：
 
 {% highlight bash %}
 $ tree quickstart/
@@ -87,47 +87,29 @@ quickstart/
             └── log4j.properties
 {% endhighlight %}
 
-The sample project is a __Maven project__, which contains four classes. _StreamingJob_ and _BatchJob_ are basic skeleton programs, _SocketTextStreamWordCount_ is a working streaming example and _WordCountJob_ is a working batch example. Please note that the _main_ method of all classes allow you to start Flink in a development/testing mode.
+这个工程是一个 Maven 工程, 包含四个类。 StreamingJob 和 BatchJob 是基本的框架程序，SocketTextStreamWordCount 是一个 Streaming 示例；而 WordCount 是一个 Batch 示例。需要注意的是，所有这些类的 main 方法都允许你在开发/测试模式下启动Flink。
 
-We recommend you __import this project into your IDE__ to develop and
-test it. If you use Eclipse, the [m2e plugin](http://www.eclipse.org/m2e/)
-allows to [import Maven projects](http://books.sonatype.com/m2eclipse-book/reference/creating-sect-importing-projects.html#fig-creating-import).
-Some Eclipse bundles include that plugin by default, others require you
-to install it manually. The IntelliJ IDE supports Maven projects out of
-the box.
+我们推荐将这个工程导入到你的IDE中，并进行开发和测试。 如果你用的是 Eclipse，可以使用 [m2e 插件](http://www.eclipse.org/m2e/) 来[导入 Maven 工程](http://books.sonatype.com/m2eclipse-book/reference/creating-sect-importing-projects.html#fig-creating-import)。有些Eclipse发行版 默认嵌入了这个插件，其他的需要你手动去安装。IntelliJ IDE内置就提供了对 Maven 工程的支持。
 
+*给Mac OS X用户的建议*：默认的 JVM 堆内存对 Flink 来说太小了，你必须手动增加内存。这里以 Eclipse 为例，依次选择 `Run Configurations -> Arguments`，然后在 `VM Arguments` 里写入：`-Xmx800m`。
 
-*A note to Mac OS X users*: The default JVM heapsize for Java is too
-small for Flink. You have to manually increase it. In Eclipse, choose
-`Run Configurations -> Arguments` and write into the `VM Arguments`
-box: `-Xmx800m`.
+## 编译工程
 
-## Build Project
+如果你想要 __编译你的工程__ , 进入到工程所在目录，并输入 `mvn clean install -Pbuild-jar` 命令。 你将会找到  __target/original-your-artifact-id-your-version.jar__ 文件，它可以在任意的 Flink 集群上运行。 还有一个 fat-jar，名为 __target/your-artifact-id-your-version.jar__ ，包含了所有添加到 Maven 工程的依赖。
 
-If you want to __build your project__, go to your project directory and
-issue the `mvn clean install -Pbuild-jar` command. You will
-__find a jar__ that runs on every Flink cluster with a compatible
-version, __target/original-your-artifact-id-your-version.jar__. There
-is also a fat-jar in __target/your-artifact-id-your-version.jar__ which,
-additionally, contains all dependencies that were added to the Maven
-project.
+## 下一步
 
-## Next Steps
+编写我们自己的程序！
 
-Write your application!
+Quickstart 工程包含了一个 WordCount 的实现，也就是大数据处理系统的 Hello World。WordCount 的目标是计算文本中单词出现的频率。比如： 单词 “the” 或者 “house” 在所有的Wikipedia文本中出现了多少次。
 
-The quickstart project contains a `WordCount` implementation, the
-"Hello World" of Big Data processing systems. The goal of `WordCount`
-is to determine the frequencies of words in a text, e.g., how often do
-the terms "the" or "house" occur in all Wikipedia texts.
-
-__Sample Input__:
+__样本输入__:
 
 ~~~bash
 big data is big
 ~~~
 
-__Sample Output__:
+__样本输出__:
 
 ~~~bash
 big 2
@@ -135,10 +117,7 @@ data 1
 is 1
 ~~~
 
-The following code shows the `WordCount` implementation from the
-Quickstart which processes some text lines with two operators (a FlatMap
-and a Reduce operation via aggregating a sum), and prints the resulting
-words and counts to std-out.
+下面的代码就是 Quickstart 工程的 WordCount 实现，它使用两种操作( FlatMap 和 Reduce )处理了一些文本，并且在标准输出中打印了单词的计数结果。
 
 ~~~java
 public class WordCount {
@@ -169,7 +148,7 @@ public class WordCount {
 }
 ~~~
 
-The operations are defined by specialized classes, here the LineSplitter class.
+这些操作是在专门的类中定义的，下面是 LineSplitter 类的实现。
 
 ~~~java
 public static final class LineSplitter implements FlatMapFunction<String, Tuple2<String, Integer>> {
@@ -189,6 +168,6 @@ public static final class LineSplitter implements FlatMapFunction<String, Tuple2
 }
 ~~~
 
-{% gh_link /flink-examples/flink-examples-batch/src/main/java/org/apache/flink/examples/java/wordcount/WordCount.java "Check GitHub" %} for the full example code.
+完整代码参见 {% gh_link /flink-examples/flink-examples-batch/src/main/java/org/apache/flink/examples/java/wordcount/WordCount.java "Check GitHub" %}。
 
-For a complete overview over our API, have a look at the [DataStream API]({{ site.baseurl }}/dev/datastream_api.html) and [DataSet API]({{ site.baseurl }}/dev/batch/index.html) sections. If you have any trouble, ask on our [Mailing List](http://mail-archives.apache.org/mod_mbox/flink-dev/). We are happy to provide help.
+有关 API 的完整概述，请参见 [DataStream API]({{ site.baseurl }}/dev/datastream_api.html) 和 [DataSet API]({{ site.baseurl }}/dev/batch/index.html) 章节。 如果你遇到困难，请到 [邮件列表](http://mail-archives.apache.org/mod_mbox/flink-dev/) 里面提问。我们很乐意为你解答。
