@@ -28,7 +28,7 @@ under the License.
 
 标准化缩放器将会根据用户指定的均值与标准差值对给定数据集进行标准化缩放。
 如果用户没有为其指定均值与标准差，标准化缩放器将会根据均值为 0、标准差为 1 对输入数据集进行缩放。
-给定输入数据 $x_1, x_2,... x_n$，它的均值为：
+给定输入数据集 $x_1, x_2,... x_n$，它的均值为：
 
  $$\bar{x} = \frac{1}{n}\sum_{i=1}^{n}x_{i}$$
 
@@ -48,7 +48,7 @@ under the License.
 
 ### 拟合
 
-StandardScaler i可以在所有`Vector`或`LabeledVector`的子类型上进行训练：
+StandardScaler 可以在所有`Vector`或`LabeledVector`的子类型上进行训练：
 
 * `fit[T <: Vector]: DataSet[T] => Unit`
 * `fit: DataSet[LabeledVector] => Unit`
