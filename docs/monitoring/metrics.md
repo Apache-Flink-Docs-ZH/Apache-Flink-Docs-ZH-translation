@@ -478,7 +478,7 @@ metrics.reporter.stsd.port: 8125
       <th rowspan="12"><strong>Job-/TaskManager</strong></th>
       <td rowspan="12">Status.JVM.Memory</td>
       <td>Memory.Heap.Used</td>
-      <td>T当前使用的堆内存大小.</td>
+      <td>当前使用的堆内存大小.</td>
     </tr>
     <tr>
       <td>Heap.Committed</td>
