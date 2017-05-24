@@ -58,42 +58,49 @@ Flink会尝试推断出在分布式计算过程中被交换和存储的数据类
  
 
 
-## Flink's TypeInformation class
-
-The class {% gh_link /flink-core/src/main/java/org/apache/flink/api/common/typeinfo/TypeInformation.java "TypeInformation" %}
-is the base class for all type descriptors. It reveals some basic properties of the type and can generate serializers
-and, in specializations, comparators for the types.
-(*Note that comparators in Flink do much more than defining an order - they are basically the utility to handle keys*)
+## FLink的TypeInformation类
+ {% gh_link /flink-core/src/main/java/org/apache/flink/api/common/typeinfo/TypeInformation.java "TypeInformation" %}类是所有类型描述类的基类。它包括了类型的一些基本属性，并可以通过它来生成序列化构造器（serializer），特殊情况下还可以生成类型的比较器。（*注意：Flink中的比较器不仅仅是定义大小顺序，更是处理keys的基本辅助工具*）
+ 在FLink内部，类型有以下区别：
+ 
+ 1.    基本类型：所有Java基本数据类型和对应装箱类型，加上void, String, Date
+2.    基本数组和Object数组
+3.    复合类型：
+a.     Flink Java Tuple（Flink Java API的一部分）
+b.    Scala case 类（包括Scala Tuple）
+c.     POJO类：遵循类bean模式的类
+4.    Scala辅助类型（Option，Either，Lists，Maps…）
+5.    泛型（Generic）：这些类型将不会由Flink自己序列化，而是借助Kryo来序列化
 
 Internally, Flink makes the following distinctions between types:
 
-* Basic types: All Java primitives and their boxed form, plus `void`, `String`, `Date`, `BigDecimal`, and `BigInteger`.
+* 基本类型：所有Java基本数据类型和对应装箱类型，加上`void`, `String`, `Date`, `BigDecimal`和 `BigInteger`.
 
-* Primitive arrays and Object arrays
+* 基本数组和对象数组
 
-* Composite types
+* 复合类型：
 
-  * Flink Java Tuples (part of the Flink Java API): max 25 fields, null fields not supported
+  * Flink Java Tuples (Flink Java API的一部分): 最多25个成员，不支持null成员
 
-  * Scala *case classes* (including Scala tuples): max 22 fields, null fields not supported
+  * Scala *case 类* (包括 Scala tuples): 最多25个成员, 不支持null成员
 
-  * Row: tuples with arbitrary number of fields and support for null fields
+  * Row: 包含任意多个字段的元组并且支持null成员
 
-  * POJOs: classes that follow a certain bean-like pattern
+  * POJOs: 参照类bean模式的类
 
-* Auxiliary types (Option, Either, Lists, Maps, ...)
+* 辅助类型  (Option, Either, Lists, Maps, ...)
 
-* Generic types: These will not be serialized by Flink itself, but by Kryo.
+* 泛型: Flink自身不会序列化泛型，而是借助Kryo进行序列化.
 
-POJOs are of particular interest, because they support the creation of complex types and the use of field
-names in the definition of keys: `dataSet.join(another).where("name").equalTo("personName")`.
-They are also transparent to the runtime and can be handled very efficiently by Flink.
+POJO类非常有意思，因为POJO类可以支持复杂类型的创建，并且在定义keys时可以使用成员的名字：`dataSet.join(another).where("name").equalTo("personName")`。同时，POJO类对于运行时（runtime）是透明的，这使得Flink可以非常高效地处理它们。
+  
 
+#### POJO类型的规则
+在满足如下条件时，Flink会将这种数据类型识别成POJO类型（并允许以成员名引用）：
 
-#### Rules for POJO types
-
-Flink recognizes a data type as a POJO type (and allows "by-name" field referencing) if the following
-conditions are fulfilled:
+* 该类是public的并且是独立的（即没有非静态的内部类）
+* 该类有一个public的无参构造函数
+* 该类（及该类的父类）的所有成员要么是public的，要么是拥有按照标准java bean命名规则命名的public getter和 public setter方法。
+* 
 
 * The class is public and standalone (no non-static inner class)
 * The class has a public no-argument constructor
