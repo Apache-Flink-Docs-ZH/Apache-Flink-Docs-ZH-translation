@@ -1,6 +1,6 @@
 ---
 mathjax: include
-title: Standard Scaler
+title: 标准化缩放
 nav-parent_id: ml
 ---
 <!--
@@ -24,53 +24,51 @@ under the License.
 
 * This will be replaced by the TOC
 {:toc}
+## 描述
 
-## Description
-
- The standard scaler scales the given data set, so that all features will have a user specified mean and variance.
- In case the user does not provide a specific mean and standard deviation, the standard scaler transforms the features of the input data set to have mean equal to 0 and standard deviation equal to 1.
- Given a set of input data $x_1, x_2,... x_n$, with mean:
+标准化缩放器将会根据用户指定的均值与标准差值对给定数据集进行标准化缩放。
+如果用户没有为其指定均值与标准差，标准化缩放器将会根据均值为 0、标准差为 1 对输入数据集进行缩放。
+给定输入数据集 $x_1, x_2,... x_n$，它的均值为：
 
  $$\bar{x} = \frac{1}{n}\sum_{i=1}^{n}x_{i}$$
 
- and standard deviation:
+标准差为：
 
  $$\sigma_{x}=\sqrt{ \frac{1}{n} \sum_{i=1}^{n}(x_{i}-\bar{x})^{2}}$$
 
-The scaled data set $z_1, z_2,...,z_n$ will be:
+经过缩放后的数据集 $z_1, z_2,...,z_n$ 为：
 
  $$z_{i}= std \left (\frac{x_{i} - \bar{x}  }{\sigma_{x}}\right ) + mean$$
 
-where $\textit{std}$ and $\textit{mean}$ are the user specified values for the standard deviation and mean.
+其中 $\textit{std}$ 与 $\textit{mean}$ 是用户指定的标准差与均值。
 
-## Operations
+## 操作
 
-`StandardScaler` is a `Transformer`.
-As such, it supports the `fit` and `transform` operation.
+`StandardScaler` 是一个转换器（`Transformer`），因此它支持拟合（`fit`）与转换（`transform`）两种操作。
 
-### Fit
+### 拟合
 
-StandardScaler is trained on all subtypes of `Vector` or `LabeledVector`:
+StandardScaler 可以在所有`Vector`或`LabeledVector`的子类型上进行训练：
 
 * `fit[T <: Vector]: DataSet[T] => Unit`
 * `fit: DataSet[LabeledVector] => Unit`
 
-### Transform
+### 转换
 
-StandardScaler transforms all subtypes of `Vector` or `LabeledVector` into the respective type:
+StandardScaler 将 `Vector` 或 `LabeledVector` 的子类型数据集转换到对应的相同类型的数据集：
 
 * `transform[T <: Vector]: DataSet[T] => DataSet[T]`
 * `transform: DataSet[LabeledVector] => DataSet[LabeledVector]`
 
-## Parameters
+## 参数
 
-The standard scaler implementation can be controlled by the following two parameters:
+标准化缩放器可由下面两个参数进行控制。、
 
  <table class="table table-bordered">
   <thead>
     <tr>
-      <th class="text-left" style="width: 20%">Parameters</th>
-      <th class="text-center">Description</th>
+      <th class="text-left" style="width: 20%">参数</th>
+      <th class="text-center">描述</th>
     </tr>
   </thead>
 
@@ -79,7 +77,7 @@ The standard scaler implementation can be controlled by the following two parame
       <td><strong>Mean</strong></td>
       <td>
         <p>
-          The mean of the scaled data set. (Default value: <strong>0.0</strong>)
+          被缩放数据集的均值。（默认值：<strong>0.0</strong>）
         </p>
       </td>
     </tr>
@@ -87,27 +85,27 @@ The standard scaler implementation can be controlled by the following two parame
       <td><strong>Std</strong></td>
       <td>
         <p>
-          The standard deviation of the scaled data set. (Default value: <strong>1.0</strong>)
+          被缩放数据集的标准差。（默认值：<strong>1.0</strong>）
         </p>
       </td>
     </tr>
   </tbody>
 </table>
 
-## Examples
+## 例子
 
 {% highlight scala %}
-// Create standard scaler transformer
+// 创建一个标准化缩放器
 val scaler = StandardScaler()
 .setMean(10.0)
 .setStd(2.0)
 
-// Obtain data set to be scaled
+// 加载需要进行缩放的数据
 val dataSet: DataSet[Vector] = ...
 
-// Learn the mean and standard deviation of the training data
+// 计算被缩放数据的均值与标准差
 scaler.fit(dataSet)
 
-// Scale the provided data set to have mean=10.0 and std=2.0
+// 根据前面设定的 均值 =10、标准差 =2.0 对数据集进行缩放
 val scaledDS = scaler.transform(dataSet)
 {% endhighlight %}
