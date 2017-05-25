@@ -28,9 +28,9 @@ under the License.
 图的表示
 -----------
 
-在Gelly中， `图(Graph)`由顶点(vertex)的`DataSet` 和边(edge)的`DataSet`表示。  
+在Gelly中， `图(Graph)`由顶点(vertex)的`DataSet` 和边(edge)的`DataSet`表示。
 
-`图`的顶点由`Vertex`类表示。`Vertex`由一个唯一ID 和一个value 定义。`Vertex`ID 应该实现`Comparable`接口。要表示没有value的顶点，可以将value的类型设为`NullType`。  
+`图`的顶点由`Vertex`类表示。`Vertex`由一个唯一ID 和一个value 定义。`Vertex`ID 应该实现`Comparable`接口。要表示没有value的顶点，可以将value的类型设为`NullType`。
 
 
 <div class="codetabs" markdown="1">
@@ -55,7 +55,8 @@ val v = new Vertex(1L, NullValue.getInstance())
 </div>
 </div>
 
-图的边用`Edge`类表示。`Edge`由一个源ID (即源`Vertex`的ID)，一个目的ID (即目的`Vertex`的ID)，一个可选的value 定义。源ID 和目的ID 应该与`Vertex`的ID 属于相同的类。没有值的边，它的value 类型为`NullValue`。  
+
+图的边用`Edge`类表示。`Edge`由一个源ID (即源`Vertex`的ID)，一个目的ID (即目的`Vertex`的ID)，一个可选的value 定义。源ID 和目的ID 应该与`Vertex`的ID 属于相同的类。没有值的边，它的value 类型为`NullValue`。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -81,16 +82,16 @@ val weight = e.getValue // weight = 0.5
 </div>
 </div>
 
-在Gelly中，`Edge`永远从源端点指向目的端点。对一个`Graph`而言，如果每条`Edge` 都对应着另一条从目的端点指向源端点的`Edge`，那么它可能是无向的。  
+在Gelly中，`Edge`永远从源端点指向目的端点。对一个`Graph`而言，如果每条`Edge` 都对应着另一条从目的端点指向源端点的`Edge`，那么它可能是无向的。
 
 {% top %}
 
 创建图
 -----------
 
-你可以通过如下方法创建一个`Graph`：  
+你可以通过如下方法创建一个`Graph`：
 
-* 根据一个由边组成的`DataSet`，可选参数是一个由顶点组成的`DataSet`：  
+* 根据一个由边组成的`DataSet`，可选参数是一个由顶点组成的`DataSet`：
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -118,7 +119,7 @@ val graph = Graph.fromDataSet(vertices, edges, env)
 </div>
 </div>
 
-* 根据一个由表示边的`Tuple2`类组成的`DataSet`。Gelly 将把每个`Tuple2`转换成`Edge`，其中第一个field 将作为源ID，第二个field 将作为目的ID。顶点和边的值都会被置为`NullValue`。  
+* 根据一个由表示边的`Tuple2`类组成的`DataSet`。Gelly 将把每个`Tuple2`转换成`Edge`，其中第一个field 将作为源ID，第二个field 将作为目的ID。顶点和边的值都会被置为`NullValue`。
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
 {% highlight java %}
@@ -141,7 +142,7 @@ val graph = Graph.fromTuple2DataSet(edges, env)
 </div>
 </div>
 
-* 根据一个由`Tuple3`组成的`DataSet`，可选参数是一个由`Tuple2`组成的`DataSet`。这种情况下，Gelly 将把每个`Tuple3`转换成`Edge`，其中第一个field 将成为源ID，第二个field 将成为目的ID，第三个field 将成为边的value。同样地，每个`Tuple2`将被转换为一个`Vertex`，其中第一个field 将成为端点的ID，第二个field 将成为端点的value。  
+* 根据一个由`Tuple3`组成的`DataSet`，可选参数是一个由`Tuple2`组成的`DataSet`。这种情况下，Gelly 将把每个`Tuple3`转换成`Edge`，其中第一个field 将成为源ID，第二个field 将成为目的ID，第三个field 将成为边的value。同样地，每个`Tuple2`将被转换为一个`Vertex`，其中第一个field 将成为端点的ID，第二个field 将成为端点的value。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -155,7 +156,7 @@ DataSet<Tuple3<String, String, Double>> edgeTuples = env.readCsvFile("path/to/ed
 Graph<String, Long, Double> graph = Graph.fromTupleDataSet(vertexTuples, edgeTuples, env);
 {% endhighlight %}
 
-* 根据一个包含边数据的CSV文件，可选参数是一个包含端点数据的CSV文件。这种情况下，Gelly 将把边CSV文件的每一行转换成一个`Edge`，其中第一个field 将成为源ID， 第二个field 将成为目的ID， 第三个field (如果存在的话)将成为边的value。同样地，可选端点CSV文件的每一行将被转换成一个`Vertex`，其中第一个field 将成为端点的ID，第二个field（如果存在的话）将成为端点的value。想从`GraphCsvReader`得到`Graph`，必须用下面的某种方法指定类型：  
+* 根据一个包含边数据的CSV文件，可选参数是一个包含端点数据的CSV文件。这种情况下，Gelly 将把边CSV文件的每一行转换成一个`Edge`，其中第一个field 将成为源ID， 第二个field 将成为目的ID， 第三个field (如果存在的话)将成为边的value。同样地，可选端点CSV文件的每一行将被转换成一个`Vertex`，其中第一个field 将成为端点的ID，第二个field（如果存在的话）将成为端点的value。想从`GraphCsvReader`得到`Graph`，必须用下面的某种方法指定类型：
 
 - `types(Class<K> vertexKey, Class<VV> vertexValue,Class<EV> edgeValue)`: both vertex and edge values are present.
 - `edgeTypes(Class<K> vertexKey, Class<EV> edgeValue)`: the Graph has edge values, but no vertex values.
@@ -165,7 +166,7 @@ Graph<String, Long, Double> graph = Graph.fromTupleDataSet(vertexTuples, edgeTup
 {% highlight java %}
 ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
-// 生成一个Vertex ID为String 类型、Vertex value为Long 类型，Edge value为Double 类型的图  
+// 生成一个Vertex ID为String 类型、Vertex value为Long 类型，Edge value为Double 类型的图
 Graph<String, Long, Double> graph = Graph.fromCsvReader("path/to/vertex/input", "path/to/edge/input", env)
 					.types(String.class, Long.class, Double.class);
 
@@ -187,11 +188,11 @@ val graph = Graph.fromTupleDataSet(vertexTuples, edgeTuples, env)
 {% endhighlight %}
 
 
-* 根据一个包含边数据的csv文件，可选参数是一个包含端点数据的csv文件。这种情况下，Gelly 将把边CSV文件的每一行转换成一个`Edge`，其中第一个field 将成为源ID， 第二个field 将成为目的ID， 第三个field (如果存在的话)将成为边的value。如果这条边没有关联的value， 将边的类型参数(第三个类型参数)设为`NullValue`。你也可以指定用某个值初始化端点。  
+* 根据一个包含边数据的csv文件，可选参数是一个包含端点数据的csv文件。这种情况下，Gelly 将把边CSV文件的每一行转换成一个`Edge`，其中第一个field 将成为源ID， 第二个field 将成为目的ID， 第三个field (如果存在的话)将成为边的value。如果这条边没有关联的value， 将边的类型参数(第三个类型参数)设为`NullValue`。你也可以指定用某个值初始化端点。
 
-如果通过`pathVertices`提供了CSV 文件的路径，那么文件的每行都会被转换成一个`Vertex`。每行的第一个field 将成为端点的ID， 第二个field 将成为端点的value。  
+如果通过`pathVertices`提供了CSV 文件的路径，那么文件的每行都会被转换成一个`Vertex`。每行的第一个field 将成为端点的ID， 第二个field 将成为端点的value。
 
-如果通过参数`vertexValueInitializer`提供了端点value的初始化工具`MapFunction` ，那么这个函数可以用来生成端点的值。根据边的输入，可以自动生成端点的集合。如果端点没有关联值，要将端点value的类型参数（第二个类型参数）设为`NullValue`。根据边的输入，会自动生成值类型为`NullValue`的端点集合。  
+如果通过参数`vertexValueInitializer`提供了端点value的初始化工具`MapFunction` ，那么这个函数可以用来生成端点的值。根据边的输入，可以自动生成端点的集合。如果端点没有关联值，要将端点value的类型参数（第二个类型参数）设为`NullValue`。根据边的输入，会自动生成值类型为`NullValue`的端点集合。
 
 
 {% highlight scala %}
@@ -222,7 +223,7 @@ val simpleGraph = Graph.fromCsvReader[Long, Double, NullValue](
 </div>
 </div>
 
-* 根据一个由边组成的`Collection`，可选参数是一个由端点组成的`Collection`:  
+* 根据一个由边组成的`Collection`，可选参数是一个由端点组成的`Collection`:
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
 {% highlight java %}
@@ -235,7 +236,7 @@ List<Edge<Long, String>> edgeList = new ArrayList...
 Graph<Long, Long, String> graph = Graph.fromCollection(vertexList, edgeList, env);
 {% endhighlight %}
 
-如果创建图时没有提供端点数据，Gelly 会根据边的输入自动生成一个`Vertex`的`DataSet`。这种情况下，生成的端点是没有值的。另外，将`MapFunction` 作为构建函数的一个参数传进去，也可以初始化`Vertex`的:  
+如果创建图时没有提供端点数据，Gelly 会根据边的输入自动生成一个`Vertex`的`DataSet`。这种情况下，生成的端点是没有值的。另外，将`MapFunction` 作为构建函数的一个参数传进去，也可以初始化`Vertex`的:
 {% highlight java %}
 ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
@@ -260,7 +261,7 @@ val edgeList = List(...)
 val graph = Graph.fromCollection(vertexList, edgeList, env)
 {% endhighlight %}
 
-如果创建图时没有提供端点的数据，Gelly 会根据边的输入自动生成一个`Vertex`的`DataSet`。这种情况下，生成的端点是没有值的。另外，将`MapFunction` 作为构建函数的一个参数传进去，也可初始化`Vertex`的值:  
+如果创建图时没有提供端点的数据，Gelly 会根据边的输入自动生成一个`Vertex`的`DataSet`。这种情况下，生成的端点是没有值的。另外，将`MapFunction` 作为构建函数的一个参数传进去，也可初始化`Vertex`的值:
 {% highlight java %}
 val env = ExecutionEnvironment.getExecutionEnvironment
 
@@ -278,7 +279,7 @@ val graph = Graph.fromCollection(edgeList,
 图的属性
 ------------
 
-Gelly 提供了一些方法获取图的各种属性:  
+Gelly 提供了一些方法获取图的各种属性:
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -310,7 +311,7 @@ long numberOfVertices()
 // 获取边的数量
 long numberOfEdges()
 
-// 获取由三元组<srcVertex, trgVertex, edge> 构成的DataSet  
+// 获取由三元组<srcVertex, trgVertex, edge> 构成的DataSet
 DataSet<Triplet<K, VV, EV>> getTriplets()
 
 {% endhighlight %}
@@ -330,7 +331,7 @@ getVertexIds: DataSet[K]
 // 获取由边ID构成的source-target pair组成的DataSet
 getEdgeIds: DataSet[(K, K)]
 
-// 获取端点的<端点ID， 入度> pair 组成的DataSet  
+// 获取端点的<端点ID， 入度> pair 组成的DataSet
 inDegrees: DataSet[(K, LongValue)]
 
 // 获取端点的<端点ID， 出度> pair 组成的DataSet
@@ -339,10 +340,10 @@ outDegrees: DataSet[(K, LongValue)]
 // 获取端点的<端点ID， 度> pair 组成的DataSet，这里的度 = 入度 + 出度
 getDegrees: DataSet[(K, LongValue)]
 
-// 获取端点的数量 
+// 获取端点的数量
 numberOfVertices: Long
 
-// 获取边的数量 
+// 获取边的数量
 numberOfEdges: Long
 
 // 获取由三元组<srcVertex, trgVertex, edge> 构成的DataSet
@@ -356,7 +357,7 @@ getTriplets: DataSet[Triplet[K, VV, EV]]
 
 图的变换
 -----------------
-* <strong>Map</strong>: Gelly 专门提供了一些方法，用来对端点的值和边的值进行map 变换。`mapVertices`和`mapEdges`返回一个新的`Graph`，它的端点(或者边)的ID保持不变，但是值变成了用户自定义的map 函数所提供的对应值。map 函数也允许改变端点或者边的值的类型。  
+* <strong>Map</strong>: Gelly 专门提供了一些方法，用来对端点的值和边的值进行map 变换。`mapVertices`和`mapEdges`返回一个新的`Graph`，它的端点(或者边)的ID保持不变，但是值变成了用户自定义的map 函数所提供的对应值。map 函数也允许改变端点或者边的值的类型。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -385,7 +386,7 @@ val updatedGraph = graph.mapVertices(v => v.getValue + 1)
 </div>
 </div>
 
-* <strong>Translate</strong>: Gelly 提供专门的方法用来translate 端点和边的ID的类型和值(`translateGraphIDs`)，端点的值(`translateVertexValues`)，或者边的值(`translateEdgeValues`)。Translation 的过程是由用户定义的map 函数完成的，`org.apache.flink.graph.asm.translate` 这个包也提供了一些map 函数。同一个`MapFunction`，在上述三种方法里是通用的。  
+* <strong>Translate</strong>: Gelly 提供专门的方法用来translate 端点和边的ID的类型和值(`translateGraphIDs`)，端点的值(`translateVertexValues`)，或者边的值(`translateEdgeValues`)。Translation 的过程是由用户定义的map 函数完成的，`org.apache.flink.graph.asm.translate` 这个包也提供了一些map 函数。同一个`MapFunction`，在上述三种方法里是通用的。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -393,7 +394,7 @@ val updatedGraph = graph.mapVertices(v => v.getValue + 1)
 ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 Graph<Long, Long, Long> graph = Graph.fromDataSet(vertices, edges, env);
 
-// 将每个端点和边的ID translate 成String 类型  
+// 将每个端点和边的ID translate 成String 类型
 Graph<String, Long, Long> updatedGraph = graph.translateGraphIds(
 				new MapFunction<Long, String>() {
 					public String map(Long id) {
@@ -401,7 +402,7 @@ Graph<String, Long, Long> updatedGraph = graph.translateGraphIds(
 					}
 				});
 
-// 将端点ID，边ID，端点值，边的值 translage 成LongValue 类型  
+// 将端点ID，边ID，端点值，边的值 translage 成LongValue 类型
 Graph<LongValue, LongValue, LongValue> updatedGraph = graph
                 .translateGraphIds(new LongToLongValue())
                 .translateVertexValues(new LongToLongValue())
@@ -414,14 +415,14 @@ Graph<LongValue, LongValue, LongValue> updatedGraph = graph
 val env = ExecutionEnvironment.getExecutionEnvironment
 val graph = Graph.fromDataSet(vertices, edges, env)
 
-// 将每个端点和边的ID translate 成String 类型  
+// 将每个端点和边的ID translate 成String 类型
 val updatedGraph = graph.translateGraphIds(id => id.toString)
 {% endhighlight %}
 </div>
 </div>
 
 
-* <strong>Filter</strong>: Filter 变换将用户自定义的filter 函数作用于`Graph`中的顶点/边。`filterOnEdges` 生成原始图的一个sub-graph，只留下那些满足预设条件的边。注意，端点的dataset 将不会变动。对应地，`filterOnVertices` 在图的端点上应用filter。那些源/目的端点不满足vertex条件的边，将从最终的边组成的 dataset中删除。可以使用`subgraph` 方法，同时在端点和边上应用filter 函数。  
+* <strong>Filter</strong>: Filter 变换将用户自定义的filter 函数作用于`Graph`中的顶点/边。`filterOnEdges` 生成原始图的一个sub-graph，只留下那些满足预设条件的边。注意，端点的dataset 将不会变动。对应地，`filterOnVertices` 在图的端点上应用filter。那些源/目的端点不满足vertex条件的边，将从最终的边组成的 dataset中删除。可以使用`subgraph` 方法，同时在端点和边上应用filter 函数。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -459,9 +460,9 @@ graph.subgraph((vertex => vertex.getValue > 0), (edge => edge.getValue < 0))
     <img alt="Filter Transformations" width="80%" src="{{ site.baseurl }}/fig/gelly-filter.png"/>
 </p>
 
-* <strong>Join</strong>: Gelly 提供一些专门的方法，对vertex 和edge 的dataset 与其它输入的dataset 做join 操作。`joinWithVertices` 将端点与输入的一个`Tuple2`组成的dataset 做join。Join 操作使用的key 是端点的ID和`Tuple2` 的第一个field。这个方法返回一个新的`Graph`，其中端点的值已经根据用户定义的转换函数更新过了。  
-类似地，使用下面三种方法，输入的dataset 也可以和边做join。`joinWithEdges` 的期望输入是`Tuple3` 组成的 `DataSet`，join 操作发生在源端点和目的端点的ID 形成的组合key 上。`joinWithEdgesOnSource` 的期望输入是`Tuple2` 组成的`DataSet`，join 操作发生在边的源端点和输入的第一个field上。`joinWithEdgesOnTarget` 的期望输入是`Tuple2` 组成的`DataSet`，join 操作发生在边的目的端点和输入的第一个field上。以上的三种方法，都是在边和输入的dataset上应用变换函数。  
-注意，输入的dataset 如果包含重复的key，Gelly 中所有的join 方法都只会处理它遇到的第一个 value。  
+* <strong>Join</strong>: Gelly 提供一些专门的方法，对vertex 和edge 的dataset 与其它输入的dataset 做join 操作。`joinWithVertices` 将端点与输入的一个`Tuple2`组成的dataset 做join。Join 操作使用的key 是端点的ID和`Tuple2` 的第一个field。这个方法返回一个新的`Graph`，其中端点的值已经根据用户定义的转换函数更新过了。
+类似地，使用下面三种方法，输入的dataset 也可以和边做join。`joinWithEdges` 的期望输入是`Tuple3` 组成的 `DataSet`，join 操作发生在源端点和目的端点的ID 形成的组合key 上。`joinWithEdgesOnSource` 的期望输入是`Tuple2` 组成的`DataSet`，join 操作发生在边的源端点和输入的第一个field上。`joinWithEdgesOnTarget` 的期望输入是`Tuple2` 组成的`DataSet`，join 操作发生在边的目的端点和输入的第一个field上。以上的三种方法，都是在边和输入的dataset上应用变换函数。
+注意，输入的dataset 如果包含重复的key，Gelly 中所有的join 方法都只会处理它遇到的第一个 value。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -492,20 +493,20 @@ val networkWithWeights = network.joinWithEdgesOnSource(vertexOutDegrees, (v1: Do
 </div>
 </div>
 
-* <strong>Reverse</strong>: `reverse()` 反转所有边，然后返回一个新的`Graph`。  
+* <strong>Reverse</strong>: `reverse()` 反转所有边，然后返回一个新的`Graph`。
 
-* <strong>Undirected</strong>: Gelly中，所有的`Graph` 永远是有向的。给图中所有边都加上方向相反的边，这样就可以表示无向图。因此，Gelly提供了`getUndirected()`方法。  
+* <strong>Undirected</strong>: Gelly中，所有的`Graph` 永远是有向的。给图中所有边都加上方向相反的边，这样就可以表示无向图。因此，Gelly提供了`getUndirected()`方法。
 
-* <strong>Union</strong>: Gelly 的`union()` 方法在指定图和当前图的端点和边的集合上取并集。在得到的`Graph` 中，重复的端点会被删除；如果存在重复边，重复的端点会被保留。  
+* <strong>Union</strong>: Gelly 的`union()` 方法在指定图和当前图的端点和边的集合上取并集。在得到的`Graph` 中，重复的端点会被删除；如果存在重复边，重复的端点会被保留。
 
 <p class="text-center">
     <img alt="Union Transformation" width="50%" src="{{ site.baseurl }}/fig/gelly-union.png"/>
 </p>
 
-* <strong>Difference</strong>：Gelly 的`difference()` 方法在指定图和当前图的端点和边的集合上取差异。  
- * <strong>Intersect</strong>: Gelly 的`intersect()` 方法在指定图和当前图的端点和边的集合上取交集。结果是生成一个新的`Graph`, 包含两个图中都存在的所有边。如果两条边的源 identifier, 目的 identifier，value 都相同，那么就认为它们是相等的。生成的图中，所有的端点都没有value。 如果需要端点的value， 可以通过`joinWithVertices()` 方法从输入图中获取。  
+* <strong>Difference</strong>：Gelly 的`difference()` 方法在指定图和当前图的端点和边的集合上取差异。
+ * <strong>Intersect</strong>: Gelly 的`intersect()` 方法在指定图和当前图的端点和边的集合上取交集。结果是生成一个新的`Graph`, 包含两个图中都存在的所有边。如果两条边的源 identifier, 目的 identifier，value 都相同，那么就认为它们是相等的。生成的图中，所有的端点都没有value。 如果需要端点的value， 可以通过`joinWithVertices()` 方法从输入图中获取。
 
- 根据`distinct` 参数存在与否，相等边在生成的`Graph` 中出现的次数要么是一次，要么是输入的图中存在的相等边的pair 的数量。  
+ 根据`distinct` 参数存在与否，相等边在生成的`Graph` 中出现的次数要么是一次，要么是输入的图中存在的相等边的pair 的数量。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -556,61 +557,61 @@ val intersect2 = graph1.intersect(graph2, false)
 图的变化
 -----------
 
-Gelly 提供如下方法，增加、删除输入`Graph`的端点或者边:   
+Gelly 提供如下方法，增加、删除输入`Graph`的端点或者边:
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
 {% highlight java %}
 
-// 添加一个端点。如果端点已经存在，不会重复添加。  
+// 添加一个端点。如果端点已经存在，不会重复添加。
 Graph<K, VV, EV> addVertex(final Vertex<K, VV> vertex)
 
-// 添加一个端点的list。 如果图中已经存在端点，它们最多会被添加一次。  
+// 添加一个端点的list。 如果图中已经存在端点，它们最多会被添加一次。
 Graph<K, VV, EV> addVertices(List<Vertex<K, VV>> verticesToAdd)
 
-// 添加一条边。如果源端点和目的端点在图中不存在，它们也会被添加。  
+// 添加一条边。如果源端点和目的端点在图中不存在，它们也会被添加。
 Graph<K, VV, EV> addEdge(Vertex<K, VV> source, Vertex<K, VV> target, EV edgeValue)
 
-// 添加一个边的list。如果在一个不存在的端点集合上添加边，边将被视为不合法，而且会被忽略。  
+// 添加一个边的list。如果在一个不存在的端点集合上添加边，边将被视为不合法，而且会被忽略。
 Graph<K, VV, EV> addEdges(List<Edge<K, EV>> newEdges)
 
-// 从图中移除指定的端点，以及它的边。  
+// 从图中移除指定的端点，以及它的边。
 Graph<K, VV, EV> removeVertex(Vertex<K, VV> vertex)
 
-// 从图中移除指定的端点的集合，以及它们的边。  
+// 从图中移除指定的端点的集合，以及它们的边。
 Graph<K, VV, EV> removeVertices(List<Vertex<K, VV>> verticesToBeRemoved)
 
-// 移除图中*所有* 与某条给定边match 的边。  
+// 移除图中*所有* 与某条给定边match 的边。
 Graph<K, VV, EV> removeEdge(Edge<K, EV> edge)
 
-// 给定一个边的list，移除图中*所有* 与list中的边match 的边。  
+// 给定一个边的list，移除图中*所有* 与list中的边match 的边。
 Graph<K, VV, EV> removeEdges(List<Edge<K, EV>> edgesToBeRemoved)
 {% endhighlight %}
 </div>
 
 <div data-lang="scala" markdown="1">
 {% highlight scala %}
-// 添加一个端点。如果端点已经存在，不会重复添加。  
+// 添加一个端点。如果端点已经存在，不会重复添加。
 addVertex(vertex: Vertex[K, VV])
 
-// 添加一个端点的list。 如果图中已经存在端点，它们最多会被添加一次。  
+// 添加一个端点的list。 如果图中已经存在端点，它们最多会被添加一次。
 addVertices(verticesToAdd: List[Vertex[K, VV]])
 
-// 添加一条边。如果源端点和目的端点在图中不存在，它们也会被添加。  
+// 添加一条边。如果源端点和目的端点在图中不存在，它们也会被添加。
 addEdge(source: Vertex[K, VV], target: Vertex[K, VV], edgeValue: EV)
 
-// 添加一个边的list。如果在一个不存在的端点集合上添加边，边将被视为不合法，而且会被忽略。  
+// 添加一个边的list。如果在一个不存在的端点集合上添加边，边将被视为不合法，而且会被忽略。
 addEdges(edges: List[Edge[K, EV]])
 
-// 从图中移除指定的端点，以及它的边。  
+// 从图中移除指定的端点，以及它的边。
 removeVertex(vertex: Vertex[K, VV])
 
-// 从图中移除指定的端点的集合，以及它们的边。  
+// 从图中移除指定的端点的集合，以及它们的边。
 removeVertices(verticesToBeRemoved: List[Vertex[K, VV]])
 
-// 移除图中*所有* 与某条给定边match 的边。  
+// 移除图中*所有* 与某条给定边match 的边。
 removeEdge(edge: Edge[K, EV])
 
-// 给定一个边的list，移除图中*所有* 与list中的边match 的边。  
+// 给定一个边的list，移除图中*所有* 与list中的边match 的边。
 removeEdges(edgesToBeRemoved: List[Edge[K, EV]])
 {% endhighlight %}
 </div>
@@ -619,17 +620,17 @@ removeEdges(edgesToBeRemoved: List[Edge[K, EV]])
 邻域方法
 -----------
 
-邻域方法可以在端点的first-hop 的邻居上进行聚合。`reduceOnEdges()`方法可以对一个端点的相邻边的值进行聚合，`reduceOnNeighbors()` 方法可以对一个端点的相邻点的值进行聚合。这些方法的聚合具有结合性和交换性，利用了内部的组合，因此极大提升了性能。  
+邻域方法可以在端点的first-hop 的邻居上进行聚合。`reduceOnEdges()`方法可以对一个端点的相邻边的值进行聚合，`reduceOnNeighbors()` 方法可以对一个端点的相邻点的值进行聚合。这些方法的聚合具有结合性和交换性，利用了内部的组合，因此极大提升了性能。
 
-邻域的范围由`EdgeDirection` 这个参数指定，可选值包括`IN`,`OUT`,`ALL`。`IN` 聚合一个端点所有的入边， `OUT` 聚合一个端点所有的出边， `ALL` 聚合一个端点所有的边。  
+邻域的范围由`EdgeDirection` 这个参数指定，可选值包括`IN`,`OUT`,`ALL`。`IN` 聚合一个端点所有的入边， `OUT` 聚合一个端点所有的出边， `ALL` 聚合一个端点所有的边。
 
-例如，假设你想从图中每个的端点的所有出边中选出最小weight：  
+例如，假设你想从图中每个的端点的所有出边中选出最小weight：
 
 <p class="text-center">
     <img alt="reduceOnEdges Example" width="50%" src="{{ site.baseurl }}/fig/gelly-example-graph.png"/>
 </p>
 
-下面的代码将计算每个端点的出边，并对得到的每个邻域应用自定义的`SelectMinWeight()`函数：  
+下面的代码将计算每个端点的出边，并对得到的每个邻域应用自定义的`SelectMinWeight()`函数：
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -669,7 +670,7 @@ final class SelectMinWeight extends ReduceEdgesFunction[Double] {
     <img alt="reduceOnEdges Example" width="50%" src="{{ site.baseurl }}/fig/gelly-reduceOnEdges.png"/>
 </p>
 
-与之类似，假设你想计算每个端点的所有in-coming 邻居端点的value之和。下面的代码计算了每个端点的in-coming 邻居，并对每个邻居端点应用自定义的`SumValues()` 函数。  
+与之类似，假设你想计算每个端点的所有in-coming 邻居端点的value之和。下面的代码计算了每个端点的in-coming 邻居，并对每个邻居端点应用自定义的`SumValues()` 函数。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -678,7 +679,7 @@ Graph<Long, Long, Double> graph = ...
 
 DataSet<Tuple2<Long, Long>> verticesWithSum = graph.reduceOnNeighbors(new SumValues(), EdgeDirection.IN);
 
-// 自定义函数，用于计算邻居端点的value之和  
+// 自定义函数，用于计算邻居端点的value之和
 static final class SumValues implements ReduceNeighborsFunction<Long> {
 
 	    	@Override
@@ -695,7 +696,7 @@ val graph: Graph[Long, Long, Double] = ...
 
 val verticesWithSum = graph.reduceOnNeighbors(new SumValues, EdgeDirection.IN)
 
-// 自定义函数，用于计算邻居端点的value之和  
+// 自定义函数，用于计算邻居端点的value之和
 final class SumValues extends ReduceNeighborsFunction[Long] {
    	override def reduceNeighbors(firstNeighbor: Long, secondNeighbor: Long): Long = {
     	firstNeighbor + secondNeighbor
@@ -709,9 +710,9 @@ final class SumValues extends ReduceNeighborsFunction[Long] {
     <img alt="reduceOnNeighbors Example" width="70%" src="{{ site.baseurl }}/fig/gelly-reduceOnNeighbors.png"/>
 </p>
 
-如果聚合函数不具有结合性和交换性，或者想从每个端点返回不止一个值，可以使用`groupReduceOnEdges()`和 `groupReduceOnNeighbors()` 这两个更一般性的方法。这些方法对每个端点返回0个，1个或者多个value，而且提供对所有邻居的访问。  
+如果聚合函数不具有结合性和交换性，或者想从每个端点返回不止一个值，可以使用`groupReduceOnEdges()`和 `groupReduceOnNeighbors()` 这两个更一般性的方法。这些方法对每个端点返回0个，1个或者多个value，而且提供对所有邻居的访问。
 
-例如，下面的代码将输出所有端点的pair，条件是连接它们的边的weight大于或者等于0.5：   
+例如，下面的代码将输出所有端点的pair，条件是连接它们的边的weight大于或者等于0.5：
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -720,7 +721,7 @@ Graph<Long, Long, Double> graph = ...
 
 DataSet<Tuple2<Vertex<Long, Long>, Vertex<Long, Long>>> vertexPairs = graph.groupReduceOnNeighbors(new SelectLargeWeightNeighbors(), EdgeDirection.OUT);
 
-// 用户自定函数，用来筛选用邻居端点，条件是连接它们的边的weight大于或者等于0.5  
+// 用户自定函数，用来筛选用邻居端点，条件是连接它们的边的weight大于或者等于0.5
 static final class SelectLargeWeightNeighbors implements NeighborsFunctionWithVertexValue<Long, Long, Double,
 		Tuple2<Vertex<Long, Long>, Vertex<Long, Long>>> {
 
@@ -745,7 +746,7 @@ val graph: Graph[Long, Long, Double] = ...
 
 val vertexPairs = graph.groupReduceOnNeighbors(new SelectLargeWeightNeighbors, EdgeDirection.OUT)
 
-// 用户自定函数，用来筛选用邻居端点，条件是连接它们的边的weight大于或者等于0.5  
+// 用户自定函数，用来筛选用邻居端点，条件是连接它们的边的weight大于或者等于0.5
 final class SelectLargeWeightNeighbors extends NeighborsFunctionWithVertexValue[Long, Long, Double,
   (Vertex[Long, Long], Vertex[Long, Long])] {
 
@@ -764,14 +765,14 @@ final class SelectLargeWeightNeighbors extends NeighborsFunctionWithVertexValue[
 </div>
 </div>
 
-如果计算聚合值不需要访问端点的value （聚合计算应用在它身上），推荐使用两个效率更高的函数`EdgesFunction` 和 `NeighborsFunction`，或者是用户自定义的函数。如果需要访问端点的value，那么就应该使用`EdgesFunctionWithVertexValue` 和 `NeighborsFunctionWithVertexValue`。  
+如果计算聚合值不需要访问端点的value （聚合计算应用在它身上），推荐使用两个效率更高的函数`EdgesFunction` 和 `NeighborsFunction`，或者是用户自定义的函数。如果需要访问端点的value，那么就应该使用`EdgesFunctionWithVertexValue` 和 `NeighborsFunctionWithVertexValue`。
 
 {% top %}
 
 图的校验
 -----------
 
-Gelly 提供一种简单的工具来检测输入的图形的合法性。随着应用语境的变化，以某个标准衡量，一个图形既可能合法也可能不合法。例如，用户可能需要检查图形是否包含重复边，或者图的结构是否是二分的。要检查图的合法性，可以自己定义 `GraphValidator`并实现它的`validate()`方法。`InvalidVertexIdsValidator`是Gelly 中预定义的validator。它检测边的集合包含了合法的端点ID，换言之，所有边的ID 在端点的ID 集合中也存在。  
+Gelly 提供一种简单的工具来检测输入的图形的合法性。随着应用语境的变化，以某个标准衡量，一个图形既可能合法也可能不合法。例如，用户可能需要检查图形是否包含重复边，或者图的结构是否是二分的。要检查图的合法性，可以自己定义 `GraphValidator`并实现它的`validate()`方法。`InvalidVertexIdsValidator`是Gelly 中预定义的validator。它检测边的集合包含了合法的端点ID，换言之，所有边的ID 在端点的ID 集合中也存在。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
