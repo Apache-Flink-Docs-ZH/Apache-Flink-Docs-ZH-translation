@@ -22,6 +22,8 @@ specific language governing permissions and limitations
 under the License.
 -->
 
+
+
 * This will be replaced by the TOC
 {:toc}
 
@@ -55,10 +57,6 @@ val v = new Vertex(1L, NullValue.getInstance())
 </div>
 </div>
 
-'
-
-$payload = json_decode($postBody);
-'
 图的边用`Edge`类表示。`Edge`由一个源ID (即源`Vertex`的ID)，一个目的ID (即目的`Vertex`的ID)，一个可选的value 定义。源ID 和目的ID 应该与`Vertex`的ID 属于相同的类。没有值的边，它的value 类型为`NullValue`。
 
 <div class="codetabs" markdown="1">
