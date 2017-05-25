@@ -74,12 +74,12 @@ verticesWithCommunity.print
 该算法在顶点不再更新它们的值或到达最大迭代次数时收敛。
 
 #### 用法
-The algorithm takes as input a `Graph` with any vertex type, `Long` vertex values, and `Double` edge values. It returns a `Graph` of the same type as the input,
-where the vertex values correspond to the community labels, i.e. two vertices belong to the same community if they have the same vertex value.
-The constructor takes two parameters:
+该算法以一个任何顶点类型的 `Graph` ， `Long` 类型顶点值和 `Double` 类型的边值为输入，返回一个和输入同类型的 `Graph`，
+其中顶点值与社区标签 (community labels) 对应， 也就是说如果两个顶点有相同的顶点值，则这两个顶点属于同一个社区。
+构造函数接收两个参数：
 
-* `maxIterations`: the maximum number of iterations to run.
-* `delta`: the hop attenuation parameter, with default value 0.5.
+* `maxIterations`: 要运行的最大迭代数.
+* `delta`: 跳衰减参数，默认值为t 0.5.
 
 ## Label Propagation
 
