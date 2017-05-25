@@ -76,7 +76,7 @@ a user-defined hop attenuation parameter, `delta`, and the superstep number.
 The algorithm converges when vertices no longer update their value or when the maximum number of iterations
 is reached.
 
-#### Usage
+#### 用法
 The algorithm takes as input a `Graph` with any vertex type, `Long` vertex values, and `Double` edge values. It returns a `Graph` of the same type as the input,
 where the vertex values correspond to the community labels, i.e. two vertices belong to the same community if they have the same vertex value.
 The constructor takes two parameters:
@@ -97,7 +97,7 @@ the label that is most frequent among its neighbors' labels. In case of a tie (i
 same frequency), the algorithm picks the greater label. The algorithm converges when no vertex changes its value or
 the maximum number of iterations has been reached. Note that different initializations might lead to different results.
 
-#### Usage
+#### 用法
 The algorithm takes as input a `Graph` with a `Comparable` vertex type, a `Comparable` vertex value type and an arbitrary edge value type.
 It returns a `DataSet` of vertices, where the vertex value corresponds to the community in which this vertex belongs after convergence.
 The constructor takes one parameter:
@@ -117,7 +117,7 @@ current value in each iteration. Upon receiving component IDs from its neighbors
 its value is lower than its current component ID. The algorithm converges when vertices no longer update their component
 ID value or when the maximum number of iterations has been reached.
 
-#### Usage
+#### 用法
 The result is a `DataSet` of vertices, where the vertex value corresponds to the assigned component.
 The constructor takes one parameter:
 
@@ -137,7 +137,7 @@ selected. In the apply phase, the algorithm sets the minimum value as the new ve
 the current value. The algorithm converges when vertices no longer update their component ID value or when the
 maximum number of iterations has been reached.
 
-#### Usage
+#### 用法
 The result is a `DataSet` of vertices, where the vertex value corresponds to the assigned component.
 The constructor takes one parameter:
 
@@ -152,7 +152,7 @@ An implementation of the Single-Source-Shortest-Paths algorithm for weighted gra
 The algorithm is implemented using [scatter-gather iterations](#scatter-gather-iterations).
 In each iteration, a vertex sends to its neighbors a message containing the sum its current distance and the edge weight connecting this vertex with the neighbor. Upon receiving candidate distance messages, a vertex calculates the minimum distance and, if a shorter path has been discovered, it updates its value. If a vertex does not change its value during a superstep, then it does not produce messages for its neighbors for the next superstep. The computation terminates after the specified maximum number of supersteps or when there are no value updates.
 
-#### Usage
+#### 用法
 The algorithm takes as input a `Graph` with any vertex type and `Double` edge values. The vertex values can be any type and are not used by this algorithm. The vertex type must implement `equals()`.
 The output is a `DataSet` of vertices where the vertex values correspond to the minimum distances from the given source vertex.
 The constructor takes two parameters:
@@ -179,7 +179,7 @@ For a group of <i>n</i> edges that share a common vertex, the number of built tr
 Therefore, an optimization of the algorithm is to group edges on the vertex with the smaller output degree to reduce the number of triads.
 This implementation extends the basic algorithm by computing output degrees of edge vertices and grouping on edges on the vertex with the smaller degree.
 
-#### Usage
+#### 用法
 The algorithm takes a directed graph as input and outputs a `DataSet` of `Tuple3`. The Vertex ID type has to be `Comparable`.
 Each `Tuple3` corresponds to a triangle, with the fields containing the IDs of the vertices forming the triangle.
 
@@ -202,7 +202,7 @@ is chosen from each group. For any edge, the source and target vertex identifier
 representative and grouped by source, target and edge value. Output vertices and edges are created from their
 corresponding groupings.
 
-#### Usage
+#### 用法
 The algorithm takes a directed, vertex (and possibly edge) attributed graph as input and outputs a new graph where each
 vertex represents a group of vertices and each edge represents a group of edges from the input graph. Furthermore, each
 vertex and edge in the output graph stores the common group value and the number of represented elements.
@@ -220,7 +220,7 @@ See the [Local Clustering Coefficient](#local-clustering-coefficient) library me
 clustering coefficient. The Average Clustering Coefficient is the average of the Local Clustering Coefficient scores
 over all vertices with at least two neighbors. Each vertex, independent of degree, has equal weight for this score.
 
-#### Usage
+#### 用法
 Directed and undirected variants are provided. The analytics take a simple graph as input and output an `AnalyticResult`
 containing the total number of vertices and average clustering coefficient of the graph. The graph ID type must be
 `Comparable` and `Copyable`.
@@ -239,7 +239,7 @@ clustering coefficient. The Global Clustering Coefficient is the ratio of connec
 Vertices with higher degrees have greater weight for this score because the count of neighbor pairs is quadratic in
 degree.
 
-#### Usage
+#### 用法
 Directed and undirected variants are provided. The analytics take a simple graph as input and output an `AnalyticResult`
 containing the total number of triplets and triangles in the graph. The result class provides a method to compute the
 global clustering coefficient score. The graph ID type must be `Comparable` and `Copyable`.
@@ -259,7 +259,7 @@ divided by the number of potential edges between neighbors.
 
 See the [Triangle Listing](#triangle-listing) library method for a detailed explanation of triangle enumeration.
 
-#### Usage
+#### 用法
 Directed and undirected variants are provided. The algorithms take a simple graph as input and output a `DataSet` of
 `UnaryResult` containing the vertex ID, vertex degree, and number of triangles containing the vertex. The result class
 provides a method to compute the local clustering coefficient score. The graph ID type must be `Comparable` and
@@ -281,7 +281,7 @@ types by counting the triangles from [Triangle Listing](#triangle-listing) and r
 to obtain the number of triplets and edges. Triangle counts are then deducted from triplet counts, and triangle and
 triplet counts are removed from edge counts.
 
-#### Usage
+#### 用法
 Directed and undirected variants are provided. The analytics take a simple graph as input and output an
 `AnalyticResult` with accessor methods for querying the count of each triad type. The graph ID type must be
 `Comparable` and `Copyable`.
@@ -301,7 +301,7 @@ This implementation uses optimizations from
 high-degree vertices. Triplets are generated from the lowest degree vertex since each triangle need only be listed once.
 This greatly reduces the number of generated triplets which is quadratic in vertex degree.
 
-#### Usage
+#### 用法
 Directed and undirected variants are provided. The algorithms take a simple graph as input and output a `DataSet` of
 `TertiaryResult` containing the three triangle vertices and, for the directed algorithm, a bitmask marking each of the
 six potential edges connecting the three vertices. The graph ID type must be `Comparable` and `Copyable`.
@@ -325,7 +325,7 @@ scores are computed from the new hub scores. The scores are then normalized and 
 HITS is similar to [PageRank](#pagerank) but vertex scores are emitted in full to each neighbor whereas in PageRank
 the vertex score is first divided by the number of neighbors.
 
-#### Usage
+#### 用法
 The algorithm takes a simple directed graph as input and outputs a `DataSet` of `UnaryResult` containing the vertex ID,
 hub score, and authority score. Termination is configured by the number of iterations and/or a convergence threshold on
 the iteration sum of the change in scores over all vertices.
@@ -346,7 +346,7 @@ link from one page to another, scores are divided by the total number of out-lin
 10 links will distribute 1/10 of its score to each neighbor, while a page with 100 links will distribute 1/100 of its
 score to each neighboring page.
 
-#### Usage
+#### 用法
 The algorithm takes a directed graph as input and outputs a `DataSet` where each `Result` contains the vertex ID and
 PageRank score. Termination is configured with a maximum number of iterations and/or a convergence threshold
 on the sum of the change in score for each vertex between iterations.
@@ -376,7 +376,7 @@ The following statistics are additionally computed for directed graphs:
 The statistics are computed over vertex degrees generated from `degree.annotate.directed.VertexDegrees` or
 `degree.annotate.undirected.VertexDegree`.
 
-#### Usage
+#### 用法
 Directed and undirected variants are provided. The analytics take a simple graph as input and output an `AnalyticResult`
 with accessor methods for the computed statistics. The graph ID type must be `Comparable`.
 
@@ -397,7 +397,7 @@ This graph analytic computes the following statistics:
 The statistics are computed over edge degrees generated from `degree.annotate.directed.EdgeDegreesPair` or
 `degree.annotate.undirected.EdgeDegreePair` and grouped by vertex.
 
-#### Usage
+#### 用法
 Directed and undirected variants are provided. The analytics take a simple graph as input and output an `AnalyticResult`
 with accessor methods for the computed statistics. The graph ID type must be `Comparable`.
 
@@ -420,7 +420,7 @@ Grouping on vertex pairs, the Adamic-Adar score is summed.
 
 See the [Jaccard Index](#jaccard-index) library method for a similar algorithm.
 
-#### Usage
+#### 用法
 The algorithm takes a simple undirected graph as input and outputs a `DataSet` of `BinaryResult` containing two vertex
 IDs and the Adamic-Adar similarity score. The graph ID type must be `Copyable`.
 
@@ -443,7 +443,7 @@ neighbors, which are double-counted in the sum of degrees.
 The algorithm first annotates each edge with the target vertex's degree. Grouping on the source vertex, each pair of
 neighbors is emitted with the degree sum. Grouping on vertex pairs, the shared neighbors are counted.
 
-#### Usage
+#### 用法
 The algorithm takes a simple undirected graph as input and outputs a `DataSet` of tuples containing two vertex IDs,
 the number of shared neighbors, and the number of distinct neighbors. The result class provides a method to compute the
 Jaccard Index score. The graph ID type must be `Copyable`.
