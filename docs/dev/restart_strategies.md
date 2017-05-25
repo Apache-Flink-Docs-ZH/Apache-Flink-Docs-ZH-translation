@@ -33,7 +33,7 @@ Flink 支持多种不同的重启策略，这些策略控制了在失败情况�
 
 默认的重启策略可以通过 Flink 的配置文件 `flink-conf.yaml` 指定。
 配置参数 *restart-strategy* 定义了哪个策略被使用。
-如果没有启用 checkpointing，则使用 "no restart" 策略。
+如果没有启用 checkpointing，则使用无重启 (no restart) 策略。
 如果启用了 checkpointing，但没有配置重启策略，则使用固定延迟 (fixed-delay) 策略，其中 `Integer.MAX_VALUE` 参数是尝试重启次数。
 参阅下列可用的重启策略来了解什么值能被支持。
 
@@ -44,32 +44,32 @@ Flink 支持多种不同的重启策略，这些策略控制了在失败情况�
 <table class="table table-bordered">
   <thead>
     <tr>
-      <th class="text-left" style="width: 50%">Restart Strategy</th>
-      <th class="text-left">Value for restart-strategy</th>
+      <th class="text-left" style="width: 50%">重启策略</th>
+      <th class="text-left">对应值</th>
     </tr>
   </thead>
   <tbody>
     <tr>
-        <td>Fixed delay</td>
+        <td>固定延迟 (Fixed delay)</td>
         <td>fixed-delay</td>
     </tr>
     <tr>
-        <td>Failure rate</td>
+        <td>失败率 (Failure rate)</td>
         <td>failure-rate</td>
     </tr>
     <tr>
-        <td>No restart</td>
+        <td>无重启 (No restart)</td>
         <td>none</td>
     </tr>
   </tbody>
 </table>
 
-Apart from defining a default restart strategy, it is possible to define for each Flink job a specific restart strategy.
-This restart strategy is set programmatically by calling the `setRestartStrategy` method on the `ExecutionEnvironment`.
-Note that this also works for the `StreamExecutionEnvironment`.
+除了定义默认的重启策略，也可以为每个 Flink 工作定义一个具体的重启策略。
+这个重启策略可以通过调用 `ExecutionEnvironment` 的 `setRestartStrategy` 方法在编程时设置。
+该方法对 `StreamExecutionEnvironment` 同样有效。
 
-The following example shows how we can set a fixed delay restart strategy for our job.
-In case of a failure the system tries to restart the job 3 times and waits 10 seconds in-between successive restart attempts.
+下列例子展示我们如何为我们的工作设置一个固定延迟重启策略。
+在失败的情况下，系统会重启工作 3 次，并在连续两次尝试重启中等待 10 秒。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
