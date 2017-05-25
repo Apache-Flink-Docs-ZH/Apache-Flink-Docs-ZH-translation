@@ -34,7 +34,7 @@ Flink 支持多种不同的重启策略，这些策略控制了在失败情况�
 默认的重启策略可以通过 Flink 的配置文件 `flink-conf.yaml` 指定。
 配置参数 *restart-strategy* 定义了哪个策略被使用。
 如果没有启用 checkpointing，则使用无重启 (no restart) 策略。
-如果启用了 checkpointing，但没有配置重启策略，则使用固定延迟 (fixed-delay) 策略，其中 `Integer.MAX_VALUE` 参数是尝试重启次数。
+如果启用了 checkpointing，但没有配置重启策略，则使用固定间隔 (fixed-delay) 策略，其中 `Integer.MAX_VALUE` 参数是尝试重启次数。
 参阅下列可用的重启策略来了解什么值能被支持。
 
 每个重启策略都有自己的一组参数来控制策略的行为。
@@ -50,7 +50,7 @@ Flink 支持多种不同的重启策略，这些策略控制了在失败情况�
   </thead>
   <tbody>
     <tr>
-        <td>固定延迟 (Fixed delay)</td>
+        <td>固定间隔 (Fixed delay)</td>
         <td>fixed-delay</td>
     </tr>
     <tr>
@@ -68,7 +68,7 @@ Flink 支持多种不同的重启策略，这些策略控制了在失败情况�
 这个重启策略可以通过调用 `ExecutionEnvironment` 的 `setRestartStrategy` 方法在编程时设置。
 该方法对 `StreamExecutionEnvironment` 同样有效。
 
-下列例子展示我们如何为我们的工作设置一个固定延迟重启策略。
+下列例子展示我们如何为我们的工作设置一个固定间隔重启策略。
 在失败的情况下，系统会重启工作 3 次，并在连续两次尝试重启中等待 10 秒。
 
 <div class="codetabs" markdown="1">
@@ -76,8 +76,8 @@ Flink 支持多种不同的重启策略，这些策略控制了在失败情况�
 {% highlight java %}
 ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 env.setRestartStrategy(RestartStrategies.fixedDelayRestart(
-  3, // number of restart attempts
-  Time.of(10, TimeUnit.SECONDS) // delay
+  3, // 尝试重启的次数
+  Time.of(10, TimeUnit.SECONDS) // 间隔
 ));
 {% endhighlight %}
 </div>
@@ -85,8 +85,8 @@ env.setRestartStrategy(RestartStrategies.fixedDelayRestart(
 {% highlight scala %}
 val env = ExecutionEnvironment.getExecutionEnvironment()
 env.setRestartStrategy(RestartStrategies.fixedDelayRestart(
-  3, // number of restart attempts
-  Time.of(10, TimeUnit.SECONDS) // delay
+  3, // 尝试重启的次数
+  Time.of(10, TimeUnit.SECONDS) // 间隔
 ))
 {% endhighlight %}
 </div>
@@ -94,11 +94,11 @@ env.setRestartStrategy(RestartStrategies.fixedDelayRestart(
 
 {% top %}
 
-## Restart Strategies
+## 重启策略
 
 The following sections describe restart strategy specific configuration options.
 
-### Fixed Delay Restart Strategy
+### 固定间隔 (Fixed Delay) 重启策略
 
 The fixed delay restart strategy attempts a given number of times to restart the job.
 If the maximum number of attempts is exceeded, the job eventually fails.
@@ -164,7 +164,7 @@ env.setRestartStrategy(RestartStrategies.fixedDelayRestart(
 
 {% top %}
 
-### Failure Rate Restart Strategy
+### 失败率 (Failure Rate) 重启策略
 
 The failure rate restart strategy restarts job after failure, but when `failure rate` (failures per time interval) is exceeded, the job eventually fails.
 In-between two consecutive restart attempts, the restart strategy waits a fixed amount of time.
@@ -235,7 +235,7 @@ env.setRestartStrategy(RestartStrategies.failureRateRestart(
 
 {% top %}
 
-### No Restart Strategy
+### 无重启 (No Restart) 策略
 
 The job fails directly and no restart is attempted.
 
@@ -260,7 +260,7 @@ env.setRestartStrategy(RestartStrategies.noRestart())
 </div>
 </div>
 
-### Fallback Restart Strategy
+### 回调 (Fallback) 重启策略
 
 The cluster defined restart strategy is used. 
 This helpful for streaming programs which enable checkpointing.
