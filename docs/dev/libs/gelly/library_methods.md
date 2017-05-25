@@ -68,7 +68,7 @@ verticesWithCommunity.print
 该库方法是一个社区探测算法的实现，该算法的具体描述请参阅 [Towards real-time community detection in large networks](http://arxiv.org/pdf/0808.2633.pdf) 这篇论文。
 
 #### 细节
-该算法通过使用 [scatter-gather iterations](#scatter-gather-iterations) 进行实现。
+该算法通过使用 [scatter-gather iterations](#scatter-gather-iterations) 来实现。
 最开始，每个顶点被分配一个 `Tuple2` 它包含了其初始值和一个分数， 该分数等于 1.0.
 在每一次迭代中，所有顶点将自身的标签和分数发送给它们的邻居。当接受到来自邻居的信息时，顶点选择分数最高的标签并用边值，一个用户指定的跳衰减 (hop attenuation) 参数 `delta`，和超步 (superstep) 数对标签重新算分。
 该算法在顶点不再更新它们的值或到达最大迭代次数时收敛。
@@ -87,12 +87,9 @@ verticesWithCommunity.print
 这是一个有名的标签传播算法的实现，该算法在[这篇论文](http://journals.aps.org/pre/abstract/10.1103/PhysRevE.76.036106)中有所描述。该算法对一个图通过迭代地在邻居间传播标签来发现该图中的社区。与[社区探测](#community-detection)不同，该算法的实现并不使用与顶点相关的分数。
 
 #### 细节
-The algorithm is implemented using [scatter-gather iterations](#scatter-gather-iterations).
-Labels are expected to be of type `Comparable` and are initialized using the vertex values of the input `Graph`.
-The algorithm iteratively refines discovered communities by propagating labels. In each iteration, a vertex adopts
-the label that is most frequent among its neighbors' labels. In case of a tie (i.e. two or more labels appear with the
-same frequency), the algorithm picks the greater label. The algorithm converges when no vertex changes its value or
-the maximum number of iterations has been reached. Note that different initializations might lead to different results.
+该算法通过使用 [scatter-gather iterations](#scatter-gather-iterations) 来实现。
+标签需要是 `Comparable` 类型，并且通过使用输入 `Graph` 的顶点值来初始化。
+该算法通过传播标签来迭代地精细化社区。在每次迭代中，顶点使用在其邻居的标签中频数最高的标签。为了避免有两个或多个标签频数相同的情况，该算法会选取比较大的标签。该算法在没有顶点改变它们的值或者到达最大迭代次数时收敛。需要注意的是不同的初始化可能会导致不同的结果。
 
 #### 用法
 The algorithm takes as input a `Graph` with a `Comparable` vertex type, a `Comparable` vertex value type and an arbitrary edge value type.
