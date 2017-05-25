@@ -278,7 +278,7 @@ counter = getRuntimeContext()
 
 注意对于此格式的字符串，如果同一作业同时运行多次，则可能会发生标识符冲突，导致指标标准数据不一致.因此，建议使用格式字符串，通过包括ID（例如 &lt;job_id&gt;）或通过为作业和操作符分配唯一的名称来保证一定程度上的唯一性.
 
-### List of all Variables
+### 变量列表
 
 - JobManager: &lt;host&gt;
 - TaskManager: &lt;host&gt;, &lt;tm_id&gt;
@@ -463,7 +463,7 @@ metrics.reporter.stsd.port: 8125
   </tbody>
 </table>
 
-#### Memory:
+#### 内存:
 <table class="table table-bordered">                               
   <thead>                                                          
     <tr>                                                           
@@ -527,7 +527,7 @@ metrics.reporter.stsd.port: 8125
   </tbody>                                                         
 </table>
 
-#### Threads:
+#### 线程:
 <table class="table table-bordered">
   <thead>
     <tr>
@@ -547,7 +547,7 @@ metrics.reporter.stsd.port: 8125
   </tbody>
 </table>
 
-#### GarbageCollection:
+#### 垃圾回收:
 <table class="table table-bordered">
   <thead>
     <tr>
@@ -571,7 +571,7 @@ metrics.reporter.stsd.port: 8125
   </tbody>
 </table>
 
-#### ClassLoader:
+#### 类加载器:
 <table class="table table-bordered">
   <thead>
     <tr>
@@ -595,7 +595,7 @@ metrics.reporter.stsd.port: 8125
   </tbody>
 </table>
 
-#### Network:
+#### 网络:
 <table class="table table-bordered">
   <thead>
     <tr>
@@ -655,7 +655,7 @@ metrics.reporter.stsd.port: 8125
   </tbody>
 </table>
 
-#### Cluster:
+#### 集群:
 <table class="table table-bordered">
   <thead>
     <tr>
@@ -685,7 +685,7 @@ metrics.reporter.stsd.port: 8125
   </tbody>
 </table>
 
-#### Checkpointing:
+#### 检查点:
 <table class="table table-bordered">
   <thead>
     <tr>
@@ -698,7 +698,7 @@ metrics.reporter.stsd.port: 8125
     <tr>
       <th rowspan="3"><strong>Job (only available on JobManager)</strong></th>
       <td>lastCheckpointDuration</td>
-      <td>T完成上一次检测点所花费的时间.</td>
+      <td>完成上一次检测点所花费的时间.</td>
     </tr>
     <tr>
       <td>lastCheckpointSize</td>
@@ -785,7 +785,7 @@ metrics.reporter.stsd.port: 8125
 </table>
 
 
-### Latency tracking
+### 延迟跟踪
 
 Flink允许去跟踪条目在整个系统中运行的延迟，为了开启延迟跟踪，`latencyTrackingInterval `(毫秒)必须在`ExecutionConfig`中设置为一个正值.
 在`latencyTrackingInterval`，源端将周期性的发送一个特殊条目，叫做`LatencyMarker`，这个标记包含一个从源端发出记录时的时间戳。延迟标记不能超过常规的用户条目，因此如果条目在一个操作的前面排队，将会通过这个标记添加延迟跟踪.
@@ -796,7 +796,7 @@ Flink允许去跟踪条目在整个系统中运行的延迟，为了开启延迟
 
 目前，Flink认为集群中所有机器的时钟是同步的。我们建议建立一个自动时钟同步服务（类似于NTP），以避免虚假的延迟结果.
 
-### Dashboard integration
+### 仪表盘集成
 
 为每个任务或者操作所收集到的指标,也可以展示在在仪表盘上。在一个作业的主页面，选择`Metrics`选项，在顶部图选择一个任务后，可以使用`Add Metrics`下拉菜单来选择要展示的指标值
   * 任务指标被列为 `<subtask_index>.<metric_name>`.
