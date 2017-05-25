@@ -24,6 +24,7 @@ under the License.
 
 * This will be replaced by the TOC
 {:toc}
+
 ## 描述
 
 标准化缩放器将会根据用户指定的均值与标准差值对给定数据集进行标准化缩放。
