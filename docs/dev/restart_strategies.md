@@ -22,25 +22,24 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-Flink supports different restart strategies which control how the jobs are restarted in case of a failure.
-The cluster can be started with a default restart strategy which is always used when no job specific restart strategy has been defined.
-In case that the job is submitted with a restart strategy, this strategy overrides the cluster's default setting.
+Flink 支持多种不同的重启策略，这些策略控制了在失败情况下工作要如何重启。
+集群在启动时会伴随一个默认的重启策略，在没有定义具体工作重启策略时会使用该默认策略。
+如果在工作提交时制定一个重启策略，该策略会覆盖集群的默认设定。
 
 * This will be replaced by the TOC
 {:toc}
 
-## Overview
+## 概览
 
-The default restart strategy is set via Flink's configuration file `flink-conf.yaml`.
-The configuration parameter *restart-strategy* defines which strategy is taken.
-If checkpointing is not enabled, the "no restart" strategy is used.
-If checkpointing is activated and the restart strategy has not been configured, the fixed-delay strategy is used with 
-`Integer.MAX_VALUE` restart attempts.
-See the following list of available restart strategies to learn what values are supported.
+默认的重启策略可以通过 Flink 的配置文件 `flink-conf.yaml` 指定。
+配置参数 *restart-strategy* 定义了哪个策略被使用。
+如果没有启用 checkpointing，则使用 "no restart" 策略。
+如果启用了 checkpointing，但没有配置重启策略，则使用固定延迟 (fixed-delay) 策略，其中 `Integer.MAX_VALUE` 参数是尝试重启次数。
+参阅下列可用的重启策略来了解什么值能被支持。
 
-Each restart strategy comes with its own set of parameters which control its behaviour.
-These values are also set in the configuration file.
-The description of each restart strategy contains more information about the respective configuration values.
+每个重启策略都有自己的一组参数来控制策略的行为。
+这些值也可以在配置文件中设置。
+每个重启策略的描述包括了更多关于对应配置值的信息。
 
 <table class="table table-bordered">
   <thead>
