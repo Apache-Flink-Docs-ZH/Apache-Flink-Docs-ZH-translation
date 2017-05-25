@@ -100,11 +100,11 @@ env.setRestartStrategy(RestartStrategies.fixedDelayRestart(
 
 ### 固定间隔 (Fixed Delay) 重启策略
 
-The fixed delay restart strategy attempts a given number of times to restart the job.
-If the maximum number of attempts is exceeded, the job eventually fails.
-In-between two consecutive restart attempts, the restart strategy waits a fixed amount of time.
+固定截个重启策略会根据指定的次数尝试重启工作。
+如果超过了最大尝试次数，则工作最终失败。
+在连续两次的重启尝试中，重启策略会等待一段固定的时间。
 
-This strategy is enabled as default by setting the following configuration parameter in `flink-conf.yaml`.
+这个策略可以通过设置 `flink-conf.yaml` 中的下列配置参数启动。
 
 ~~~
 restart-strategy: fixed-delay
@@ -113,21 +113,21 @@ restart-strategy: fixed-delay
 <table class="table table-bordered">
   <thead>
     <tr>
-      <th class="text-left" style="width: 40%">Configuration Parameter</th>
-      <th class="text-left" style="width: 40%">Description</th>
-      <th class="text-left">Default Value</th>
+      <th class="text-left" style="width: 40%">配置参数</th>
+      <th class="text-left" style="width: 40%">描述</th>
+      <th class="text-left">默认值</th>
     </tr>
   </thead>
   <tbody>
     <tr>
         <td><code>restart-strategy.fixed-delay.attempts</code></td>
-        <td>The number of times that Flink retries the execution before the job is declared as failed.</td>
-        <td>1, or <code>Integer.MAX_VALUE</code> if activated by checkpointing</td>
+        <td>在工作宣布失败之前 Flink 尝试重启的次数.</td>
+        <td>1, 或 <code>Integer.MAX_VALUE</code> 如果被 checkpointing 激活</td>
     </tr>
     <tr>
         <td><code>restart-strategy.fixed-delay.delay</code></td>
-        <td>Delaying the retry means that after a failed execution, the re-execution does not start immediately, but only after a certain delay. Delaying the retries can be helpful when the program interacts with external systems where for example connections or pending transactions should reach a timeout before re-execution is attempted.</td>
-        <td><code>akka.ask.timeout</code>, or 10s if activated by checkpointing</td>
+        <td>间隔重启指的是在一次失败的执行之后，并不会立即重新开始另一次执行，而是在一段间隔之后再开始. 当程序与外部系统进行交互时，比如连接或待定事务需要在 Flink 尝试重新执行之前超时，该方法是有助的.</td>
+        <td><code>akka.ask.timeout</code>, 或 10s 如果被 checkpointing 激活</td>
     </tr>
   </tbody>
 </table>
