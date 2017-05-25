@@ -1,9 +1,8 @@
 ---
-title: Application Development：Streaming (DataStream API)：Connectors-RabbitMQ
-nav-id: DataStream API
-nav-pos: 1
-nav-title: Connectors-RabbitMQ
-nav-parent_id: application
+title: "RabbitMQ Connector"
+nav-title: RabbitMQ
+nav-parent_id: connectors
+nav-pos: 6
 ---
 <!--
 Licensed to the Apache Software Foundation (ASF) under one
@@ -75,7 +74,7 @@ under the License.
    - 可检查点：检查点生效后，在检查点完成后，消息是互相确认的（因此，会把消息从rabbitmq中删除）。
 
    - 使用相关编号：相关编号是rabbitmq应用的特征，当提交一个消息进rabbitmq时，必须得在消息配置中设置一个相关编号。在检查点恢复是，源利用相关编号去重已经被处理过的数据，
-         
+
    - 非并行的源：实现仅有一次，源必须非并行（并行度为1）。这个限制是因为rabbitmq是从一个单一队列存在多个消费者的调度消息方式。
 
 2， **至少一次**：当检查点生效，但是没有使用相关编号或者源是并行的，源仅仅提供至少消费一次的保证。
@@ -93,7 +92,7 @@ final RMQConnectionConfig connectionConfig = new RMQConnectionConfig.Builder()
     .setPort(5000)
     ...
     .build();
-    
+
 final DataStream<String> stream = env
     .addSource(new RMQSource<String>(
         connectionConfig,            // rabbitmq连接的配置
@@ -113,7 +112,7 @@ val connectionConfig = new RMQConnectionConfig.Builder()
     .setPort(5000)
     ...
     .build
-    
+
 val stream = env
     .addSource(new RMQSource[String](
         connectionConfig,            // 配置
@@ -137,7 +136,7 @@ final RMQConnectionConfig connectionConfig = new RMQConnectionConfig.Builder()
     .setPort(5000)
     ...
     .build();
-    
+
 stream.addSink(new RMQSink<String>(
 connectionConfig,
     "queueName",
@@ -151,7 +150,7 @@ val connectionConfig = new RMQConnectionConfig.Builder()
     .setPort(5000)
     ...
     .build
-    
+
 stream.addSink(new RMQSink[String](
     connectionConfig,
 "queueName",
