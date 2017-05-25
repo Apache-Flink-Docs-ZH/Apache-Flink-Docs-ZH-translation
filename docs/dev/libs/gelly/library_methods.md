@@ -22,12 +22,12 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-Gelly has a growing collection of graph algorithms for easily analyzing large-scale Graphs.
+Gelly拥有一组图算法来简易分析大规模的图，这些算法至今仍在不断增长。
 
 * This will be replaced by the TOC
 {:toc}
 
-Gelly's library methods can be used by simply calling the `run()` method on the input graph:
+Gelly 库的方法能够通简单地过对输入图调用 `run()` 方法来使用：
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -36,10 +36,10 @@ ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
 Graph<Long, Long, NullValue> graph = ...
 
-// run Label Propagation for 30 iterations to detect communities on the input graph
+// 用 30 次迭代运行 Label Propagation 来探测输入图的社区 (communities)
 DataSet<Vertex<Long, Long>> verticesWithCommunity = graph.run(new LabelPropagation<Long>(30));
 
-// print the result
+// 打印结果
 verticesWithCommunity.print();
 
 {% endhighlight %}
@@ -51,19 +51,19 @@ val env = ExecutionEnvironment.getExecutionEnvironment
 
 val graph: Graph[java.lang.Long, java.lang.Long, NullValue] = ...
 
-// run Label Propagation for 30 iterations to detect communities on the input graph
+// 用 30 次迭代运行 Label Propagation 来探测输入图的社区 (communities)
 val verticesWithCommunity = graph.run(new LabelPropagation[java.lang.Long, java.lang.Long, NullValue](30))
 
-// print the result
+// 打印结果
 verticesWithCommunity.print
 
 {% endhighlight %}
 </div>
 </div>
 
-## Community Detection
+## 社区探测 (Community Detection)
 
-#### Overview
+#### 概览
 In graph theory, communities refer to groups of nodes that are well connected internally, but sparsely connected to other groups.
 This library method is an implementation of the community detection algorithm described in the paper [Towards real-time community detection in large networks](http://arxiv.org/pdf/0808.2633.pdf).
 
@@ -86,7 +86,7 @@ The constructor takes two parameters:
 
 ## Label Propagation
 
-#### Overview
+#### 概览
 This is an implementation of the well-known Label Propagation algorithm described in [this paper](http://journals.aps.org/pre/abstract/10.1103/PhysRevE.76.036106). The algorithm discovers communities in a graph, by iteratively propagating labels between neighbors. Unlike the [Community Detection library method](#community-detection), this implementation does not use scores associated with the labels.
 
 #### Details
@@ -106,7 +106,7 @@ The constructor takes one parameter:
 
 ## Connected Components
 
-#### Overview
+#### 概览
 This is an implementation of the Weakly Connected Components algorithm. Upon convergence, two vertices belong to the
 same component, if there is a path from one to the other, without taking edge direction into account.
 
@@ -125,7 +125,7 @@ The constructor takes one parameter:
 
 ## GSA Connected Components
 
-#### Overview
+#### 概览
 This is an implementation of the Weakly Connected Components algorithm. Upon convergence, two vertices belong to the
 same component, if there is a path from one to the other, without taking edge direction into account.
 
@@ -145,7 +145,7 @@ The constructor takes one parameter:
 
 ## Single Source Shortest Paths
 
-#### Overview
+#### 概览
 An implementation of the Single-Source-Shortest-Paths algorithm for weighted graphs. Given a source vertex, the algorithm computes the shortest paths from this source to all other nodes in the graph.
 
 #### Details
@@ -168,7 +168,7 @@ See the [Single Source Shortest Paths](#single-source-shortest-paths) library me
 
 ## Triangle Enumerator
 
-#### Overview
+#### 概览
 This library method enumerates unique triangles present in the input graph. A triangle consists of three edges that connect three vertices with each other.
 This implementation ignores edge directions.
 
@@ -185,7 +185,7 @@ Each `Tuple3` corresponds to a triangle, with the fields containing the IDs of t
 
 ## Summarization
 
-#### Overview
+#### 概览
 The summarization algorithm computes a condensed version of the input graph by grouping vertices and edges based on
 their values. In doing so, the algorithm helps to uncover insights about patterns and distributions in the graph.
 One possible use case is the visualization of communities where the whole graph is too large and needs to be summarized
@@ -211,7 +211,7 @@ vertex and edge in the output graph stores the common group value and the number
 
 ### Average Clustering Coefficient
 
-#### Overview
+#### 概览
 The average clustering coefficient measures the mean connectedness of a graph. Scores range from 0.0 (no edges between
 neighbors) to 1.0 (complete graph).
 
@@ -229,7 +229,7 @@ containing the total number of vertices and average clustering coefficient of th
 
 ### Global Clustering Coefficient
 
-#### Overview
+#### 概览
 The global clustering coefficient measures the connectedness of a graph. Scores range from 0.0 (no edges between
 neighbors) to 1.0 (complete graph).
 
@@ -248,7 +248,7 @@ global clustering coefficient score. The graph ID type must be `Comparable` and 
 
 ### Local Clustering Coefficient
 
-#### Overview
+#### 概览
 The local clustering coefficient measures the connectedness of each vertex's neighborhood. Scores range from 0.0 (no
 edges between neighbors) to 1.0 (neighborhood is a clique).
 
@@ -270,7 +270,7 @@ provides a method to compute the local clustering coefficient score. The graph I
 
 ### Triadic Census
 
-#### Overview
+#### 概览
 A triad is formed by any three vertices in a graph. Each triad contains three pairs of vertices which may be connected
 or unconnected. The [Triadic Census](http://vlado.fmf.uni-lj.si/pub/networks/doc/triads/triads.pdf) counts the
 occurrences of each type of triad with the graph.
@@ -290,7 +290,7 @@ Directed and undirected variants are provided. The analytics take a simple graph
 
 ### Triangle Listing
 
-#### Overview
+#### 概览
 Enumerates all triangles in the graph. A triangle is composed of three edges connecting three vertices into cliques of
 size 3.
 
@@ -313,7 +313,7 @@ six potential edges connecting the three vertices. The graph ID type must be `Co
 
 ### Hyperlink-Induced Topic Search
 
-#### Overview
+#### 概览
 [Hyperlink-Induced Topic Search](http://www.cs.cornell.edu/home/kleinber/auth.pdf) (HITS, or "Hubs and Authorities")
 computes two interdependent scores for every vertex in a directed graph. Good hubs are those which point to many
 good authorities and good authorities are those pointed to by many good hubs.
@@ -334,7 +334,7 @@ the iteration sum of the change in scores over all vertices.
 
 ### PageRank
 
-#### Overview
+#### 概览
 [PageRank](https://en.wikipedia.org/wiki/PageRank) is an algorithm that was first used to rank web search engine
 results. Today, the algorithm and many variations are used in various graph application domains. The idea of PageRank is
 that important or relevant vertices tend to link to other important vertices.
@@ -357,7 +357,7 @@ on the sum of the change in score for each vertex between iterations.
 
 ### Vertex Metrics
 
-#### Overview
+#### 概览
 This graph analytic computes the following statistics for both directed and undirected graphs:
 - number of vertices
 - number of edges
@@ -386,7 +386,7 @@ with accessor methods for the computed statistics. The graph ID type must be `Co
 
 ### Edge Metrics
 
-#### Overview
+#### 概览
 This graph analytic computes the following statistics:
 - number of triangle triplets
 - number of rectangle triplets
@@ -408,7 +408,7 @@ with accessor methods for the computed statistics. The graph ID type must be `Co
 
 ### Adamic-Adar
 
-#### Overview
+#### 概览
 Adamic-Adar measures the similarity between pairs of vertices as the sum of the inverse logarithm of degree over shared
 neighbors. Scores are non-negative and unbounded. A vertex with higher degree has greater overall influence but is less
 influential to each pair of neighbors.
@@ -430,7 +430,7 @@ IDs and the Adamic-Adar similarity score. The graph ID type must be `Copyable`.
 
 ### Jaccard Index
 
-#### Overview
+#### 概览
 The Jaccard Index measures the similarity between vertex neighborhoods and is computed as the number of shared neighbors
 divided by the number of distinct neighbors. Scores range from 0.0 (no shared neighbors) to 1.0 (all neighbors are
 shared).
