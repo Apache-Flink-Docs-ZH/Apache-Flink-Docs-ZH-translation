@@ -35,7 +35,7 @@ Flink的web界面提供了一个标签去监控作业的检查点.统计的结�
 
 概述标签列举了以下统计信息。请注意这些统计信息将在作业管理器丢失后失效，并且如果作业管理器发生故障转移统计信息也将会被重置。
 
-- **检测点统计**
+- **检查点统计**
 	- 已触发: 自作业开始以来已经触发的检查点总量.
 	- 进行中: 当前正在进行的检查点数量.
 	- 已完成: 自作业开始以来已经成功的检查点总量.
@@ -56,7 +56,7 @@ Flink的web界面提供了一个标签去监控作业的检查点.统计的结�
   <img src="{{ site.baseurl }}/fig/checkpoint_monitoring-history.png" width="700px" alt="检查点监控: 历史">
 </center>
 
-- **ID**: 触发的检查点的ID.每个检测点的ID是递增的,从1开始.
+- **ID**: 触发的检查点的ID.每个检查点的ID是递增的,从1开始.
 - **状态**: 检查点的当前状态，它可能是 *进行中* (<i aria-hidden="true" class="fa fa-circle-o-notch fa-spin fa-fw"/>), *已完成* (<i aria-hidden="true" class="fa fa-check"/>), 或者*已失败* (<i aria-hidden="true" class="fa fa-remove"/>). 如果触发的检查点是一个保存点，你将会看到一个 <i aria-hidden="true" class="fa fa-floppy-o"/> 符号.
 - **触发时间**: 在作业管理器上触发的检查点的时间.
 - **最近确认**: 在作业管理器上收到的任何子任务的最新确认时间（或如果尚未收到确认，则为n/a）.
