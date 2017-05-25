@@ -96,7 +96,7 @@ env.setRestartStrategy(RestartStrategies.fixedDelayRestart(
 
 ## 重启策略
 
-The following sections describe restart strategy specific configuration options.
+以下各部分描述与具体重启策略相关的配置选项。
 
 ### 固定间隔 (Fixed Delay) 重启策略
 
