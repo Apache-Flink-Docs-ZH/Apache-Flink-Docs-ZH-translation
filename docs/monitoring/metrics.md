@@ -22,7 +22,7 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-Flink公开了一种指标系统，可以收集和暴露指标给外部系统.
+Flink公开了一个指标系统，可以收集和暴露指标给外部系统.
 * This will be replaced by the TOC
 {:toc}
 
@@ -153,6 +153,7 @@ public class MyMapper extends RichMapFunction<Long, Integer> {
       <version>{{site.version}}</version>
 </dependency>
 {% endhighlight %}
+
 你可以注册一个Codahale/DropWizard 直方图类似于：
 
 {% highlight java %}
@@ -173,7 +174,7 @@ public class MyMapper extends RichMapFunction<Long, Integer> {
 
 #### Meter
 
-`Meter`用于度量平均吞吐量，使用`markEvent（）`方法可以注册一个发生的事件。同时发生的多个事件可以使用`markEvent(long n)`方法来进行注册。
+`Meter`用于度量平均吞吐量，使用`markEvent（）`方法可以注册一个发生的事件.同时发生的多个事件可以使用`markEvent(long n)`方法来进行注册。
 通过调用`MetricGroup`的`meter(String name, Meter meter)`方法来注册一个meter
 
 {% highlight java %}
@@ -193,8 +194,7 @@ public class MyMapper extends RichMapFunction<Long, Integer> {
 }
 {% endhighlight %}
 
-Flink提供了一个 {% gh_link flink-metrics/flink-metrics-dropwizard/src/main/java/org/apache/flink/dropwizard/metrics/DropwizardMeterWrapper.java "Wrapper" %}来允许使用 Codahale/DropWizard meters. 
-要使用此包装器，请在您的`pom.xml`中添加以下依赖：
+Flink提供了一个 {% gh_link flink-metrics/flink-metrics-dropwizard/src/main/java/org/apache/flink/dropwizard/metrics/DropwizardMeterWrapper.java "Wrapper" %}来允许使用 Codahale/DropWizard meters. 要使用此包装器，请在您的`pom.xml`中添加以下依赖：
 
 {% highlight xml %}
 <dependency>
@@ -223,8 +223,8 @@ public class MyMapper extends RichMapFunction<Long, Integer> {
 
 ## Scope
 
-每个指标被分配一个标识符，根据该标识符，它将基于3个组件进行报告：注册指标时用户提供的名称，可选的用户自定义域和系统提供的域。例如，如果`A.B`是系统域，`C.D`是用户域，`E`是名称，那么指标的标识符将是`A.B.C.D.E`.
-你可以配置标识符的分隔符（默认:`.`）,通过设置`conf/flink-conf.yam`里面的`metrics.scope.delimiter`参数
+每个指标被分配一个标识符，该标识符将基于3个组件进行汇报：注册指标时用户提供的名称，可选的用户自定义域和系统提供的域。例如，如果`A.B`是系统域，`C.D`是用户域，`E`是名称，那么指标的标识符将是`A.B.C.D.E`.
+你可以通过设置`conf/flink-conf.yam`里面的`metrics.scope.delimiter`参数来配置标识符的分隔符（默认:`.`）.
 
 ### User Scope
 
@@ -241,14 +241,9 @@ counter = getRuntimeContext()
 
 ### System Scope
 
-The system scope contains context information about the metric, for example in which task it was registered or what job that task belongs to.
-
-Which context information should be included can be configured by setting the following keys in `conf/flink-conf.yaml`.
-Each of these keys expect a format string that may contain constants (e.g. "taskmanager") and variables (e.g. "&lt;task_id&gt;") which will be replaced at runtime.
-
 系统域包含关于这个指标的上下文信息，例如其注册的任务或该任务属于哪个作业.
-可以通过在`conf/flink-conf.yaml`中设置以下关键字来配置它的上下文信息。
-这些关键字的每一个都期望可以包含常量的格式字符串（例如:“taskmanager”）和将在运行时被替换的变量（例如:"&lt;task_id&gt;"）
+
+可以通过在`conf/flink-conf.yaml`中设置以下关键字来配置它的上下文信息.这些关键字的每一个都期望可以包含常量的格式字符串（例如:“taskmanager”）和将在运行时被替换的变量（例如:"&lt;task_id&gt;"）
 
 - `metrics.scope.jm`
   - 默认: &lt;host&gt;.jobmanager
@@ -261,7 +256,7 @@ Each of these keys expect a format string that may contain constants (e.g. "task
   - 适用于属于一个task manager的所有指标.
 - `metrics.scope.tm.job`
   - 默认: &lt;host&gt;.taskmanager.&lt;tm_id&gt;.&lt;job_name&gt;
-  - 适用于属于一个task manager或者job的所有指标.
+  - 适用于属于一个task manager和job的所有指标.
 - `metrics.scope.task`
   - 默认: &lt;host&gt;.taskmanager.&lt;tm_id&gt;.&lt;job_name&gt;.&lt;task_name&gt;.&lt;subtask_index&gt;
    - 适用于属于一个task的所有指标.
@@ -275,17 +270,15 @@ Each of these keys expect a format string that may contain constants (e.g. "task
 
 `localhost.taskmanager.1234.MyJob.MyOperator.0.MyMetric`
 
-如果你想包含任务名称，但省略task manager信息，你可以指定以下格式：
+如果你想包含任务名称，但省略task manager的信息，你可以指定以下格式：
 
 `metrics.scope.operator: <host>.<job_name>.<task_name>.<operator_name>.<subtask_index>`
 
 这可以创建标识符`localhost.MyJob.MySource_->_MyOperator.MyOperator.0.MyMetric`.
 
-注意对于此格式字符串，如果同一作业同时运行多次，则可能会发生标识符冲突，导致指标标准数据不一致。
-因此，建议使用格式字符串，通过包括ID（例如 &lt;job_id&gt;）
-或通过为作业和操作符分配唯一的名称来提供一定程度的唯一性.
+注意对于此格式的字符串，如果同一作业同时运行多次，则可能会发生标识符冲突，导致指标标准数据不一致.因此，建议使用格式字符串，通过包括ID（例如 &lt;job_id&gt;）或通过为作业和操作符分配唯一的名称来保证一定程度上的唯一性.
 
-### List of all Variables
+### 变量列表
 
 - JobManager: &lt;host&gt;
 - TaskManager: &lt;host&gt;, &lt;tm_id&gt;
@@ -295,14 +288,13 @@ Each of these keys expect a format string that may contain constants (e.g. "task
 
 ## Reporter
 
-指标能够暴露给一个外部系统，通过在`conf/flink-conf.yaml`中配置一个或者一些reporters.
-这些reporters将在每个job和task manager启动时被实例化.
+通过在`conf/flink-conf.yaml`中配置一个或者一些reporters，能够让指标暴露给一个外部系统.这些reporters将在每个job和task manager启动时被实例化.
 
 - `metrics.reporters`: reporters的名称列表.
 - `metrics.reporter.<name>.<config>`: 给定reporter名称`<name>`的通用设置.
 - `metrics.reporter.<name>.class`: 给定reporter名称`<name>`的reporter类 .
 - `metrics.reporter.<name>.interval`: 给定reporter名称`<name>`的reporter间隔.
-- `metrics.reporter.<name>.scope.delimiter`: 给定reporter名称`<name>`所使用的分割分标识(默认值用：`metrics.scope.delimiter`)
+- `metrics.reporter.<name>.scope.delimiter`: 给定reporter名称`<name>`所使用的分割符标识(默认值用：`metrics.scope.delimiter`)
 
 
 所有的reporters必须至少具备`class`属性，有些允许指定一个reporting的`interval`，以下，我们将列举更多针对每个reporter的设置.
@@ -322,19 +314,18 @@ metrics.reporter.my_other_reporter.port: 10000
 ```
 
 **重要提示：**当Flink启动的时候，通过放入到/lib目录下包含reporter的jar文件必须可访问.
-你可以通过实现`org.apache.flink.metrics.reporter.MetricReporter`接口来定义你自己的`Reporter`， 如果这个Reporter必须定期发送报告，那你也必须同时实现`Scheduled`接口.
+
+你可以通过实现`org.apache.flink.metrics.reporter.MetricReporter`接口来定义自己的`Reporter`， 如果这个Reporter必须定期发送报告，那你也必须同时实现`Scheduled`接口.
 
 下面的章节列举了支持的reporters.
 
 ### JMX (org.apache.flink.metrics.jmx.JMXReporter)
 
-You don't have to include an additional dependency since the JMX reporter is available by default
-but not activated.
+不必包含其他依赖关系，因为JMX reporter默认可用，但是并没有被激活
 
 参数:
+- `port` - (可选) JMX侦听连接的端口，也可以是端口范围。当指定范围时，相关job或者task manager 日志将显示实际端口。如果设置了此设置，Flink将为给定的端口/范围启动一个额外的JMX连接器。在默认本地JMX接口上指标始终可用.
 
-- `port` - (可选) JMX侦听连接的端口，也可以是端口范围。当指定范围时，相关job或者task manager 日志将显示实际端口。如果设置了此设置，Flink将为给定的端口/范围启动一个额外的JMX连接器。默认本地JMX接口始终可以使用指标
-你不必包含其他依赖关系，因为JMX reporter默认可用，但是没有被激活
 
 示例配置：
 
@@ -346,21 +337,22 @@ metrics.reporter.jmx.port: 8789
 
 {% endhighlight %}
 
-Metrics exposed through JMX are identified by a domain and a list of key-properties, which together form the object name.
+通过JMX暴露出来的指标由一个域和一个键-属性列表来标识，它们一起形成对象名称。
 
-The domain always begins with `org.apache.flink` followed by a generalized metric identifier. In contrast to the usual
-identifier it is not affected by scope-formats, does not contain any variables and is constant across jobs.
-An example for such a domain would be `org.apache.flink.job.task.numBytesOut`.
+域始终以 org.apache.flink打头，后面跟着通用指标标识。相对于常用的标识符，它不受域格式影响，不包含任何变量，并且作业之间是不变的，这样域的一个列子是：
 
-The key-property list contains the values for all variables, regardless of configured scope formats, that are associated
-with a given metric.
-An example for such a list would be `host=localhost,job_name=MyJob,task_name=MyTask`.
+`org.apache.flink.job.task.numBytesOut`.
 
-The domain thus identifies a metric class, while the key-property list identifies one (or multiple) instances of that metric.
+键-属性列表包含所有变量的值，与配置的域格式无关，它们与给定的指标相关联，这样列表的列子是：
+
+`host=localhost,job_name=MyJob,task_name=MyTask`.
+
+因此域识别一个指标类，而键-属性性列表识别一个（或多个）指标实例
+
 
 ### Ganglia (org.apache.flink.metrics.ganglia.GangliaReporter)
 
-为了使用这个reporter，你必须将`/opt/flink-metrics-ganglia-{{site.version}}.jar`拷贝到Flink的`/lib`文件夹中
+为了使用这个reporter，你必须将`/opt/flink-metrics-ganglia-{{site.version}}.jar`拷贝到Flink发行版本下的`/lib`文件夹中
 
 参数:
 
@@ -388,7 +380,7 @@ metrics.reporter.gang.addressingMode: MULTICAST
 
 ### Graphite (org.apache.flink.metrics.graphite.GraphiteReporter)
 
-为了使用这个reporter，你必须将`/opt/flink-metrics-graphite-{{site.version}}.jar`拷贝到Flink的`/lib`文件夹中
+为了使用这个reporter，你必须将`/opt/flink-metrics-graphite-{{site.version}}.jar`拷贝到Flink发行版本下的`/lib`文件夹中
 
 参数:
 
@@ -410,7 +402,7 @@ metrics.reporter.grph.protocol: TCP
 
 ### StatsD (org.apache.flink.metrics.statsd.StatsDReporter)
 
-为了使用reporter，你必须将`/opt/flink-metrics-statsd-{{site.version}}.jar` 拷贝到Flink的`/lib`文件夹中
+为了使用reporter，你必须将`/opt/flink-metrics-statsd-{{site.version}}.jar`拷贝到Flink发行版本下`/lib`文件夹中
 
 参数:
 
@@ -433,7 +425,7 @@ metrics.reporter.stsd.port: 8125
 默认情况下，Flink收集了几个能够深入了解当前状态的指标，本章节是所有这些指标的一个参考
 以下表格通常有4列：
 
-* "Scope"列表述了用于生成系统域的域格式，例如，如果单元格包含“Operator”，则使用“metric.scope.operator”的作用域格式，如果单元格包含以斜杠分割的多个值，则会根据不同的实体报告多个指标，例如job-和askmanagers。
+* "Scope"列描述了用于生成系统域的域格式，例如，如果单元格包含“Operator”，则使用“metric.scope.operator”的作用域格式，如果单元格包含以斜杠分割的多个值，则会根据不同的实体报告多个指标，例如job-和taskmanagers.
 
 * "Infix"（可选） 列描述了哪些中缀附加到系统域中.
 
@@ -471,7 +463,7 @@ metrics.reporter.stsd.port: 8125
   </tbody>
 </table>
 
-#### Memory:
+#### 内存:
 <table class="table table-bordered">                               
   <thead>                                                          
     <tr>                                                           
@@ -486,7 +478,7 @@ metrics.reporter.stsd.port: 8125
       <th rowspan="12"><strong>Job-/TaskManager</strong></th>
       <td rowspan="12">Status.JVM.Memory</td>
       <td>Memory.Heap.Used</td>
-      <td>T当前使用的堆内存大小.</td>
+      <td>当前使用的堆内存大小.</td>
     </tr>
     <tr>
       <td>Heap.Committed</td>
@@ -535,7 +527,7 @@ metrics.reporter.stsd.port: 8125
   </tbody>                                                         
 </table>
 
-#### Threads:
+#### 线程:
 <table class="table table-bordered">
   <thead>
     <tr>
@@ -555,7 +547,7 @@ metrics.reporter.stsd.port: 8125
   </tbody>
 </table>
 
-#### GarbageCollection:
+#### 垃圾回收:
 <table class="table table-bordered">
   <thead>
     <tr>
@@ -579,7 +571,7 @@ metrics.reporter.stsd.port: 8125
   </tbody>
 </table>
 
-#### ClassLoader:
+#### 类加载器:
 <table class="table table-bordered">
   <thead>
     <tr>
@@ -603,7 +595,7 @@ metrics.reporter.stsd.port: 8125
   </tbody>
 </table>
 
-#### Network:
+#### 网络:
 <table class="table table-bordered">
   <thead>
     <tr>
@@ -663,7 +655,7 @@ metrics.reporter.stsd.port: 8125
   </tbody>
 </table>
 
-#### Cluster:
+#### 集群:
 <table class="table table-bordered">
   <thead>
     <tr>
@@ -693,7 +685,7 @@ metrics.reporter.stsd.port: 8125
   </tbody>
 </table>
 
-#### Checkpointing:
+#### 检查点:
 <table class="table table-bordered">
   <thead>
     <tr>
@@ -706,7 +698,7 @@ metrics.reporter.stsd.port: 8125
     <tr>
       <th rowspan="3"><strong>Job (only available on JobManager)</strong></th>
       <td>lastCheckpointDuration</td>
-      <td>T完成上一次检测点所花费的时间.</td>
+      <td>完成上一次检测点所花费的时间.</td>
     </tr>
     <tr>
       <td>lastCheckpointSize</td>
@@ -793,24 +785,23 @@ metrics.reporter.stsd.port: 8125
 </table>
 
 
-### Latency tracking
+### 延迟跟踪
 
 Flink允许去跟踪条目在整个系统中运行的延迟，为了开启延迟跟踪，`latencyTrackingInterval `(毫秒)必须在`ExecutionConfig`中设置为一个正值.
 在`latencyTrackingInterval`，源端将周期性的发送一个特殊条目，叫做`LatencyMarker`，这个标记包含一个从源端发出记录时的时间戳。延迟标记不能超过常规的用户条目，因此如果条目在一个操作的前面排队，将会通过这个标记添加延迟跟踪.
 
-请注意延迟标记是不记录用户条目在操作中所花费的时间，而是绕过它们。特别是这个标记是不用于记录在窗口缓冲区中的时间条目。只有当操作不能够接受新的条目，它们才会排队。用这个标记测量的延迟将会反映出这一点.
+请注意延迟标记不记录用户条目在操作中所花费的时间，而是绕过它们。特别是这个标记是不用于记录在窗口缓冲区中的时间条目。只有当操作不能够接受新的条目时，它们才会排队,用这个标记测量的延迟将会反映出这一点.
 
 所有中间操作通过保留每个源的最后`n`个延迟的列表，来计算一个延迟的分布。落地操作保留每个源的列表，然后每个并行源实例允许检测由单个机器所引起的延迟问题.
 
 目前，Flink认为集群中所有机器的时钟是同步的。我们建议建立一个自动时钟同步服务（类似于NTP），以避免虚假的延迟结果.
 
-### Dashboard integration
+### 仪表盘集成
 
-为每个任务或者操作所收集到的指标也可以在仪表盘上进行可视化。在一个作业的主页面，选择`Metrics`选项卡，在顶部图选择一个任务后，可以使用`Add Metrics`下拉菜单选择要展示的指标值
+为每个任务或者操作所收集到的指标,也可以展示在在仪表盘上。在一个作业的主页面，选择`Metrics`选项，在顶部图选择一个任务后，可以使用`Add Metrics`下拉菜单来选择要展示的指标值
   * 任务指标被列为 `<subtask_index>.<metric_name>`.
   * 操作指标被列为 `<subtask_index>.<operator_name>.<metric_name>`.
-每个指标被可视化为一个单独的图形，用x轴表示时间和y轴表示测量值。
-所有的图表每10秒自动更新一次，并在导航到另一页时继续执行.
+每个指标被可视化为一个单独的图表，用x轴表示时间和y轴表示测量值。所有的图表每10秒自动更新一次，并在导航到另一页时继续执行.
 
 这里对可视化指标的数量没有限制；但是只有数值型指标可以可视化。
 
