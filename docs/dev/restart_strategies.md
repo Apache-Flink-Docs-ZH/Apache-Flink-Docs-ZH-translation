@@ -132,22 +132,22 @@ restart-strategy: fixed-delay
   </tbody>
 </table>
 
-For example:
+举个例子:
 
 ~~~
 restart-strategy.fixed-delay.attempts: 3
 restart-strategy.fixed-delay.delay: 10 s
 ~~~
 
-The fixed delay restart strategy can also be set programmatically:
+固定间隔重启策略也可以在编程时进行设定:
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
 {% highlight java %}
 ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 env.setRestartStrategy(RestartStrategies.fixedDelayRestart(
-  3, // number of restart attempts
-  Time.of(10, TimeUnit.SECONDS) // delay
+  3, // 尝试重启的次数
+  Time.of(10, TimeUnit.SECONDS) // 间隔
 ));
 {% endhighlight %}
 </div>
@@ -155,8 +155,8 @@ env.setRestartStrategy(RestartStrategies.fixedDelayRestart(
 {% highlight scala %}
 val env = ExecutionEnvironment.getExecutionEnvironment()
 env.setRestartStrategy(RestartStrategies.fixedDelayRestart(
-  3, // number of restart attempts
-  Time.of(10, TimeUnit.SECONDS) // delay
+  3, // 尝试重启的次数
+  Time.of(10, TimeUnit.SECONDS) // 间隔
 ))
 {% endhighlight %}
 </div>
