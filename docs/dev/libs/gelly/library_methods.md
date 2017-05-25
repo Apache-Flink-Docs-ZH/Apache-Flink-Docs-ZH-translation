@@ -74,8 +74,8 @@ verticesWithCommunity.print
 该算法在顶点不再更新它们的值或到达最大迭代次数时收敛。
 
 #### 用法
-该算法以一个任何顶点类型的 `Graph` ， `Long` 类型顶点值和 `Double` 类型的边值为输入，返回一个和输入同类型的 `Graph`，
-其中顶点值与社区标签 (community labels) 对应， 也就是说如果两个顶点有相同的顶点值，则这两个顶点属于同一个社区。
+该算法接收一个任何顶点类型的 `Graph` ， `Long` 类型顶点值和 `Double` 类型的边值作为输入，返回一个和输入同类型的 `Graph`，
+其中顶点值与社区标签 (community labels) 对应，也就是说如果两个顶点有相同的顶点值，则这两个顶点属于同一个社区。
 构造函数接收两个参数：
 
 * `maxIterations`: 要运行的最大迭代数.
@@ -92,11 +92,11 @@ verticesWithCommunity.print
 该算法通过传播标签来迭代地精细化社区。在每次迭代中，顶点使用在其邻居的标签中频数最高的标签。为了避免有两个或多个标签频数相同的情况，该算法会选取比较大的标签。该算法在没有顶点改变它们的值或者到达最大迭代次数时收敛。需要注意的是不同的初始化可能会导致不同的结果。
 
 #### 用法
-The algorithm takes as input a `Graph` with a `Comparable` vertex type, a `Comparable` vertex value type and an arbitrary edge value type.
-It returns a `DataSet` of vertices, where the vertex value corresponds to the community in which this vertex belongs after convergence.
-The constructor takes one parameter:
+该算法接收一个 `Comparable` 顶点类型的 `Graph`，一个 `Comparable` 顶点值类型和一个任意边值类型。
+它返回一个包含顶点的 `DataSet`，其中顶点值与该算法收敛后该点所属的社区对应。
+构造器接受一个参数：
 
-* `maxIterations`: the maximum number of iterations to run.
+* `maxIterations`: 要运行的最大迭代数.
 
 ## Connected Components
 
