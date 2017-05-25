@@ -24,6 +24,7 @@ under the License.
 
 * This will be replaced by the TOC
 {:toc}
+
 ## 描述
 
 使用具有合页损失函数的 CoCoA 算法实现了软间隔 SVM。
