@@ -64,17 +64,14 @@ verticesWithCommunity.print
 ## 社区探测 (Community Detection)
 
 #### 概览
-In graph theory, communities refer to groups of nodes that are well connected internally, but sparsely connected to other groups.
-This library method is an implementation of the community detection algorithm described in the paper [Towards real-time community detection in large networks](http://arxiv.org/pdf/0808.2633.pdf).
+在图论中，社区 (communities) 指的是一组对内紧密连接的，但对外与其它组连接稀疏的节点。
+该库方法是一个社区探测算法的实现，该算法的具体描述请参阅 [Towards real-time community detection in large networks](http://arxiv.org/pdf/0808.2633.pdf) 这篇论文。
 
 #### 细节
-The algorithm is implemented using [scatter-gather iterations](#scatter-gather-iterations).
-Initially, each vertex is assigned a `Tuple2` containing its initial value along with a score equal to 1.0.
-In each iteration, vertices send their labels and scores to their neighbors. Upon receiving messages from its neighbors,
-a vertex chooses the label with the highest score and subsequently re-scores it using the edge values,
-a user-defined hop attenuation parameter, `delta`, and the superstep number.
-The algorithm converges when vertices no longer update their value or when the maximum number of iterations
-is reached.
+该算法通过使用 [scatter-gather iterations](#scatter-gather-iterations) 进行实现。
+最开始，每个顶点被分配一个 `Tuple2` 它包含了其初始值和一个分数， 该分数等于 1.0.
+在每一次迭代中，所有顶点将自身的标签和分数发送给它们的邻居。当接受到来自邻居的信息时，顶点选择分数最高的标签并用边值，一个用户指定的跳衰减 (hop attenuation) 参数 `delta`，和超步 (superstep) 数对标签重新算分。
+该算法在顶点不再更新它们的值或到达最大迭代次数时收敛。
 
 #### 用法
 The algorithm takes as input a `Graph` with any vertex type, `Long` vertex values, and `Double` edge values. It returns a `Graph` of the same type as the input,
