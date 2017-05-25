@@ -34,6 +34,7 @@ Apache Flink官网：[http://flink.apache.org](http://flink.apache.org/index.htm
 
 *提示*
 - Docs目录下的其他文件，均为文档生成工具，不用翻译；
+- 关于GitHub协作，比如如何提交翻译成果等，建议参考文章：http://blog.csdn.net/zhangdaiscott/article/details/17438153 ;
 - 大家在翻译时，可参考Flink 1.1版本部分文档翻译，参见[http://doc.flink-china.org/](http://doc.flink-china.org/)，可作为翻译蓝本，需要经过对比，部分文档内容已经变更；在此感谢原文档翻译志愿者的贡献；
 - 同时也感谢 并发编程网 组织的Flink部分章节内容。
 
@@ -50,20 +51,43 @@ Apache Flink官网：[http://flink.apache.org](http://flink.apache.org/index.htm
 凡参与本项目翻译、审校的同学，请自行将个人信息填写到下面。
 
 *翻译* [认领](https://github.com/Apache-Flink-Docs-ZH/Apache-Flink-Docs-ZH-translation/wiki)
+
+已合并翻译成果名单(更新到 2017-05-23)：
+
  - [tuhaihe](https://github.com/tuahihe)
- - XXX
+ - [vinsyuan7788](https://github.com/vinsyuan7788)
+ - [lsvih](https://github.com/lsvih)
+ - [stubird](https://github.com/stubird)
+ - [zjuwangg](https://github.com/zjuwangg)
+ - [lmalds](https://github.com/lmalds)
+ - [felixcyj](https://github.com/felixcyj)
+ - [wayblink](https://github.com/wayblink)
+ - [HuangZhenyang](https://github.com/HuangZhenyang)
+ - [Jay357089](https://github.com/Jay357089)
+ - [fanzhidongyzby](https://github.com/fanzhidongyzby)
+ - [Cluluxiu](https://github.com/Cluluxiu)
+ - [siyu828](https://github.com/siyu828)
+ - [chengat1314](https://github.com/chengat1314)
+ - [alixGuo](https://github.com/alixGuo)
+ - [iadmirezhe](https://github.com/iadmirezhe)
+ - [stevenwu2017](https://github.com/stevenwu2017)
+ - [Wennn](https://github.com/Wennn)
+ - [chlyzzo](https://github.com/chlyzzo)
+ - [jinglining](https://github.com/jinglining)
+ 
 
 ---
 
 *审校* [点我认领](https://github.com/Apache-Flink-Docs-ZH/Apache-Flink-Docs-ZH-translation/wiki)
  - [tuhaihe](https://github.com/tuahihe) 
- - XXX
+ - [lviiii](https://github.com/lviiii)
  
  
+
  ---
  
  *项目经理* [认领](https://github.com/Apache-Flink-Docs-ZH/Apache-Flink-Docs-ZH-translation/issues/1)
- - XXX
+- [lviiii](https://github.com/lviiii)
  
 
 

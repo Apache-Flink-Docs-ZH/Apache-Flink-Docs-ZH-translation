@@ -23,38 +23,29 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-Flink is compatible with Apache Hadoop MapReduce interfaces and therefore allows
-reusing code that was implemented for Hadoop MapReduce.
+Flink兼容Apache Hadoop MapReduce的接口，因此可以使用面向MapReduce的代码。
 
-You can:
+你可以:
 
-- use Hadoop's `Writable` [data types](index.html#data-types) in Flink programs.
-- use any Hadoop `InputFormat` as a [DataSource](index.html#data-sources).
-- use any Hadoop `OutputFormat` as a [DataSink](index.html#data-sinks).
-- use a Hadoop `Mapper` as [FlatMapFunction](dataset_transformations.html#flatmap).
-- use a Hadoop `Reducer` as [GroupReduceFunction](dataset_transformations.html#groupreduce-on-grouped-dataset).
+- Flink中使用Hadoop `Writable` [数据类型（Data type）](index.html#data-types).
+- 使用Hadoop `InputFormat` 作为[数据源（DataSource）](index.html#data-sources).
+- 使用Hadoop `OutputFormat` 作为 [数据落地（DataSink）](index.html#data-sinks).
+- 使用Hadoop `Mapper` 作为 [FlatMapFunction](dataset_transformations.html#flatmap).
+- 使用Hadoop `Reducer` 作为 [GroupReduceFunction](dataset_transformations.html#groupreduce-on-grouped-dataset).
 
-This document shows how to use existing Hadoop MapReduce code with Flink. Please refer to the
-[Connecting to other systems]({{ site.baseurl }}/dev/batch/connectors.html) guide for reading from Hadoop supported file systems.
+这篇文档展示如何在Flink中使用现存的Hadoop MapReduce代码。可以参考
+[连接其他系统]({{ site.baseurl }}/dev/batch/connectors.html) 来了解如何从Hadoop支持的文件系统中读取数据。
 
 * This will be replaced by the TOC
 {:toc}
 
-### Project Configuration
+### 项目配置
 
-Support for Haddop input/output formats is part of the `flink-java` and
-`flink-scala` Maven modules that are always required when writing Flink jobs.
-The code is located in `org.apache.flink.api.java.hadoop` and
-`org.apache.flink.api.scala.hadoop` in an additional sub-package for the
-`mapred` and `mapreduce` API.
+支持Hadoop的输入输出（input／output）格式是`flink-java`和`flink-scala`的maven模块的一部分，这两部分是在编写Flink任务时经常需要用到的。 `mapred`和`mapreduce` 的api代码分别在`org.apache.flink.api.java.hadoop`和`org.apache.flink.api.scala.hadoop`以及一个额外的子包中。
 
-Support for Hadoop Mappers and Reducers is contained in the `flink-hadoop-compatibility`
-Maven module.
-This code resides in the `org.apache.flink.hadoopcompatibility`
-package.
+对Hadoop MapReduce的支持是在`flink-hadoop-compatibility`的maven模块中。代码具体在`org.apache.flink.hadoopcompatibility`包中。
 
-Add the following dependency to your `pom.xml` if you want to reuse Mappers
-and Reducers.
+如果想要重复使用`Mappers and Reducers`， 需要在maven中的pom.xml中添加下面依赖：
 
 ~~~xml
 <dependency>
@@ -64,26 +55,17 @@ and Reducers.
 </dependency>
 ~~~
 
-### Using Hadoop Data Types
+### 使用Hadoop数据类型
 
-Flink supports all Hadoop `Writable` and `WritableComparable` data types
-out-of-the-box. You do not need to include the Hadoop Compatibility dependency,
-if you only want to use your Hadoop data types. See the
-[Programming Guide](index.html#data-types) for more details.
+Flink支持所有的Hadoop `Writable` 和 `WritableComparable` 数据类型, 不用额外添加Hadoop Compatibility 依赖。 可以参考[Programming Guide](index.html#data-types)了解如何使用Hadoop数据类型（Hadoop data type）。
 
-### Using Hadoop InputFormats
+### 使用Hadoop输入格式
 
-Hadoop input formats can be used to create a data source by using
-one of the methods `readHadoopFile` or `createHadoopInput` of the
-`ExecutionEnvironment`. The former is used for input formats derived
-from `FileInputFormat` while the latter has to be used for general purpose
-input formats.
+可以使用Hadoop输入格式来创建数据源，具体是调用 ExecutionEnvironment 的 readHadoopFile 或 createHadoopInput方法。 前者用于来自FileInputFormat的输入格式， 后者用于普通的输入格式。
 
-The resulting `DataSet` contains 2-tuples where the first field
-is the key and the second field is the value retrieved from the Hadoop
-InputFormat.
+创建的数据集包含的是一个“键-值”2元组，“值”是从Hadoop输入格式获得的数值。
 
-The following example shows how to use Hadoop's `TextInputFormat`.
+下面的例子介绍如何使用Hadoop的 `TextInputFormat`。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -115,34 +97,29 @@ val input: DataSet[(LongWritable, Text)] =
 
 </div>
 
-### Using Hadoop OutputFormats
+### 使用Hadoop输出格式
 
-Flink provides a compatibility wrapper for Hadoop `OutputFormats`. Any class
-that implements `org.apache.hadoop.mapred.OutputFormat` or extends
-`org.apache.hadoop.mapreduce.OutputFormat` is supported.
-The OutputFormat wrapper expects its input data to be a DataSet containing
-2-tuples of key and value. These are to be processed by the Hadoop OutputFormat.
+Flink提供兼容Hadoop输出格式（Hadoop OutputFormat）的封装。支持任何实现`org.apache.hadoop.mapred.OutputFormat`接口或者继承`org.apache.hadoop.mapreduce.OutputFormat`的类。输出格式的封装需要的输入是“键值对”形式。他们将会交给Hadoop输出格式处理。
 
-The following example shows how to use Hadoop's `TextOutputFormat`.
+下面的例子介绍如何使用Hadoop的 `TextOutputFormat`。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
 
 ~~~java
-// Obtain the result we want to emit
+// 获取所需数据
 DataSet<Tuple2<Text, IntWritable>> hadoopResult = [...]
 
-// Set up the Hadoop TextOutputFormat.
+// 创建和初始化Hadoop TextOutputFormat.
 HadoopOutputFormat<Text, IntWritable> hadoopOF =
-  // create the Flink wrapper.
   new HadoopOutputFormat<Text, IntWritable>(
-    // set the Hadoop OutputFormat and specify the job.
+    // 设置Hadoop OutputFormat和特定的job作为初始化参数
     new TextOutputFormat<Text, IntWritable>(), job
   );
 hadoopOF.getConfiguration().set("mapreduce.output.textoutputformat.separator", " ");
 TextOutputFormat.setOutputPath(job, new Path(outputPath));
 
-// Emit data using the Hadoop TextOutputFormat.
+// 通过Hadoop TextOutputFormat输出结果
 hadoopResult.output(hadoopOF);
 ~~~
 
@@ -150,7 +127,7 @@ hadoopResult.output(hadoopOF);
 <div data-lang="scala" markdown="1">
 
 ~~~scala
-// Obtain your result to emit.
+// 获取所需数据
 val hadoopResult: DataSet[(Text, IntWritable)] = [...]
 
 val hadoopOF = new HadoopOutputFormat[Text,IntWritable](
@@ -169,48 +146,49 @@ hadoopResult.output(hadoopOF)
 
 </div>
 
-### Using Hadoop Mappers and Reducers
+### 使用Hadoop Mappers和Reducers 
 
-Hadoop Mappers are semantically equivalent to Flink's [FlatMapFunctions](dataset_transformations.html#flatmap) and Hadoop Reducers are equivalent to Flink's [GroupReduceFunctions](dataset_transformations.html#groupreduce-on-grouped-dataset). Flink provides wrappers for implementations of Hadoop MapReduce's `Mapper` and `Reducer` interfaces, i.e., you can reuse your Hadoop Mappers and Reducers in regular Flink programs. At the moment, only the Mapper and Reduce interfaces of Hadoop's mapred API (`org.apache.hadoop.mapred`) are supported.
+`Hadoop Mappers` 语法上等价于Flink的`FlatMapFunctions`，`Hadoop Reducers`语法上等价于Flink的`GroupReduceFunctions`。 Flink同样封装了`Hadoop MapReduce`的`Mapper and Reducer`接口的实现。 用户可以在Flink程序中复用Hadoop的`Mappers and Reducers`。 这时，仅仅`org.apache.hadoop.mapred`的Mapper and Reducer接口被支持。
 
 The wrappers take a `DataSet<Tuple2<KEYIN,VALUEIN>>` as input and produce a `DataSet<Tuple2<KEYOUT,VALUEOUT>>` as output where `KEYIN` and `KEYOUT` are the keys and `VALUEIN` and `VALUEOUT` are the values of the Hadoop key-value pairs that are processed by the Hadoop functions. For Reducers, Flink offers a wrapper for a GroupReduceFunction with (`HadoopReduceCombineFunction`) and without a Combiner (`HadoopReduceFunction`). The wrappers accept an optional `JobConf` object to configure the Hadoop Mapper or Reducer.
 
-Flink's function wrappers are
+封装函数用`DataSet<Tuple2<KEYIN,VALUEIN>>`作为输入， 产生`DataSet<Tuple2<KEYOUT,VALUEOUT>>`作为输出， 其中`KEYIN`和`KEYOUT`是“键” ，`VALUEIN` 和`VALUEOUT` 是“值”，它们是Hadoop函数处理的键值对。 对于Reducers，Flink将GroupReduceFunction封装成`HadoopReduceCombineFunction`，但没有Combiner(`HadoopReduceFunction`)。 封装函数接收可选的`JobConf`对象来配置Hadoop的Mapper or Reducer。
+
+Flink的方法封装有
 
 - `org.apache.flink.hadoopcompatibility.mapred.HadoopMapFunction`,
 - `org.apache.flink.hadoopcompatibility.mapred.HadoopReduceFunction`, and
 - `org.apache.flink.hadoopcompatibility.mapred.HadoopReduceCombineFunction`.
+他们可以被用于[FlatMapFunctions](dataset_transformations.html#flatmap)或[GroupReduceFunctions](dataset_transformations.html#groupreduce-on-grouped-dataset).
 
-and can be used as regular Flink [FlatMapFunctions](dataset_transformations.html#flatmap) or [GroupReduceFunctions](dataset_transformations.html#groupreduce-on-grouped-dataset).
-
-The following example shows how to use Hadoop `Mapper` and `Reducer` functions.
+下面的例子介绍如何使用Hadoop的`Mapper`和`Reducer` 。
 
 ~~~java
-// Obtain data to process somehow.
+// 获取待处理数据
 DataSet<Tuple2<Text, LongWritable>> text = [...]
 
 DataSet<Tuple2<Text, LongWritable>> result = text
-  // use Hadoop Mapper (Tokenizer) as MapFunction
+  // 使用Hadoop Mapper (Tokenizer)作为Map函数
   .flatMap(new HadoopMapFunction<LongWritable, Text, Text, LongWritable>(
     new Tokenizer()
   ))
   .groupBy(0)
-  // use Hadoop Reducer (Counter) as Reduce- and CombineFunction
+  // 使用Hadoop Reducer (Counter)作为Reduce函数
   .reduceGroup(new HadoopReduceCombineFunction<Text, LongWritable, Text, LongWritable>(
     new Counter(), new Counter()
   ));
 ~~~
 
-**Please note:** The Reducer wrapper works on groups as defined by Flink's [groupBy()](dataset_transformations.html#transformations-on-grouped-dataset) operation. It does not consider any custom partitioners, sort or grouping comparators you might have set in the `JobConf`.
+**需要注意:** Reducer封装处理由Flink中的[groupBy()](dataset_transformations.html#transformations-on-grouped-dataset)定义的groups。 它并不考虑任何在JobConf定义的自定义的分区器(partitioners), 排序（sort）或分组（grouping）的比较器。
 
-### Complete Hadoop WordCount Example
+### 完整Hadoop WordCount示例
 
-The following example shows a complete WordCount implementation using Hadoop data types, Input- and OutputFormats, and Mapper and Reducer implementations.
+下面给出一个完整的使用Hadoop 数据类型， InputFormat/OutputFormat/Mapper/Reducer的示例。
 
 ~~~java
 ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 
-// Set up the Hadoop TextInputFormat.
+// 创建和初始化Hadoop TextInputFormat.
 Job job = Job.getInstance();
 HadoopInputFormat<LongWritable, Text> hadoopIF =
   new HadoopInputFormat<LongWritable, Text>(
@@ -218,21 +196,21 @@ HadoopInputFormat<LongWritable, Text> hadoopIF =
   );
 TextInputFormat.addInputPath(job, new Path(inputPath));
 
-// Read data using the Hadoop TextInputFormat.
+// 从Hadoop TextInputFormat读取数据.
 DataSet<Tuple2<LongWritable, Text>> text = env.createInput(hadoopIF);
 
 DataSet<Tuple2<Text, LongWritable>> result = text
-  // use Hadoop Mapper (Tokenizer) as MapFunction
+  // 使用Hadoop Mapper (Tokenizer)作为Map函数
   .flatMap(new HadoopMapFunction<LongWritable, Text, Text, LongWritable>(
     new Tokenizer()
   ))
   .groupBy(0)
-  // use Hadoop Reducer (Counter) as Reduce- and CombineFunction
+  // 使用Hadoop Reducer (Counter)作为Reduce函数
   .reduceGroup(new HadoopReduceCombineFunction<Text, LongWritable, Text, LongWritable>(
     new Counter(), new Counter()
   ));
 
-// Set up the Hadoop TextOutputFormat.
+// 创建和初始化Hadoop TextOutputFormat.
 HadoopOutputFormat<Text, IntWritable> hadoopOF =
   new HadoopOutputFormat<Text, IntWritable>(
     new TextOutputFormat<Text, IntWritable>(), job
@@ -240,9 +218,9 @@ HadoopOutputFormat<Text, IntWritable> hadoopOF =
 hadoopOF.getConfiguration().set("mapreduce.output.textoutputformat.separator", " ");
 TextOutputFormat.setOutputPath(job, new Path(outputPath));
 
-// Emit data using the Hadoop TextOutputFormat.
+// 使用Hadoop TextOutputFormat输出结果.
 result.output(hadoopOF);
 
-// Execute Program
+// 执行程序
 env.execute("Hadoop WordCount");
 ~~~

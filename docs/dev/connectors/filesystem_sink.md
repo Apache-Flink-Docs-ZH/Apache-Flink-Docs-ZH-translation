@@ -23,9 +23,7 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-This connector provides a Sink that writes partitioned files to any filesystem supported by
-Hadoop FileSystem. To use this connector, add the
-following dependency to your project:
+此连接器提供了一个槽（Sink），将分区文件写入Hadoop文件系统（Hadoop FileSystem）支持的任何文件系统。要使用此连接器，请将以下依赖项添加到您的项目中：
 
 {% highlight xml %}
 <dependency>
@@ -35,16 +33,12 @@ following dependency to your project:
 </dependency>
 {% endhighlight %}
 
-Note that the streaming connectors are currently not part of the binary
-distribution. See
-[here]({{site.baseurl}}/dev/linking.html)
-for information about how to package the program with the libraries for
-cluster execution.
+请注意，流（Streaming）连接器当前不是二进制分发的一部分。有关如何将程序与程序库打包以进行集群执行的信息，请参阅
+[here]({{site.baseurl}}/dev/linking.html)。
 
-#### Bucketing File Sink
+#### 分桶（Bucketing）文件槽（Sink）
 
-The bucketing behaviour as well as the writing can be configured but we will get to that later.
-This is how you can create a bucketing sink which by default, sinks to rolling files that are split by time:
+分桶（Bucketing）行为以及写入操作均可被配置，我们稍后将会介绍。此处将了解如何创建一个分桶的槽（bucketing sink），默认情况下，会将槽（sink）配置到按时间分割的滚动文件：
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -65,34 +59,17 @@ input.addSink(new BucketingSink[String]("/base/path"))
 </div>
 </div>
 
-The only required parameter is the base path where the buckets will be
-stored. The sink can be further configured by specifying a custom bucketer, writer and batch size.
+唯一必需的参数是存储桶（buckets）的基本路径。可以通过指定自定义的bucketer，writer和batch大小来进一步配置槽（sink）。
 
-By default the bucketing sink will split by the current system time when elements arrive and will
-use the datetime pattern `"yyyy-MM-dd--HH"` to name the buckets. This pattern is passed to
-`SimpleDateFormat` with the current system time to form a bucket path. A new bucket will be created
-whenever a new date is encountered. For example, if you have a pattern that contains minutes as the
-finest granularity you will get a new bucket every minute. Each bucket is itself a directory that
-contains several part files: each parallel instance of the sink will create its own part file and
-when part files get too big the sink will also create a new part file next to the others. When a
-bucket becomes inactive, the open part file will be flushed and closed. A bucket is regarded as
-inactive when it hasn't been written to recently. By default, the sink checks for inactive buckets
-every minute, and closes any buckets which haven't been written to for over a minute. This
-behaviour can be configured with `setInactiveBucketCheckInterval()` and
-`setInactiveBucketThreshold()` on a `BucketingSink`.
+默认情况下，当有元素写入（elements arrive）时，分桶的槽（bucketing sink）将根据当前的系统时间分离，并使用日期时间格式`"yyyy-MM-dd--HH"`来命名这些桶（buckets）。此格式将传递给具有当前系统时间的`SimpleDateFormat`以形成桶（bucket）路径。每当出现新的日期时，都会创建一个新的桶（bucket）。例如，如果您有一个包含以分钟作为最细粒度的格式，您将每分钟获得一个新的桶（bucket）。每个桶（bucket）本身是一个包含几个局部（part）文件的目录：每个并行实例的槽（sink）将创建自己的局部（part）文件，当局部（part）文件变得太大时，槽（sink）将在其他局部（part）文件旁边再创建一个新的局部（part）文件。当桶（bucket）变得不活跃时，被打开的局部（part）文件将被刷新并关闭。当最近没有写入操作时，桶（bucket）将被视为不活跃。默认情况下，槽（sink）每分钟检查一次不活跃的桶（bucket），并关闭一分钟内没有写入操作的所有桶（bucket）。可以在`BucketingSink`上使用`setInactiveBucketCheckInterval()`和`setInactiveBucketThreshold()`。
 
-You can also specify a custom bucketer by using `setBucketer()` on a `BucketingSink`. If desired,
-the bucketer can use a property of the element or tuple to determine the bucket directory.
+您也可以使用`BucketingSink`上的`setBucketer()`指定自定义的bucketer。 如果需要，bucketer可以使用元素（element）或元组（tuple）的属性来确定桶（bucket）目录。
 
-The default writer is `StringWriter`. This will call `toString()` on the incoming elements
-and write them to part files, separated by newline. To specify a custom writer use `setWriter()`
-on a `BucketingSink`. If you want to write Hadoop SequenceFiles you can use the provided
-`SequenceFileWriter` which can also be configured to use compression.
+默认的writer是`StringWriter`。这将在传入的元素（elements）上调用`toString()`，并将它们写入局部（part）文件，用换行符分隔。 要在`BucketingSink`上指定一个自定义的writer，请使用`setWriter()`。如果要编写Hadoop序列文件（Hadoop SequenceFiles），可以使用系统提供的`SequenceFileWriter`其可被配置为使用压缩（compression）。
 
-The last configuration option is the batch size. This specifies when a part file should be closed
-and a new one started. (The default part file size is 384 MB).
+最后一个配置选项是批量大小。 这指定何时应该关闭局部（part）文件并启动一个新的局部（part）文件。 （默认局部（part）文件大小为384 MB）。
 
-Example:
+示例：
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -123,15 +100,13 @@ input.addSink(sink)
 </div>
 </div>
 
-This will create a sink that writes to bucket files that follow this schema:
+将创建一个写入到遵循该模式（schema）的桶（bucket）文件的槽（sink）：
 
 ```
 /base/path/{date-time}/part-{parallel-task}-{count}
 ```
 
-Where `date-time` is the string that we get from the date/time format, `parallel-task` is the index
-of the parallel sink instance and `count` is the running number of part files that where created
-because of the batch size.
+其中`date-time`是从日期/时间格式获取的字符串，`parallel-task`是并行槽（sink）实例的索引，`count`是根据批量大小而创建的局部（part）文件的运行数。
 
-For in-depth information, please refer to the JavaDoc for
+更多详细信息，请参阅 JavaDoc for
 [BucketingSink](http://flink.apache.org/docs/latest/api/java/org/apache/flink/streaming/connectors/fs/bucketing/BucketingSink.html).

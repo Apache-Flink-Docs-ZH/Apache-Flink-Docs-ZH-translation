@@ -25,19 +25,17 @@ under the License.
 * This will be replaced by the TOC
 {:toc}
 
-Gelly provides a collection of scalable graph generators. Each generator is
+Gelly 提供了一组可扩展的图生成器。每个生成器都是：
 
-* parallelizable, in order to create large datasets
-* scale-free, generating the same graph regardless of parallelism
-* thrifty, using as few operators as possible
+* 并行的, 用于创建大型数据集。
+* 自由扩展的, 用于生成并行度无关的同样的图。
+* 简洁的，使用了尽可能少的操作。
 
-Graph generators are configured using the builder pattern. The parallelism of generator
-operators can be set explicitly by calling `setParallelism(parallelism)`. Lowering the
-parallelism will reduce the allocation of memory and network buffers.
+图生成器使用Builder模式进行配置，可以通过调用`setParallelism(parallelism)`设置并行度。减少
+并行度可以降低内存和网络缓冲区的使用。
 
-Graph-specific configuration must be called first, then configuration common to all
-generators, and lastly the call to `generate()`. The following example configures a
-grid graph with two dimensions, configures the parallelism, and generates the graph.
+特定的图配置必须首先被调用，该配置对所有的图生成器都是通用的，最后才会调用`generate()`。
+接下来的例子使用两个维度配置了网格图，配置了并行度并生成了图。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -72,9 +70,9 @@ val graph = new GridGraph(env.getJavaEnv).addDimension(2, wrapEndpoints).addDime
 </div>
 </div>
 
-## Complete Graph
+## 完全图
 
-An undirected graph connecting every distinct pair of vertices.
+连接所有不同顶点对的无向图。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -136,9 +134,9 @@ val graph = new CompleteGraph(env.getJavaEnv, vertexCount).generate()
     <text x="51" y="199">4</text>
 </svg>
 
-## Cycle Graph
+## 环图
 
-An undirected graph where all edges form a single cycle.
+所有的边形成一个环的无向图。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -192,9 +190,9 @@ val graph = new CycleGraph(env.getJavaEnv, vertexCount).generate()
     <text x="51" y="199">4</text>
 </svg>
 
-## Empty Graph
+## 空图
 
-The graph containing no edges.
+不存在边的图。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -242,12 +240,11 @@ val graph = new EmptyGraph(env.getJavaEnv, vertexCount).generate()
     <text x="510" y="40">4</text>
 </svg>
 
-## Grid Graph
+## 网格图
 
-An undirected graph connecting vertices in a regular tiling in one or more dimensions.
-Each dimension is configured separately. When the dimension size is at least three the
-endpoints are optionally connected by setting `wrapEndpoints`. Changing the following
-example to `addDimension(4, true)` would connect `0` to `3` and `4` to `7`.
+一种点在一到多个维度正常平铺的无向图。每个维度都是独立配置的。当维度大小多于3时，每个维度的端点
+可以通过设置`wrapEndpoints`连接起来，那么下边例子的`addDimension(4, true)`将会连接`0`和`3`
+以及`4`和`7`。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -314,10 +311,9 @@ val graph = new GridGraph(env.getJavaEnv).addDimension(2, wrapEndpoints).addDime
     <text x="510" y="160">7</text>
 </svg>
 
-## Hypercube Graph
+## 超立方体图
 
-An undirected graph where edges form an n-dimensional hypercube. Each vertex
-in a hypercube connects to one other vertex in each dimension.
+所有的边形成N维超立方体的无向图。超立方体内的每个顶点和同维度的其他顶点连接。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -389,9 +385,9 @@ val graph = new HypercubeGraph(env.getJavaEnv, dimensions).generate()
     <text x="510" y="280">7</text>
 </svg>
 
-## Path Graph
+## 路径图
 
-An undirected Graph where all edges form a single path.
+所有的边形成了一条路径的无向图。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -441,15 +437,13 @@ val graph = new PathGraph(env.getJavaEnv, vertexCount).generate()
     <text x="510" y="40">4</text>
 </svg>
 
-## RMat Graph
+## RMat图
 
-A directed or undirected power-law graph generated using the
-[Recursive Matrix (R-Mat)](http://www.cs.cmu.edu/~christos/PUBLICATIONS/siam04.pdf) model.
+使用[Recursive Matrix (R-Mat)](http://www.cs.cmu.edu/~christos/PUBLICATIONS/siam04.pdf)模型
+生成的有向或者无向幂图。
 
-RMat is a stochastic generator configured with a source of randomness implementing the
-`RandomGenerableFactory` interface. Provided implementations are `JDKRandomGeneratorFactory`
-and `MersenneTwisterFactory`. These generate an initial sequence of random values which are
-then used as seeds for generating the edges.
+RMat是一个使用实现`RandomGenerableFactory`接口的随机源配置的随机生成器，`JDKRandomGeneratorFactory`
+和`MersenneTwisterFactory`实现了该接口。它产生了一个用于生成边的随机种子的随机初始序列。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -526,9 +520,9 @@ val graph = new RMatGraph(env.getJavaEnv, rnd, vertexCount, edgeCount).setConsta
 </div>
 </div>
 
-## Singleton Edge Graph
+## 单边图
 
-An undirected graph containing isolated two-paths.
+包含独立的双路径的无向图。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -592,9 +586,9 @@ val graph = new SingletonEdgeGraph(env.getJavaEnv, vertexPairCount).generate()
     <text x="510" y="160">7</text>
 </svg>
 
-## Star Graph
+## 星图
 
-An undirected graph containing a single central vertex connected to all other leaf vertices.
+包含一个连接到所有其他叶子顶点的中心顶点的无向图。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
