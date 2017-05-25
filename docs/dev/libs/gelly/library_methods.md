@@ -79,12 +79,12 @@ verticesWithCommunity.print
 构造函数接收两个参数：
 
 * `maxIterations`: 要运行的最大迭代数.
-* `delta`: 跳衰减参数，默认值为t 0.5.
+* `delta`: 跳衰减参数，默认值为 0.5.
 
-## Label Propagation
+## 标签传播 (Label Propagation)
 
 #### 概览
-This is an implementation of the well-known Label Propagation algorithm described in [this paper](http://journals.aps.org/pre/abstract/10.1103/PhysRevE.76.036106). The algorithm discovers communities in a graph, by iteratively propagating labels between neighbors. Unlike the [Community Detection library method](#community-detection), this implementation does not use scores associated with the labels.
+这是一个有名的标签传播算法的实现，该算法在[这篇论文](http://journals.aps.org/pre/abstract/10.1103/PhysRevE.76.036106)中有所描述。该算法对一个图通过迭代地在邻居间传播标签来发现该图中的社区。与[社区探测](#community-detection)不同，该算法的实现并不使用与顶点相关的分数。
 
 #### 细节
 The algorithm is implemented using [scatter-gather iterations](#scatter-gather-iterations).
