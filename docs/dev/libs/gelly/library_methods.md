@@ -22,7 +22,7 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-Gelly拥有一组图算法来简易分析大规模的图，这些算法至今仍在不断增长。
+Gelly 拥有一组图算法来简易分析大规模的图，这些算法至今仍在不断增长。
 
 * This will be replaced by the TOC
 {:toc}
@@ -67,7 +67,7 @@ verticesWithCommunity.print
 In graph theory, communities refer to groups of nodes that are well connected internally, but sparsely connected to other groups.
 This library method is an implementation of the community detection algorithm described in the paper [Towards real-time community detection in large networks](http://arxiv.org/pdf/0808.2633.pdf).
 
-#### Details
+#### 细节
 The algorithm is implemented using [scatter-gather iterations](#scatter-gather-iterations).
 Initially, each vertex is assigned a `Tuple2` containing its initial value along with a score equal to 1.0.
 In each iteration, vertices send their labels and scores to their neighbors. Upon receiving messages from its neighbors,
@@ -89,7 +89,7 @@ The constructor takes two parameters:
 #### 概览
 This is an implementation of the well-known Label Propagation algorithm described in [this paper](http://journals.aps.org/pre/abstract/10.1103/PhysRevE.76.036106). The algorithm discovers communities in a graph, by iteratively propagating labels between neighbors. Unlike the [Community Detection library method](#community-detection), this implementation does not use scores associated with the labels.
 
-#### Details
+#### 细节
 The algorithm is implemented using [scatter-gather iterations](#scatter-gather-iterations).
 Labels are expected to be of type `Comparable` and are initialized using the vertex values of the input `Graph`.
 The algorithm iteratively refines discovered communities by propagating labels. In each iteration, a vertex adopts
@@ -110,7 +110,7 @@ The constructor takes one parameter:
 This is an implementation of the Weakly Connected Components algorithm. Upon convergence, two vertices belong to the
 same component, if there is a path from one to the other, without taking edge direction into account.
 
-#### Details
+#### 细节
 The algorithm is implemented using [scatter-gather iterations](#scatter-gather-iterations).
 This implementation uses a comparable vertex value as initial component identifier (ID). Vertices propagate their
 current value in each iteration. Upon receiving component IDs from its neighbors, a vertex adopts a new component ID if
@@ -129,7 +129,7 @@ The constructor takes one parameter:
 This is an implementation of the Weakly Connected Components algorithm. Upon convergence, two vertices belong to the
 same component, if there is a path from one to the other, without taking edge direction into account.
 
-#### Details
+#### 细节
 The algorithm is implemented using [gather-sum-apply iterations](#gather-sum-apply-iterations).
 This implementation uses a comparable vertex value as initial component identifier (ID). In the gather phase, each
 vertex collects the vertex value of their adjacent vertices. In the sum phase, the minimum among those values is
@@ -148,7 +148,7 @@ The constructor takes one parameter:
 #### 概览
 An implementation of the Single-Source-Shortest-Paths algorithm for weighted graphs. Given a source vertex, the algorithm computes the shortest paths from this source to all other nodes in the graph.
 
-#### Details
+#### 细节
 The algorithm is implemented using [scatter-gather iterations](#scatter-gather-iterations).
 In each iteration, a vertex sends to its neighbors a message containing the sum its current distance and the edge weight connecting this vertex with the neighbor. Upon receiving candidate distance messages, a vertex calculates the minimum distance and, if a shorter path has been discovered, it updates its value. If a vertex does not change its value during a superstep, then it does not produce messages for its neighbors for the next superstep. The computation terminates after the specified maximum number of supersteps or when there are no value updates.
 
@@ -172,7 +172,7 @@ See the [Single Source Shortest Paths](#single-source-shortest-paths) library me
 This library method enumerates unique triangles present in the input graph. A triangle consists of three edges that connect three vertices with each other.
 This implementation ignores edge directions.
 
-#### Details
+#### 细节
 The basic triangle enumeration algorithm groups all edges that share a common vertex and builds triads, i.e., triples of vertices
 that are connected by two edges. Then, all triads are filtered for which no third edge exists that closes the triangle.
 For a group of <i>n</i> edges that share a common vertex, the number of built triads is quadratic <i>((n*(n-1))/2)</i>.
@@ -191,7 +191,7 @@ their values. In doing so, the algorithm helps to uncover insights about pattern
 One possible use case is the visualization of communities where the whole graph is too large and needs to be summarized
 based on the community identifier stored at a vertex.
 
-#### Details
+#### 细节
 In the resulting graph, each vertex represents a group of vertices that share the same value. An edge, that connects a
 vertex with itself, represents all edges with the same edge value that connect vertices from the same vertex group. An
 edge between different vertices in the output graph represents all edges with the same edge value between members of
@@ -215,7 +215,7 @@ vertex and edge in the output graph stores the common group value and the number
 The average clustering coefficient measures the mean connectedness of a graph. Scores range from 0.0 (no edges between
 neighbors) to 1.0 (complete graph).
 
-#### Details
+#### 细节
 See the [Local Clustering Coefficient](#local-clustering-coefficient) library method for a detailed explanation of
 clustering coefficient. The Average Clustering Coefficient is the average of the Local Clustering Coefficient scores
 over all vertices with at least two neighbors. Each vertex, independent of degree, has equal weight for this score.
@@ -233,7 +233,7 @@ containing the total number of vertices and average clustering coefficient of th
 The global clustering coefficient measures the connectedness of a graph. Scores range from 0.0 (no edges between
 neighbors) to 1.0 (complete graph).
 
-#### Details
+#### 细节
 See the [Local Clustering Coefficient](#local-clustering-coefficient) library method for a detailed explanation of
 clustering coefficient. The Global Clustering Coefficient is the ratio of connected neighbors over the entire graph.
 Vertices with higher degrees have greater weight for this score because the count of neighbor pairs is quadratic in
@@ -252,7 +252,7 @@ global clustering coefficient score. The graph ID type must be `Comparable` and 
 The local clustering coefficient measures the connectedness of each vertex's neighborhood. Scores range from 0.0 (no
 edges between neighbors) to 1.0 (neighborhood is a clique).
 
-#### Details
+#### 细节
 An edge between neighbors of a vertex is a triangle. Counting edges between neighbors is equivalent to counting the
 number of triangles which include the vertex. The clustering coefficient score is the number of edges between neighbors
 divided by the number of potential edges between neighbors.
@@ -275,7 +275,7 @@ A triad is formed by any three vertices in a graph. Each triad contains three pa
 or unconnected. The [Triadic Census](http://vlado.fmf.uni-lj.si/pub/networks/doc/triads/triads.pdf) counts the
 occurrences of each type of triad with the graph.
 
-#### Details
+#### 细节
 This analytic counts the four undirected triad types (formed with 0, 1, 2, or 3 connecting edges) or 16 directed triad
 types by counting the triangles from [Triangle Listing](#triangle-listing) and running [Vertex Metrics](#vertex-metrics)
 to obtain the number of triplets and edges. Triangle counts are then deducted from triplet counts, and triangle and
@@ -294,7 +294,7 @@ Directed and undirected variants are provided. The analytics take a simple graph
 Enumerates all triangles in the graph. A triangle is composed of three edges connecting three vertices into cliques of
 size 3.
 
-#### Details
+#### 细节
 Triangles are listed by joining open triplets (two edges with a common neighbor) against edges on the triplet endpoints.
 This implementation uses optimizations from
 [Schank's algorithm](http://i11www.iti.uni-karlsruhe.de/extra/publications/sw-fclt-05_t.pdf) to improve performance with
@@ -318,7 +318,7 @@ six potential edges connecting the three vertices. The graph ID type must be `Co
 computes two interdependent scores for every vertex in a directed graph. Good hubs are those which point to many
 good authorities and good authorities are those pointed to by many good hubs.
 
-#### Details
+#### 细节
 Every vertex is assigned the same initial hub and authority scores. The algorithm then iteratively updates the scores
 until termination. During each iteration new hub scores are computed from the authority scores, then new authority
 scores are computed from the new hub scores. The scores are then normalized and optionally tested for convergence.
@@ -339,7 +339,7 @@ the iteration sum of the change in scores over all vertices.
 results. Today, the algorithm and many variations are used in various graph application domains. The idea of PageRank is
 that important or relevant vertices tend to link to other important vertices.
 
-#### Details
+#### 细节
 The algorithm operates in iterations, where pages distribute their scores to their neighbors (pages they have links to)
 and subsequently update their scores based on the sum of values they receive. In order to consider the importance of a
 link from one page to another, scores are divided by the total number of out-links of the source page. Thus, a page with
@@ -372,7 +372,7 @@ The following statistics are additionally computed for directed graphs:
 - maximum out degree
 - maximum in degree
 
-#### Details
+#### 细节
 The statistics are computed over vertex degrees generated from `degree.annotate.directed.VertexDegrees` or
 `degree.annotate.undirected.VertexDegree`.
 
@@ -393,7 +393,7 @@ This graph analytic computes the following statistics:
 - maximum number of triangle triplets
 - maximum number of rectangle triplets
 
-#### Details
+#### 细节
 The statistics are computed over edge degrees generated from `degree.annotate.directed.EdgeDegreesPair` or
 `degree.annotate.undirected.EdgeDegreePair` and grouped by vertex.
 
@@ -413,7 +413,7 @@ Adamic-Adar measures the similarity between pairs of vertices as the sum of the 
 neighbors. Scores are non-negative and unbounded. A vertex with higher degree has greater overall influence but is less
 influential to each pair of neighbors.
 
-#### Details
+#### 细节
 The algorithm first annotates each vertex with the inverse of the logarithm of the vertex degree then joins this score
 onto edges by source vertex. Grouping on the source vertex, each pair of neighbors is emitted with the vertex score.
 Grouping on vertex pairs, the Adamic-Adar score is summed.
@@ -435,7 +435,7 @@ The Jaccard Index measures the similarity between vertex neighborhoods and is co
 divided by the number of distinct neighbors. Scores range from 0.0 (no shared neighbors) to 1.0 (all neighbors are
 shared).
 
-#### Details
+#### 细节
 Counting shared neighbors for pairs of vertices is equivalent to counting connecting paths of length two. The number of
 distinct neighbors is computed by storing the sum of degrees of the vertex pair and subtracting the count of shared
 neighbors, which are double-counted in the sum of degrees.
