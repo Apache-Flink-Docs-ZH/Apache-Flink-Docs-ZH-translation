@@ -225,9 +225,9 @@ env.setRestartStrategy(RestartStrategies.failureRateRestart(
 {% highlight scala %}
 val env = ExecutionEnvironment.getExecutionEnvironment()
 env.setRestartStrategy(RestartStrategies.failureRateRestart(
-  3, // max failures per unit
-  Time.of(5, TimeUnit.MINUTES), //time interval for measuring failure rate
-  Time.of(10, TimeUnit.SECONDS) // delay
+  3, // 一个时间段内的最大失败次数
+  Time.of(5, TimeUnit.MINUTES), // 衡量失败次数的是时间段
+  Time.of(10, TimeUnit.SECONDS) // 间隔
 ))
 {% endhighlight %}
 </div>
@@ -237,13 +237,13 @@ env.setRestartStrategy(RestartStrategies.failureRateRestart(
 
 ### 无重启 (No Restart) 策略
 
-The job fails directly and no restart is attempted.
+没有任何工作重启，若工作失败则直接宣告失败。
 
 ~~~
 restart-strategy: none
 ~~~
 
-The no restart strategy can also be set programmatically:
+无重启策略也可以通过编程来设定：
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -262,8 +262,8 @@ env.setRestartStrategy(RestartStrategies.noRestart())
 
 ### 回调 (Fallback) 重启策略
 
-The cluster defined restart strategy is used. 
-This helpful for streaming programs which enable checkpointing.
-Per default, a fixed delay restart strategy is chosen if there is no other restart strategy defined.
+使用集群定义的重启策略。
+该策略对启用 checkpointing 的流式程序有帮助。
+如果没有其他的定义的重启策略，每一次默认启用都会启动固定间隔重启策略，
 
 {% top %}
