@@ -104,7 +104,7 @@ env.setRestartStrategy(RestartStrategies.fixedDelayRestart(
 如果超过了最大尝试次数，则工作最终失败。
 在连续两次的重启尝试中，重启策略会等待一段固定的时间。
 
-这个策略可以通过设置 `flink-conf.yaml` 中的下列配置参数启动。
+这个策略可以通过设置 `flink-conf.yaml` 中的下列配置参数作为默认策略启动。
 
 ~~~
 restart-strategy: fixed-delay
@@ -166,10 +166,10 @@ env.setRestartStrategy(RestartStrategies.fixedDelayRestart(
 
 ### 失败率 (Failure Rate) 重启策略
 
-The failure rate restart strategy restarts job after failure, but when `failure rate` (failures per time interval) is exceeded, the job eventually fails.
-In-between two consecutive restart attempts, the restart strategy waits a fixed amount of time.
+失败率重启策略在失败后重启工作，当超过 `failure rate` (一段时间间隔内的失败次数) 时工作宣告失败。
+在连续两次重启尝试中，该重启策略会等待一端固定的时间。
 
-This strategy is enabled as default by setting the following configuration parameter in `flink-conf.yaml`.
+这个策略可以通过设置 `flink-conf.yaml` 中的下列配置参数作为默认策略启动。
 
 ~~~
 restart-strategy: failure-rate
@@ -208,7 +208,7 @@ restart-strategy.failure-rate.failure-rate-interval: 5 min
 restart-strategy.failure-rate.delay: 10 s
 ~~~
 
-The failure rate restart strategy can also be set programmatically:
+失败率重启策略也可以在编程时进行设定:
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
