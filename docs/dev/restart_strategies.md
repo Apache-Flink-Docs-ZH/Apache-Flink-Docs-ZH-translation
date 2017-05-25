@@ -166,7 +166,7 @@ env.setRestartStrategy(RestartStrategies.fixedDelayRestart(
 
 ### 失败率 (Failure Rate) 重启策略
 
-失败率重启策略在失败后重启工作，当超过 `failure rate` (一段时间间隔内的失败次数) 时工作宣告失败。
+失败率重启策略在失败后重启工作，当超过 `failure rate` (一个时间段内的失败次数) 时工作宣告失败。
 在连续两次重启尝试中，该重启策略会等待一端固定的时间。
 
 这个策略可以通过设置 `flink-conf.yaml` 中的下列配置参数作为默认策略启动。
@@ -178,25 +178,25 @@ restart-strategy: failure-rate
 <table class="table table-bordered">
   <thead>
     <tr>
-      <th class="text-left" style="width: 40%">Configuration Parameter</th>
-      <th class="text-left" style="width: 40%">Description</th>
-      <th class="text-left">Default Value</th>
+      <th class="text-left" style="width: 40%">配置参数</th>
+      <th class="text-left" style="width: 40%">描述</th>
+      <th class="text-left">默认值</th>
     </tr>
   </thead>
   <tbody>
     <tr>
         <td><it>restart-strategy.failure-rate.max-failures-per-interval</it></td>
-        <td>Maximum number of restarts in given time interval before failing a job</td>
+        <td>在工作宣告失败之前，给定时间段内的最大重启次数</td>
         <td>1</td>
     </tr>
     <tr>
         <td><it>restart-strategy.failure-rate.failure-rate-interval</it></td>
-        <td>Time interval for measuring failure rate.</td>
+        <td>衡量失败率的时间段.</td>
         <td>1 minute</td>
     </tr>
     <tr>
         <td><it>restart-strategy.failure-rate.delay</it></td>
-        <td>Delay between two consecutive restart attempts</td>
+        <td>连续两次重启尝试间的间隔</td>
         <td><it>akka.ask.timeout</it></td>
     </tr>
   </tbody>
@@ -215,9 +215,9 @@ restart-strategy.failure-rate.delay: 10 s
 {% highlight java %}
 ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 env.setRestartStrategy(RestartStrategies.failureRateRestart(
-  3, // max failures per interval
-  Time.of(5, TimeUnit.MINUTES), //time interval for measuring failure rate
-  Time.of(10, TimeUnit.SECONDS) // delay
+  3, // 一个时间段内的最大失败次数
+  Time.of(5, TimeUnit.MINUTES), // 衡量失败次数的是时间段
+  Time.of(10, TimeUnit.SECONDS) // 间隔
 ));
 {% endhighlight %}
 </div>
