@@ -93,7 +93,7 @@ verticesWithCommunity.print
 
 #### 用法
 该算法接收一个 `Comparable` 顶点类型的 `Graph`，一个 `Comparable` 顶点值类型和一个任意边值类型。
-它返回一个包含顶点的 `DataSet`，其中顶点值与该算法收敛后该点所属的社区对应。
+它返回一个顶点组成的 `DataSet`，其中顶点值与该算法收敛后该点所属的社区对应。
 构造器接受一个参数：
 
 * `maxIterations`: 要运行的最大迭代数.
@@ -108,7 +108,7 @@ verticesWithCommunity.print
 该实现使用一个可比较的顶点值作为初始的组件ID (component identifier)。定点在每次迭代中广播它们当前的值。当顶点从邻居点接收到组件ID时，如果顶点的值低于它当前的组件ID，该顶点会采用新的组件ID。该算法在顶点不再更新它们的组件ID值或到达最大迭代次数时收敛。
 
 #### 用法
-该算法的结果是一个包含顶点的 `DataSet`，其中顶点值与分配给该顶点的组件相对应。
+该算法的结果是一个顶点组成的 `DataSet`，其中顶点值与分配给该顶点的组件相对应。
 构造器接收一个参数：
 
 * `maxIterations`: 要运行的最大迭代数.
@@ -123,7 +123,7 @@ verticesWithCommunity.print
 该实现使用一个可比较的顶点值作为初始的组件ID (component identifier)。在收集阶段 (gather phase)，每一个顶点收集它们的邻接点的顶点值。在求总阶段 (sum phase) 选择这些值中的最小值。在应用阶段 (apply phase)，如果最小值小于当前值，该算法把最小值设为新的顶点值。该算法在顶点不再更新它们的组件ID值或到达最大迭代次数时收敛。
 
 #### 用法
-该算法的结果是一个包含顶点的 `DataSet`，其中顶点值与分配给该顶点的组件相对应。
+该算法的结果是一个顶点组成的 `DataSet`，其中顶点值与分配给该顶点的组件相对应。
 构造器接收一个参数：
 
 * `maxIterations`: 要运行的最大迭代数.
@@ -139,7 +139,7 @@ verticesWithCommunity.print
 
 #### 用法
 该接收一个任何顶点类型的 `Graph` 和 `Double` 类型的边值。顶点值可以是任何类型，且不会被该算法使用。顶点类型必须实现 `equals()`。
-输出是一个包含顶点的 `DataSet`，其中顶点值对应从给定源点到该点的最小距离。
+输出是一个顶点组成的 `DataSet`，其中顶点值对应从给定源点到该点的最小距离。
 构造器接收两个参数：
 
 * `srcVertexId` 源点的点ID.
@@ -164,7 +164,7 @@ verticesWithCommunity.print
 该实现通过计算边顶点 (edge vertices) 的出边自由度和用较小的自由度来对点上的边进行分组来继承基本的算法。
 
 #### 用法
-该算法接收一个有向图作为输入，并输入一个包含 `Tuple3` 的 `DataSet`。顶点ID类型必须是 `Comparable`。
+该算法接收一个有向图作为输入，并输入一个 `Tuple3` 组成的 `DataSet`。顶点ID类型必须是 `Comparable`。
 每一个 `Tuple3` 对应一个三角，其中的字段包含了组成三角形的顶点的ID。
 
 ## 总结 (Summarization)
@@ -212,31 +212,23 @@ verticesWithCommunity.print
 ### 局部集聚系数 (Local Clustering Coefficient)
 
 #### 概览
-The local clustering coefficient measures the connectedness of each vertex's neighborhood. Scores range from 0.0 (no
-edges between neighbors) to 1.0 (neighborhood is a clique).
+局部聚类系数衡量每个顶点的邻居的正确度。得分从 0.0 (邻居之间没有边) 到 1.0 (邻居是一个團)。
 
 #### 细节
-An edge between neighbors of a vertex is a triangle. Counting edges between neighbors is equivalent to counting the
-number of triangles which include the vertex. The clustering coefficient score is the number of edges between neighbors
-divided by the number of potential edges between neighbors.
+一个顶点的邻居之间的边是一个三角。对邻居间的边计数相当于计算包含了顶点的三角形的数量。集聚系数是邻居间的边的数目与邻居间潜在边的数目的商。
 
-See the [Triangle Listing](#triangle-listing) library method for a detailed explanation of triangle enumeration.
+想要了解三角枚举的详细解释，参阅[三角罗列](#triangle-listing) 库方法。
 
 #### 用法
-Directed and undirected variants are provided. The algorithms take a simple graph as input and output a `DataSet` of
-`UnaryResult` containing the vertex ID, vertex degree, and number of triangles containing the vertex. The result class
-provides a method to compute the local clustering coefficient score. The graph ID type must be `Comparable` and
-`Copyable`.
+有向和无向的变体均有提供。该分析接收一个简单图作为输入，并输出一个 `UnaryResult` 组成的 `DataSet`，其中包含了顶点ID 顶点自由度，和包含顶点的三角的数量。该结果类提供一个方法来计算局部集聚系数得分。图 ID 类型必须是 `Comparable` 和 `Copyable`。
 
-* `setIncludeZeroDegreeVertices`: include results for vertices with a degree of zero
-* `setLittleParallelism`: override the parallelism of operators processing small amounts of data
+* `setIncludeZeroDegreeVertices`: 包含了自由度为 0 的顶点的结果
+* `setLittleParallelism`: 覆盖处理少量数据的算子的平行度
 
-### Triadic Census
+### 三元统计 (Triadic Census)
 
 #### 概览
-A triad is formed by any three vertices in a graph. Each triad contains three pairs of vertices which may be connected
-or unconnected. The [Triadic Census](http://vlado.fmf.uni-lj.si/pub/networks/doc/triads/triads.pdf) counts the
-occurrences of each type of triad with the graph.
+一个三点组合 (triad） 是由一个图内的三个顶点组成。每个三点组合包含了三队可能相连或不相连的顶点。[三元统计](http://vlado.fmf.uni-lj.si/pub/networks/doc/triads/triads.pdf)计算图中每种类型的三点组合的出现次数。
 
 #### 细节
 This analytic counts the four undirected triad types (formed with 0, 1, 2, or 3 connecting edges) or 16 directed triad
@@ -249,7 +241,7 @@ Directed and undirected variants are provided. The analytics take a simple graph
 `AnalyticResult` with accessor methods for querying the count of each triad type. The graph ID type must be
 `Comparable` and `Copyable`.
 
-* `setLittleParallelism`: override the parallelism of operators processing small amounts of data
+* `setLittleParallelism`: 覆盖处理少量数据的算子的平行度
 
 ### Triangle Listing
 
@@ -269,7 +261,7 @@ Directed and undirected variants are provided. The algorithms take a simple grap
 `TertiaryResult` containing the three triangle vertices and, for the directed algorithm, a bitmask marking each of the
 six potential edges connecting the three vertices. The graph ID type must be `Comparable` and `Copyable`.
 
-* `setLittleParallelism`: override the parallelism of operators processing small amounts of data
+* `setLittleParallelism`: 覆盖处理少量数据的算子的平行度
 * `setSortTriangleVertices`: normalize the triangle listing such that for each result (K0, K1, K2) the vertex IDs are sorted K0 < K1 < K2
 
 ## Link Analysis
@@ -293,7 +285,7 @@ The algorithm takes a simple directed graph as input and outputs a `DataSet` of 
 hub score, and authority score. Termination is configured by the number of iterations and/or a convergence threshold on
 the iteration sum of the change in scores over all vertices.
 
-* `setParallelism`: override the operator parallelism
+* `setParallelism`: 覆盖算子的平行度
 
 ### PageRank
 
@@ -314,7 +306,7 @@ The algorithm takes a directed graph as input and outputs a `DataSet` where each
 PageRank score. Termination is configured with a maximum number of iterations and/or a convergence threshold
 on the sum of the change in score for each vertex between iterations.
 
-* `setParallelism`: override the operator parallelism
+* `setParallelism`: 覆盖算子的平行度
 
 ## Metric
 
@@ -344,7 +336,7 @@ Directed and undirected variants are provided. The analytics take a simple graph
 with accessor methods for the computed statistics. The graph ID type must be `Comparable`.
 
 * `setIncludeZeroDegreeVertices`: include results for vertices with a degree of zero
-* `setParallelism`: override the operator parallelism
+* `setParallelism`: 覆盖算子的平行度
 * `setReduceOnTargetId` (undirected only): the degree can be counted from either the edge source or target IDs. By default the source IDs are counted. Reducing on target IDs may optimize the algorithm if the input edge list is sorted by target ID
 
 ### Edge Metrics
@@ -364,7 +356,7 @@ The statistics are computed over edge degrees generated from `degree.annotate.di
 Directed and undirected variants are provided. The analytics take a simple graph as input and output an `AnalyticResult`
 with accessor methods for the computed statistics. The graph ID type must be `Comparable`.
 
-* `setParallelism`: override the operator parallelism
+* `setParallelism`: 覆盖算子的平行度
 * `setReduceOnTargetId` (undirected only): the degree can be counted from either the edge source or target IDs. By default the source IDs are counted. Reducing on target IDs may optimize the algorithm if the input edge list is sorted by target ID
 
 ## Similarity
@@ -387,7 +379,7 @@ See the [Jaccard Index](#jaccard-index) library method for a similar algorithm.
 The algorithm takes a simple undirected graph as input and outputs a `DataSet` of `BinaryResult` containing two vertex
 IDs and the Adamic-Adar similarity score. The graph ID type must be `Copyable`.
 
-* `setLittleParallelism`: override the parallelism of operators processing small amounts of data
+* `setLittleParallelism`: 覆盖处理少量数据的算子的平行度
 * `setMinimumRatio`: filter out Adamic-Adar scores less than the given ratio times the average score
 * `setMinimumScore`: filter out Adamic-Adar scores less than the given minimum
 
@@ -411,7 +403,7 @@ The algorithm takes a simple undirected graph as input and outputs a `DataSet` o
 the number of shared neighbors, and the number of distinct neighbors. The result class provides a method to compute the
 Jaccard Index score. The graph ID type must be `Copyable`.
 
-* `setLittleParallelism`: override the parallelism of operators processing small amounts of data
+* `setLittleParallelism`: 覆盖处理少量数据的算子的平行度
 * `setMaximumScore`: filter out Jaccard Index scores greater than or equal to the given maximum fraction
 * `setMinimumScore`: filter out Jaccard Index scores less than the given minimum fraction
 
