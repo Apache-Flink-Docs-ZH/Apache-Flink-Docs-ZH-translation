@@ -98,24 +98,20 @@ verticesWithCommunity.print
 
 * `maxIterations`: 要运行的最大迭代数.
 
-## Connected Components
+## 连接组件 (Connected Components)
 
 #### 概览
-This is an implementation of the Weakly Connected Components algorithm. Upon convergence, two vertices belong to the
-same component, if there is a path from one to the other, without taking edge direction into account.
+这是一个弱连接组件 (Weakly Connected Components) 算法的实现。当该算法收敛时，如果两个点间是相连的，不管是从哪个点连向哪个点，这两点都属于同一个组件。
 
 #### 细节
-The algorithm is implemented using [scatter-gather iterations](#scatter-gather-iterations).
-This implementation uses a comparable vertex value as initial component identifier (ID). Vertices propagate their
-current value in each iteration. Upon receiving component IDs from its neighbors, a vertex adopts a new component ID if
-its value is lower than its current component ID. The algorithm converges when vertices no longer update their component
-ID value or when the maximum number of iterations has been reached.
+该算法通过使用 [scatter-gather iterations](#scatter-gather-iterations) 来实现。
+该实现使用一个可比较的顶点值作为初始的组件ID (component identifier)。定点在每次迭代中广播它们当前的值。当顶点从邻居点接收到组件ID时，如果顶点的值低于它当前的组件ID，该顶点会采用新的组件ID。该算法在顶点不再更新它们的组件ID值或到达最大迭代次数时收敛。
 
 #### 用法
-The result is a `DataSet` of vertices, where the vertex value corresponds to the assigned component.
-The constructor takes one parameter:
+该算法的结果是一个包含顶点的 `DataSet`，其中顶点值与分配给顶点的组件相对应。
+构造器接收一个参数：
 
-* `maxIterations`: the maximum number of iterations to run.
+* `maxIterations`: 要运行的最大迭代数.
 
 ## GSA Connected Components
 
