@@ -231,19 +231,14 @@ verticesWithCommunity.print
 一个三点组合 (triad） 是由一个图内的三个顶点组成。每个三点组合包含了三队可能相连或不相连的顶点。[三元统计](http://vlado.fmf.uni-lj.si/pub/networks/doc/triads/triads.pdf)计算图中每种类型的三点组合的出现次数。
 
 #### 细节
-This analytic counts the four undirected triad types (formed with 0, 1, 2, or 3 connecting edges) or 16 directed triad
-types by counting the triangles from [Triangle Listing](#triangle-listing) and running [Vertex Metrics](#vertex-metrics)
-to obtain the number of triplets and edges. Triangle counts are then deducted from triplet counts, and triangle and
-triplet counts are removed from edge counts.
+该分析统计四种无向三点组合类型 (由0, 1, 2， 或 3 相连边组成) 或 16 种有向三点组合类型来获得三点组 (triplet) 和边的数量，该统计是通过对来自[三角罗列](#triangle-listing)的三角形计数和运行[顶点指标](#vertex-metrics)来进行的。从三点组的数目中推断出三角的数目，再把三角数和三点组数从边数中移除。
 
 #### 用法
-Directed and undirected variants are provided. The analytics take a simple graph as input and output an
-`AnalyticResult` with accessor methods for querying the count of each triad type. The graph ID type must be
-`Comparable` and `Copyable`.
+有向和无向的变体均有提供。该分析接收一个简单图作为输入，并为查询每个三点组合类型的数目输出一个带有 accessor 方法的 `AnalyticResult`。图 ID 类型必须是 `Comparable` 和 `Copyable`。
 
 * `setLittleParallelism`: 覆盖处理少量数据的算子的平行度
 
-### Triangle Listing
+### 三角罗列 (Triangle Listing)
 
 #### 概览
 Enumerates all triangles in the graph. A triangle is composed of three edges connecting three vertices into cliques of
@@ -264,7 +259,7 @@ six potential edges connecting the three vertices. The graph ID type must be `Co
 * `setLittleParallelism`: 覆盖处理少量数据的算子的平行度
 * `setSortTriangleVertices`: normalize the triangle listing such that for each result (K0, K1, K2) the vertex IDs are sorted K0 < K1 < K2
 
-## Link Analysis
+## 链接分析 (Link Analysis)
 
 ### Hyperlink-Induced Topic Search
 
@@ -287,7 +282,7 @@ the iteration sum of the change in scores over all vertices.
 
 * `setParallelism`: 覆盖算子的平行度
 
-### PageRank
+### 佩奇排名 (PageRank)
 
 #### 概览
 [PageRank](https://en.wikipedia.org/wiki/PageRank) is an algorithm that was first used to rank web search engine
@@ -308,9 +303,9 @@ on the sum of the change in score for each vertex between iterations.
 
 * `setParallelism`: 覆盖算子的平行度
 
-## Metric
+## 指标 (Metric)
 
-### Vertex Metrics
+### 顶点指标 (Vertex Metrics)
 
 #### 概览
 This graph analytic computes the following statistics for both directed and undirected graphs:
@@ -339,7 +334,7 @@ with accessor methods for the computed statistics. The graph ID type must be `Co
 * `setParallelism`: 覆盖算子的平行度
 * `setReduceOnTargetId` (undirected only): the degree can be counted from either the edge source or target IDs. By default the source IDs are counted. Reducing on target IDs may optimize the algorithm if the input edge list is sorted by target ID
 
-### Edge Metrics
+### 边指标 (Edge Metrics)
 
 #### 概览
 This graph analytic computes the following statistics:
@@ -359,9 +354,9 @@ with accessor methods for the computed statistics. The graph ID type must be `Co
 * `setParallelism`: 覆盖算子的平行度
 * `setReduceOnTargetId` (undirected only): the degree can be counted from either the edge source or target IDs. By default the source IDs are counted. Reducing on target IDs may optimize the algorithm if the input edge list is sorted by target ID
 
-## Similarity
+## 相似度 (Similarity)
 
-### Adamic-Adar
+### AA指数 (Adamic-Adar)
 
 #### 概览
 Adamic-Adar measures the similarity between pairs of vertices as the sum of the inverse logarithm of degree over shared
@@ -383,7 +378,7 @@ IDs and the Adamic-Adar similarity score. The graph ID type must be `Copyable`.
 * `setMinimumRatio`: filter out Adamic-Adar scores less than the given ratio times the average score
 * `setMinimumScore`: filter out Adamic-Adar scores less than the given minimum
 
-### Jaccard Index
+### 杰卡德指数 (Jaccard Index)
 
 #### 概览
 The Jaccard Index measures the similarity between vertex neighborhoods and is computed as the number of shared neighbors
