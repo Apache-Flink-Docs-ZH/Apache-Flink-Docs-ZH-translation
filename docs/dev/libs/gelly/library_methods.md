@@ -286,31 +286,29 @@ verticesWithCommunity.print
 ### 顶点指标 (Vertex Metrics)
 
 #### 概览
-This graph analytic computes the following statistics for both directed and undirected graphs:
-- number of vertices
-- number of edges
-- average degree
-- number of triplets
-- maximum degree
-- maximum number of triplets
+该图分析对有向图和无向图计算下列统计：
+- 顶点数量 (number of vertices)
+- 边数量 (number of edges)
+- 平均自由度 (average degree)
+- 三点组数 (number of triplets)
+- 最大自由度 (maximum degree)
+- 三点组最大数 (maximum number of triplets)
 
-The following statistics are additionally computed for directed graphs:
-- number of unidirectional edges
-- number of bidirectional edges
-- maximum out degree
-- maximum in degree
+对有向图，可以额外计算下列统计：
+- 无向边数量 (number of unidirectional edges)
+- 双向边数量 (number of bidirectional edges)
+- 最大出边自由度 (maximum out degree)
+- 最大入边自由度 (maximum in degree)
 
 #### 细节
-The statistics are computed over vertex degrees generated from `degree.annotate.directed.VertexDegrees` or
-`degree.annotate.undirected.VertexDegree`.
+该统计被计算在从 `degree.annotate.directed.VertexDegrees` 或 `degree.annotate.undirected.VertexDegree` 产生的点自由度 (vertex degree) 上。
 
 #### 用法
-Directed and undirected variants are provided. The analytics take a simple graph as input and output an `AnalyticResult`
-with accessor methods for the computed statistics. The graph ID type must be `Comparable`.
+有向和无向的变体均有提供。该分析接收一个简单图作为输入，并为计算过的统计输出一个带有 accessor 方法的 `AnalyticResult`。图 ID 类型必须是 `Comparable`。
 
-* `setIncludeZeroDegreeVertices`: include results for vertices with a degree of zero
+* `setIncludeZeroDegreeVertices`: 包含了自由度为 0 的顶点的结果
 * `setParallelism`: 覆盖算子的平行度
-* `setReduceOnTargetId` (undirected only): the degree can be counted from either the edge source or target IDs. By default the source IDs are counted. Reducing on target IDs may optimize the algorithm if the input edge list is sorted by target ID
+* `setReduceOnTargetId` (仅对无向图): 自由度可以从边的源点 ID 或 目标点 ID 计算。默认情况下用源头 ID 计算。如果输入边列表通过目标点 ID 排序，在目标点上的归约可能优化该算法
 
 ### 边指标 (Edge Metrics)
 
@@ -330,7 +328,7 @@ Directed and undirected variants are provided. The analytics take a simple graph
 with accessor methods for the computed statistics. The graph ID type must be `Comparable`.
 
 * `setParallelism`: 覆盖算子的平行度
-* `setReduceOnTargetId` (undirected only): the degree can be counted from either the edge source or target IDs. By default the source IDs are counted. Reducing on target IDs may optimize the algorithm if the input edge list is sorted by target ID
+* `setReduceOnTargetId` (仅对无向图): 自由度可以从边的源点 ID 或 目标点 ID 计算。默认情况下用源头 ID 计算。如果输入边列表通过目标点 ID 排序，在目标点上的归约可能优化该算法
 
 ## 相似度 (Similarity)
 
