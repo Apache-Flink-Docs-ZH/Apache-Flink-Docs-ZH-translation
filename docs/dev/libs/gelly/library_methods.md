@@ -138,12 +138,9 @@ verticesWithCommunity.print
 在每次迭代中，一个顶点发送一个消息到该顶点的邻居，该消息包含该顶点当前距离和连接该点与邻居的边的权重。一旦接收到这个消息，顶点计算最小距离，如果发现更短的路径，该算法会更新改顶点的值。如果一个顶点在一个超步 (superstep) 间没有改变自身的值，则不会在下一个超步给邻居生成消息。计算在超过指定的最大超步数或没有值可以更新的时候终止。
 
 #### 用法
-该接收一个任何顶点类型的 `Graph` and `Double` 类型的边值。顶点值可以是任何类型，且不会被该算法使用。顶点类型必须实现 `equals()`。
+该接收一个任何顶点类型的 `Graph` 和 `Double` 类型的边值。顶点值可以是任何类型，且不会被该算法使用。顶点类型必须实现 `equals()`。
 输出是一个包含顶点的 `DataSet`，其中顶点值对应从给定源点到该点的最小距离。
 构造器接收两个参数：
-The algorithm takes as input a `Graph` with any vertex type and `Double` edge values. The vertex values can be any type and are not used by this algorithm. The vertex type must implement `equals()`.
-The output is a `DataSet` of vertices where the vertex values correspond to the minimum distances from the given source vertex.
-The constructor takes two parameters:
 
 * `srcVertexId` 源点的点ID.
 * `maxIterations`: 要运行的最大迭代数.
@@ -154,22 +151,21 @@ The constructor takes two parameters:
 
 参阅[单源最短路径](#single-source-shortest-paths)库方法获取实现细节和使用信息。
 
-## Triangle Enumerator
+## 三角枚举器 (Triangle Enumerator)
 
 #### 概览
-This library method enumerates unique triangles present in the input graph. A triangle consists of three edges that connect three vertices with each other.
-This implementation ignores edge directions.
+这个库方法枚举出现在输入图中的唯一三角 (unique triangles)。一个三角由连接相互三个点的三条边组成。
+该实现忽略了边的方向。
 
 #### 细节
-The basic triangle enumeration algorithm groups all edges that share a common vertex and builds triads, i.e., triples of vertices
-that are connected by two edges. Then, all triads are filtered for which no third edge exists that closes the triangle.
-For a group of <i>n</i> edges that share a common vertex, the number of built triads is quadratic <i>((n*(n-1))/2)</i>.
-Therefore, an optimization of the algorithm is to group edges on the vertex with the smaller output degree to reduce the number of triads.
-This implementation extends the basic algorithm by computing output degrees of edge vertices and grouping on edges on the vertex with the smaller degree.
+这个基本的三角枚举算法对所有共享一个共有顶点的边进行分组，并构建被两个边相连接的三点组合 (triad)。 然后过滤所有不存在关闭三角的第三条边的三点组合。
+对于一组共享一个共有顶点的 <i>n</i> 边，构建的三点组合的数量是 <i>((n*(n-1))/2)</i>。
+因此，该算法的一个优化是用较小的出边自由度 (output degree) 对顶点上的边进行分组来减小三角组合的数量。
+该实现通过计算边顶点 (edge vertices) 的出边自由度和用较小的自由度来对点上的边进行分组来继承基本的算法。
 
 #### 用法
-The algorithm takes a directed graph as input and outputs a `DataSet` of `Tuple3`. The Vertex ID type has to be `Comparable`.
-Each `Tuple3` corresponds to a triangle, with the fields containing the IDs of the vertices forming the triangle.
+该算法接收一个有向图作为输入，并输入一个包含 `Tuple3` 的 `DataSet`。顶点ID类型必须是 `Comparable`。
+每一个 `Tuple3` 对应一个三角，其中的字段包含了组成三角形的顶点的ID。
 
 ## Summarization
 
