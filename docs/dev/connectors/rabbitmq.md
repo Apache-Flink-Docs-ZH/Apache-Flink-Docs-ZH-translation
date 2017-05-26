@@ -1,8 +1,9 @@
 ---
-title: "RabbitMQ Connector"
-nav-title: RabbitMQ
-nav-parent_id: connectors
-nav-pos: 6
+title: Application Development：Streaming (DataStream API)：Connectors-RabbitMQ
+nav-id: DataStream API
+nav-pos: 1
+nav-title: Connectors-RabbitMQ
+nav-parent_id: application
 ---
 <!--
 Licensed to the Apache Software Foundation (ASF) under one

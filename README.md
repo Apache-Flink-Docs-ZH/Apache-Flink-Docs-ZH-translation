@@ -8,6 +8,7 @@ Apache Flink是一款分布式、高性能的开源流式处理框架，在2015�
 
 ## 内容来源
 
+
 Apache Flink官网：[http://flink.apache.org](http://flink.apache.org/index.html)，主要包括：
 
 - [Introduction to Flink](http://flink.apache.org/introduction.html)
@@ -74,21 +75,21 @@ Apache Flink官网：[http://flink.apache.org](http://flink.apache.org/index.htm
  - [Wennn](https://github.com/Wennn)
  - [chlyzzo](https://github.com/chlyzzo)
  - [jinglining](https://github.com/jinglining)
- 
+
 
 ---
 
 *审校* [点我认领](https://github.com/Apache-Flink-Docs-ZH/Apache-Flink-Docs-ZH-translation/wiki)
- - [tuhaihe](https://github.com/tuahihe) 
+ - [tuhaihe](https://github.com/tuahihe)
  - [lviiii](https://github.com/lviiii)
- 
- 
+
+
 
  ---
- 
+
  *项目经理* [认领](https://github.com/Apache-Flink-Docs-ZH/Apache-Flink-Docs-ZH-translation/issues/1)
 - [lviiii](https://github.com/lviiii)
- 
+
 
 
 ## 支持社区
