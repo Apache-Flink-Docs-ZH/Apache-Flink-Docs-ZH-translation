@@ -333,24 +333,19 @@ verticesWithCommunity.print
 ### AA指数 (Adamic-Adar)
 
 #### 概览
-Adamic-Adar measures the similarity between pairs of vertices as the sum of the inverse logarithm of degree over shared
-neighbors. Scores are non-negative and unbounded. A vertex with higher degree has greater overall influence but is less
-influential to each pair of neighbors.
+AA指数衡量顶点对之间的相似度，其结果作为共享邻居上的自由度的逆对数的和。得分是非负且无界的。拥有较高自由度的顶点总体上有较大的影响，但每对邻居则没那么有影响。
 
 #### 细节
-The algorithm first annotates each vertex with the inverse of the logarithm of the vertex degree then joins this score
-onto edges by source vertex. Grouping on the source vertex, each pair of neighbors is emitted with the vertex score.
-Grouping on vertex pairs, the Adamic-Adar score is summed.
+该算法首先用顶点自由度的逆对数标注每个顶点，然后用源点把该分数合并到边上。在源点上分组，发送每一对邻居与其顶点得分。在顶点组上分组，然后计算AA指数的得分。
 
-See the [Jaccard Index](#jaccard-index) library method for a similar algorithm.
+查阅[杰卡德指数](#jaccard-index)库方法来了解相似的算法。
 
 #### 用法
-The algorithm takes a simple undirected graph as input and outputs a `DataSet` of `BinaryResult` containing two vertex
-IDs and the Adamic-Adar similarity score. The graph ID type must be `Copyable`.
+该算法接收一个简单的无向图作为输入，并输出一个 `BinaryResult` 组成的 `DataSet`，其中包含了两个顶点 ID 和 AA 相似度分数。图 ID 类型必须是 `Copyable`。
 
 * `setLittleParallelism`: 覆盖处理少量数据的算子的平行度
-* `setMinimumRatio`: filter out Adamic-Adar scores less than the given ratio times the average score
-* `setMinimumScore`: filter out Adamic-Adar scores less than the given minimum
+* `setMinimumRatio`: 过滤小于给定指数乘以平均分数的结果的得分
+* `setMinimumScore`: 过滤小于给定最小值的得分
 
 ### 杰卡德指数 (Jaccard Index)
 
@@ -373,7 +368,7 @@ the number of shared neighbors, and the number of distinct neighbors. The result
 Jaccard Index score. The graph ID type must be `Copyable`.
 
 * `setLittleParallelism`: 覆盖处理少量数据的算子的平行度
-* `setMaximumScore`: filter out Jaccard Index scores greater than or equal to the given maximum fraction
-* `setMinimumScore`: filter out Jaccard Index scores less than the given minimum fraction
+* `setMaximumScore`: 过滤大于等于给定最大值的得分
+* `setMinimumScore`: 过滤小于给定最小值的得分
 
 {% top %}
