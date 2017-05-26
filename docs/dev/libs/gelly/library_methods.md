@@ -167,13 +167,11 @@ verticesWithCommunity.print
 该算法接收一个有向图作为输入，并输入一个包含 `Tuple3` 的 `DataSet`。顶点ID类型必须是 `Comparable`。
 每一个 `Tuple3` 对应一个三角，其中的字段包含了组成三角形的顶点的ID。
 
-## Summarization
+## 总结 (Summarization)
 
 #### 概览
-The summarization algorithm computes a condensed version of the input graph by grouping vertices and edges based on
-their values. In doing so, the algorithm helps to uncover insights about patterns and distributions in the graph.
-One possible use case is the visualization of communities where the whole graph is too large and needs to be summarized
-based on the community identifier stored at a vertex.
+总结算法通过基于点和边的值对点和边分组来计算一个浓缩版的输入图。通过这种做法，该算法能帮助洞察获悉图中的模式和分布。
+该算法的一个用途是社区的可视化，其中社区所在图极大且该图需要基于存于顶点的社区ID来总结。
 
 #### 细节
 In the resulting graph, each vertex represents a group of vertices that share the same value. An edge, that connects a
