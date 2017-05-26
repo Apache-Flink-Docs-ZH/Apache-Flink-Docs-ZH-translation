@@ -128,28 +128,31 @@ verticesWithCommunity.print
 
 * `maxIterations`: 要运行的最大迭代数.
 
-## Single Source Shortest Paths
+## 单源最短路径 (Single Source Shortest Paths)
 
 #### 概览
-An implementation of the Single-Source-Shortest-Paths algorithm for weighted graphs. Given a source vertex, the algorithm computes the shortest paths from this source to all other nodes in the graph.
+该算法是一个单源最短路径算法的实现，该实现是为了计算加权图。给定一个源点，该算法计算图中从该源点到所有其它点的最短路径。
 
 #### 细节
-The algorithm is implemented using [scatter-gather iterations](#scatter-gather-iterations).
-In each iteration, a vertex sends to its neighbors a message containing the sum its current distance and the edge weight connecting this vertex with the neighbor. Upon receiving candidate distance messages, a vertex calculates the minimum distance and, if a shorter path has been discovered, it updates its value. If a vertex does not change its value during a superstep, then it does not produce messages for its neighbors for the next superstep. The computation terminates after the specified maximum number of supersteps or when there are no value updates.
+该算法通过使用 [scatter-gather iterations](#scatter-gather-iterations) 来实现。
+在每次迭代中，一个顶点发送一个消息到该顶点的邻居，该消息包含该顶点当前距离和连接该点与邻居的边的权重。一旦接收到这个消息，顶点计算最小距离，如果发现更短的路径，该算法会更新改顶点的值。如果一个顶点在一个超步 (superstep) 间没有改变自身的值，则不会在下一个超步给邻居生成消息。计算在超过指定的最大超步数或没有值可以更新的时候终止。
 
 #### 用法
+该接收一个任何顶点类型的 `Graph` and `Double` 类型的边值。顶点值可以是任何类型，且不会被该算法使用。顶点类型必须实现 `equals()`。
+输出是一个包含顶点的 `DataSet`，其中顶点值对应从给定源点到该点的最小距离。
+构造器接收两个参数：
 The algorithm takes as input a `Graph` with any vertex type and `Double` edge values. The vertex values can be any type and are not used by this algorithm. The vertex type must implement `equals()`.
 The output is a `DataSet` of vertices where the vertex values correspond to the minimum distances from the given source vertex.
 The constructor takes two parameters:
 
-* `srcVertexId` The vertex ID of the source vertex.
-* `maxIterations`: the maximum number of iterations to run.
+* `srcVertexId` 源点的点ID.
+* `maxIterations`: 要运行的最大迭代数.
 
-## GSA Single Source Shortest Paths
+## GSA 单源最短路径 (GSA Single Source Shortest Paths)
 
-The algorithm is implemented using [gather-sum-apply iterations](#gather-sum-apply-iterations).
+该算法通过使用 [gather-sum-apply iterations](#gather-sum-apply-iterations) 来实现。
 
-See the [Single Source Shortest Paths](#single-source-shortest-paths) library method for implementation details and usage information.
+参阅[单源最短路径](#single-source-shortest-paths)库方法获取实现细节和使用信息。
 
 ## Triangle Enumerator
 
