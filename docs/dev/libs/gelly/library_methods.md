@@ -22,7 +22,7 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-Gelly 拥有一组图算法来简易分析大规模的图，这些算法至今仍在不断增长。
+Gelly 拥有一组至今仍在不断增长的图算法来简易分析大规模的图。
 
 * This will be replaced by the TOC
 {:toc}
@@ -119,18 +119,14 @@ verticesWithCommunity.print
 这是一个弱连接组件 (Weakly Connected Components) 算法的实现。当该算法收敛时，如果两个点间是相连的，不管是从哪个点连向哪个点，这两点都属于同一个组件。
 
 #### 细节
-The algorithm is implemented using [gather-sum-apply iterations](#gather-sum-apply-iterations).
-This implementation uses a comparable vertex value as initial component identifier (ID). In the gather phase, each
-vertex collects the vertex value of their adjacent vertices. In the sum phase, the minimum among those values is
-selected. In the apply phase, the algorithm sets the minimum value as the new vertex value if it is smaller than
-the current value. The algorithm converges when vertices no longer update their component ID value or when the
-maximum number of iterations has been reached.
+该算法通过使用 [gather-sum-apply iterations](#gather-sum-apply-iterations) 来实现。
+该实现使用一个可比较的顶点值作为初始的组件ID (component identifier)。在收集阶段 (gather phase)，每一个顶点收集它们的邻接点的顶点值。在求总阶段 (sum phase) 选择这些值中的最小值。在应用阶段 (apply phase)，如果最小值小于当前值，该算法把最小值设为新的顶点值。该算法在顶点不再更新它们的组件ID值或到达最大迭代次数时收敛。
 
 #### 用法
-The result is a `DataSet` of vertices, where the vertex value corresponds to the assigned component.
-The constructor takes one parameter:
+该算法的结果是一个包含顶点的 `DataSet`，其中顶点值与分配给该顶点的组件相对应。
+构造器接收一个参数：
 
-* `maxIterations`: the maximum number of iterations to run.
+* `maxIterations`: 要运行的最大迭代数.
 
 ## Single Source Shortest Paths
 
