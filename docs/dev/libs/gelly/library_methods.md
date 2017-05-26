@@ -64,7 +64,7 @@ verticesWithCommunity.print
 ## 社区探测 (Community Detection)
 
 #### 概览
-在图论中，社区 (communities) 指的是一组对内紧密连接的，但对外与其它组连接稀疏的节点。
+在图论中，社区 (communities) 指的是一组对内紧密连接，但对外与其它组连接稀疏的节点。
 该库方法是一个社区探测算法的实现，该算法的具体描述请参阅 [Towards real-time community detection in large networks](http://arxiv.org/pdf/0808.2633.pdf) 这篇论文。
 
 #### 细节
@@ -174,24 +174,16 @@ verticesWithCommunity.print
 该算法的一个用途是社区的可视化，其中社区所在图极大且该图需要基于存于顶点的社区ID来总结。
 
 #### 细节
-In the resulting graph, each vertex represents a group of vertices that share the same value. An edge, that connects a
-vertex with itself, represents all edges with the same edge value that connect vertices from the same vertex group. An
-edge between different vertices in the output graph represents all edges with the same edge value between members of
-different vertex groups in the input graph.
+在结果图中，每个顶点标识了一组分享同个值的顶点。连接顶点的边表示所有拥有相同边值的边，这些边从相同的顶点群连接顶点。输出图中的两个顶点之间的边表示所有输入图中两个不同顶点组内的顶点之间的拥有相同值的边。
 
-The algorithm is implemented using Flink data operators. First, vertices are grouped by their value and a representative
-is chosen from each group. For any edge, the source and target vertex identifiers are replaced with the corresponding
-representative and grouped by source, target and edge value. Output vertices and edges are created from their
-corresponding groupings.
+这个算法拥 Flink 数据算子实现。首先，通过顶点的值将顶点分组，并从每一组中选出一个代表点。对于任意边，源点和目标点ID用对应的代表点替换，并拥源点，目标点和边值进行分组。输出顶点和边从他们对应的组中创建。
 
 #### 用法
-The algorithm takes a directed, vertex (and possibly edge) attributed graph as input and outputs a new graph where each
-vertex represents a group of vertices and each edge represents a group of edges from the input graph. Furthermore, each
-vertex and edge in the output graph stores the common group value and the number of represented elements.
+该算法接收一个有向，顶点（和边)带属性的图作为输入，并输出一个新的图，其中该新图的每一个顶点表示一组来自输入图的顶点，每一条边表示一组来自输入图的边。不仅如此，输出图的每一个顶点和每一条边储存了共有的组值和代表元素的数量。
 
-## Clustering
+## 聚类 (Clustering)
 
-### Average Clustering Coefficient
+### 平均聚类系数 (Average Clustering Coefficient)
 
 #### 概览
 The average clustering coefficient measures the mean connectedness of a graph. Scores range from 0.0 (no edges between
@@ -209,7 +201,7 @@ containing the total number of vertices and average clustering coefficient of th
 
 * `setLittleParallelism`: override the parallelism of operators processing small amounts of data
 
-### Global Clustering Coefficient
+### 全局聚类系数 (Global Clustering Coefficient)
 
 #### 概览
 The global clustering coefficient measures the connectedness of a graph. Scores range from 0.0 (no edges between
@@ -228,7 +220,7 @@ global clustering coefficient score. The graph ID type must be `Comparable` and 
 
 * `setLittleParallelism`: override the parallelism of operators processing small amounts of data
 
-### Local Clustering Coefficient
+### 本地聚类系数 (Local Clustering Coefficient)
 
 #### 概览
 The local clustering coefficient measures the connectedness of each vertex's neighborhood. Scores range from 0.0 (no
