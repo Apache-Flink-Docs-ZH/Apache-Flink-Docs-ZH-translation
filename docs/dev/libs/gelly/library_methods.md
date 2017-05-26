@@ -108,16 +108,15 @@ verticesWithCommunity.print
 该实现使用一个可比较的顶点值作为初始的组件ID (component identifier)。定点在每次迭代中广播它们当前的值。当顶点从邻居点接收到组件ID时，如果顶点的值低于它当前的组件ID，该顶点会采用新的组件ID。该算法在顶点不再更新它们的组件ID值或到达最大迭代次数时收敛。
 
 #### 用法
-该算法的结果是一个包含顶点的 `DataSet`，其中顶点值与分配给顶点的组件相对应。
+该算法的结果是一个包含顶点的 `DataSet`，其中顶点值与分配给该顶点的组件相对应。
 构造器接收一个参数：
 
 * `maxIterations`: 要运行的最大迭代数.
 
-## GSA Connected Components
+## GSA 连接组件 (GSA Connected Components)
 
 #### 概览
-This is an implementation of the Weakly Connected Components algorithm. Upon convergence, two vertices belong to the
-same component, if there is a path from one to the other, without taking edge direction into account.
+这是一个弱连接组件 (Weakly Connected Components) 算法的实现。当该算法收敛时，如果两个点间是相连的，不管是从哪个点连向哪个点，这两点都属于同一个组件。
 
 #### 细节
 The algorithm is implemented using [gather-sum-apply iterations](#gather-sum-apply-iterations).
