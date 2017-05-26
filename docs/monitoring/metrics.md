@@ -23,6 +23,7 @@ under the License.
 -->
 
 Flink公开了一个指标系统，可以收集和暴露指标给外部系统.
+
 * This will be replaced by the TOC
 {:toc}
 
@@ -34,7 +35,7 @@ Flink公开了一个指标系统，可以收集和暴露指标给外部系统.
 Flink支持的指标类型：`Counters`,`Gauges`,`Histograms`和`Meters`.
 
 #### Counter
-`Counter`用作某方面计数，通过调用`inc()/inc(long n) `或者 `dec()/dec(long n)`方法来使当前的值增加或者减少. 
+`Counter`用作某方面计数，通过调用`inc()/inc(long n) `或者 `dec()/dec(long n)`方法来使当前的值增加或者减少.
  通过调用`MetricGroup`的`counter(String name)`方法可以创建和注册一个`Counter`.
 
 {% highlight java %}
@@ -361,7 +362,7 @@ metrics.reporter.jmx.port: 8789
 - `tmax` - 旧指标能够保留软性限制的最长时间
 - `dmax` - 旧指标能够保留硬性限制的最长时间
 - `ttl` - 传输UDP包的生存时间
-- `addressingMode` - UDP使用的寻址模式(UNICAST/MULTICAST)  
+- `addressingMode` - UDP使用的寻址模式(UNICAST/MULTICAST)
 
 示例配置:
 
@@ -464,17 +465,17 @@ metrics.reporter.stsd.port: 8125
 </table>
 
 #### 内存:
-<table class="table table-bordered">                               
-  <thead>                                                          
-    <tr>                                                           
+<table class="table table-bordered">
+  <thead>
+    <tr>
       <th class="text-left" style="width: 20%">Scope</th>
-      <th class="text-left" style="width: 25%">Infix</th>          
-      <th class="text-left" style="width: 23%">Metrics</th>                           
-      <th class="text-left" style="width: 32%">Description</th>                       
-    </tr>                                                          
-  </thead>                                                         
-  <tbody>                                                          
-    <tr>                                                           
+      <th class="text-left" style="width: 25%">Infix</th>
+      <th class="text-left" style="width: 23%">Metrics</th>
+      <th class="text-left" style="width: 32%">Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
       <th rowspan="12"><strong>Job-/TaskManager</strong></th>
       <td rowspan="12">Status.JVM.Memory</td>
       <td>Memory.Heap.Used</td>
@@ -523,8 +524,8 @@ metrics.reporter.stsd.port: 8125
     <tr>
       <td>Mapped.TotalCapacity</td>
       <td>映射缓冲池中缓冲区的数量.</td>
-    </tr>                                                         
-  </tbody>                                                         
+    </tr>
+  </tbody>
 </table>
 
 #### 线程:
