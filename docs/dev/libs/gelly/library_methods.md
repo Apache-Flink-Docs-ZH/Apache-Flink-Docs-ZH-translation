@@ -251,28 +251,20 @@ verticesWithCommunity.print
 有向和无向的变体均有提供。该算法接收一个简单图作为输入，并输出一个 `TertiaryResult` 组成的 `DataSet`， 其中包含了三个三角定点。对于有向算法，还包含一个位掩码，该位掩码标记六个潜在的连接三角的点的边。图 ID 类型必须是 `Comparable` 和 `Copyable`。
 
 * `setLittleParallelism`: 覆盖处理少量数据的算子的平行度
-* `setSortTriangleVertices`: normalize the triangle listing such that for each result (K0, K1, K2) the vertex IDs are sorted K0 < K1 < K2
+* `setSortTriangleVertices`: 归范化三角罗列，这样对于每一个结果 (K0, K1, K2)，顶点 ID 会被排序成 K0 < K1 < K2
 
 ## 链接分析 (Link Analysis)
 
-### Hyperlink-Induced Topic Search
+### 基于超链接的主题检索 (Hyperlink-Induced Topic Search)
 
 #### 概览
-[Hyperlink-Induced Topic Search](http://www.cs.cornell.edu/home/kleinber/auth.pdf) (HITS, or "Hubs and Authorities")
-computes two interdependent scores for every vertex in a directed graph. Good hubs are those which point to many
-good authorities and good authorities are those pointed to by many good hubs.
+[基于超链接的主题检索](http://www.cs.cornell.edu/home/kleinber/auth.pdf) (HITS, or "枢纽和权威" ("Hubs and Authorities")) 为一个有向图的每个顶点计算两个互相独立的分数。优质的枢纽是那些指向许多优质的权威的枢纽，而优质的权威是那些被优质的枢纽指向的权威。
 
 #### 细节
-Every vertex is assigned the same initial hub and authority scores. The algorithm then iteratively updates the scores
-until termination. During each iteration new hub scores are computed from the authority scores, then new authority
-scores are computed from the new hub scores. The scores are then normalized and optionally tested for convergence.
-HITS is similar to [PageRank](#pagerank) but vertex scores are emitted in full to each neighbor whereas in PageRank
-the vertex score is first divided by the number of neighbors.
+每个点被分配相同的初始枢纽得分和权威得分。该算法迭代地更新得分直到终结。在每一次迭代中新的枢纽得分从权威得分计算而得，然后新的权威分数从新的枢纽得分计算得出。这些分数接着为收敛被归一化和测试。 HITS 算法和[佩奇排名](#pagerank)相似，只是顶点得分全部发送给每一个邻居，而在佩奇排名中定点得分先除以邻居的分数。
 
 #### 用法
-The algorithm takes a simple directed graph as input and outputs a `DataSet` of `UnaryResult` containing the vertex ID,
-hub score, and authority score. Termination is configured by the number of iterations and/or a convergence threshold on
-the iteration sum of the change in scores over all vertices.
+该算法接收一个简单的有向图作为输入，输出一个 `UnaryResult` 组成的 `DataSet`，其中包含了顶点的 ID，枢纽得分，和权威得分。可以通过配置迭代的次数和/或收敛的阈值加所有顶点上的得分变化来决定何时终结算法。
 
 * `setParallelism`: 覆盖算子的平行度
 
