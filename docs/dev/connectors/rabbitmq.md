@@ -28,7 +28,7 @@ under the License.
 
 # RabbitMQ连接器许可证
 
-Flink下的rabbitMQ连接器位于一个maven依赖" RabbitMQ AMQP Java Clien"上，由[Mozilla Public License v1.1 (MPL 1.1)](https://www.mozilla.org/en-US/MPL/1.1/) 许可。
+Flink下的RabbitMQ连接器位于一个maven依赖" RabbitMQ AMQP Java Clien"上，由[Mozilla Public License v1.1 (MPL 1.1)](https://www.mozilla.org/en-US/MPL/1.1/) 许可。
 
 Flink本身不重写" RabbitMQ AMQP Java Clien"中的源码，也不对其进行打包成二进制文件。
 用户基于flink的rabbitMQ连接器（即RabbitMQ AMQP Java Clien）创建和发布拓展开的工作，可能会受到Mozilla Public License v1.1 (MPL 1.1)说明的一些限制。
