@@ -167,7 +167,7 @@ verticesWithCommunity.print
 该算法接收一个有向图作为输入，并输入一个 `Tuple3` 组成的 `DataSet`。顶点ID类型必须是 `Comparable`。
 每一个 `Tuple3` 对应一个三角，其中的字段包含了组成三角形的顶点的ID。
 
-## 总结 (Summarization)
+## 总结算法 (Summarization)
 
 #### 概览
 总结算法通过基于点和边的值对点和边分组来计算一个浓缩版的输入图。通过这种做法，该算法能帮助洞察获悉图中的模式和分布。
@@ -264,28 +264,20 @@ verticesWithCommunity.print
 每个点被分配相同的初始枢纽得分和权威得分。该算法迭代地更新得分直到终结。在每一次迭代中新的枢纽得分从权威得分计算而得，然后新的权威分数从新的枢纽得分计算得出。这些分数接着为收敛被归一化和测试。 HITS 算法和[佩奇排名](#pagerank)相似，只是顶点得分全部发送给每一个邻居，而在佩奇排名中定点得分先除以邻居的分数。
 
 #### 用法
-该算法接收一个简单的有向图作为输入，输出一个 `UnaryResult` 组成的 `DataSet`，其中包含了顶点的 ID，枢纽得分，和权威得分。可以通过配置迭代的次数和/或收敛的阈值加所有顶点上的得分变化来决定何时终结算法。
+该算法接收一个简单的有向图作为输入，输出一个 `UnaryResult` 组成的 `DataSet`，其中包含了顶点的 ID，枢纽得分，和权威得分。可以通过配置迭代的次数和/或在所有顶点上的得分变化的迭代总和上的收敛阈值来决定何时终结算法。
 
 * `setParallelism`: 覆盖算子的平行度
 
 ### 佩奇排名 (PageRank)
 
 #### 概览
-[PageRank](https://en.wikipedia.org/wiki/PageRank) is an algorithm that was first used to rank web search engine
-results. Today, the algorithm and many variations are used in various graph application domains. The idea of PageRank is
-that important or relevant vertices tend to link to other important vertices.
+[佩奇排名](https://en.wikipedia.org/wiki/PageRank)是一个最早被使用来对网页搜索引擎进行排名的算法。如今，该算法及其许多变体在各种图应用领域都被使用。排气算法的思想是重要或相关的顶点总是倾向与其它重要的顶点链接。
 
 #### 细节
-The algorithm operates in iterations, where pages distribute their scores to their neighbors (pages they have links to)
-and subsequently update their scores based on the sum of values they receive. In order to consider the importance of a
-link from one page to another, scores are divided by the total number of out-links of the source page. Thus, a page with
-10 links will distribute 1/10 of its score to each neighbor, while a page with 100 links will distribute 1/100 of its
-score to each neighboring page.
+该算法迭代地进行，其中页面将它们的分数分布给它们的邻居 (它们链接的页面) 并根据它们接收的分数更新其分数。为了考虑一个页面到另一个页面的链接的重要性，分数会除以源页面的外向链接的总数。因此，一个有 10 个链接的页面会分配它的得分的 1/10 到每一个邻居，而一个有 100 个链接的页面会分配它的得分的 1/100 到每一个邻居.
 
 #### 用法
-The algorithm takes a directed graph as input and outputs a `DataSet` where each `Result` contains the vertex ID and
-PageRank score. Termination is configured with a maximum number of iterations and/or a convergence threshold
-on the sum of the change in score for each vertex between iterations.
+该算法接收一个有向图作为输入，并输出一个 `DataSet`，其中每一个 `Result` 包含顶点 ID 和佩奇排名得分。可以通过配置迭代的次数和/或在迭代之间的每一个顶点的分数变化的总和上的收敛阈值来决定何时终结算法。
 
 * `setParallelism`: 覆盖算子的平行度
 
