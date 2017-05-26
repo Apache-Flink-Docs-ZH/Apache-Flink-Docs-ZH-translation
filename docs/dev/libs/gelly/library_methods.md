@@ -181,43 +181,35 @@ verticesWithCommunity.print
 #### 用法
 该算法接收一个有向，顶点（和边)带属性的图作为输入，并输出一个新的图，其中该新图的每一个顶点表示一组来自输入图的顶点，每一条边表示一组来自输入图的边。不仅如此，输出图的每一个顶点和每一条边储存了共有的组值和代表元素的数量。
 
-## 聚类 (Clustering)
+## 集聚 (Clustering)
 
-### 平均聚类系数 (Average Clustering Coefficient)
+### 平均集聚系数 (Average Clustering Coefficient)
 
 #### 概览
-平均聚类系数衡量一个图的平均正确度。得分从 0.0 (邻居之间没有边) 到 1.0 (完全图)。
+平均集聚系数衡量一个图的平均正确度。得分从 0.0 (邻居之间没有边) 到 1.0 (完全图)。
 
 #### 细节
-想了解聚类系数的详细解释，参阅[本地聚类系数](#local-clustering-coefficient) 库方法。平均聚类系数是所有拥有至少两个邻居的顶点上的本地聚类系数得分的平均值。每一个顶点，无论自由度如何，对于该得分有相等的权重。
+想了解集聚系数的详细解释，参阅[局部集聚系数](#local-clustering-coefficient) 库方法。平均集聚系数是所有拥有至少两个邻居的顶点上的本地集聚系数得分的平均值。每一个顶点，无论自由度如何，对于该得分有相等的权重。
 
 #### 用法
-有向和无向的变体均有提供。该分析接收一个简单图作为输入，并输出一个 `AnalyticResult`，该结果包含了顶点的总数和图的平均聚类系数。图ID类型必须是
-Directed and undirected variants are provided. The analytics take a simple graph as input and output an `AnalyticResult`
-containing the total number of vertices and average clustering coefficient of the graph. The graph ID type must be `Comparable` 和 `Copyable`。
+有向和无向的变体均有提供。该分析接收一个简单图作为输入，并输出一个 `AnalyticResult`，该结果包含了顶点的总数和图的平均集聚系数。图 ID 类型必须是 `Comparable` 和 `Copyable`。
 
 * `setLittleParallelism`: 覆盖处理少量数据的算子的平行度
 
-### 全局聚类系数 (Global Clustering Coefficient)
+### 整体集聚系数 (Global Clustering Coefficient)
 
 #### 概览
-The global clustering coefficient measures the connectedness of a graph. Scores range from 0.0 (no edges between
-neighbors) to 1.0 (complete graph).
+全局集聚系数衡量了一个图的正确度。得分从 0.0 (邻居之间没有边) 到 1.0 (完全图)。
 
 #### 细节
-See the [Local Clustering Coefficient](#local-clustering-coefficient) library method for a detailed explanation of
-clustering coefficient. The Global Clustering Coefficient is the ratio of connected neighbors over the entire graph.
-Vertices with higher degrees have greater weight for this score because the count of neighbor pairs is quadratic in
-degree.
+想了解集聚系数的详细解释，参阅[本地集聚系数](#local-clustering-coefficient) 库方法。全局集聚系数是整个图上的相连邻居的比率。拥有较高自由度的顶点对于该得分有比较大的权重，因为邻居对 (neighbor pairs) 数是自由数的二次方。
 
 #### 用法
-Directed and undirected variants are provided. The analytics take a simple graph as input and output an `AnalyticResult`
-containing the total number of triplets and triangles in the graph. The result class provides a method to compute the
-global clustering coefficient score. The graph ID type must be `Comparable` and `Copyable`.
+有向和无向的变体均有提供。该分析接收一个简单图作为输入，并输出一个 `AnalyticResult`，该结果包含了图中三点组 (triplet) 和三角 (triangle) 的总数。该结果类提供了一个方法来计算整体集聚系数得分。图 ID 类型必须是 `Comparable` 和 `Copyable`。
 
 * `setLittleParallelism`: 覆盖处理少量数据的算子的平行度
 
-### 本地聚类系数 (Local Clustering Coefficient)
+### 局部集聚系数 (Local Clustering Coefficient)
 
 #### 概览
 The local clustering coefficient measures the connectedness of each vertex's neighborhood. Scores range from 0.0 (no
