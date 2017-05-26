@@ -199,10 +199,10 @@ verticesWithCommunity.print
 ### 整体集聚系数 (Global Clustering Coefficient)
 
 #### 概览
-全局集聚系数衡量了一个图的正确度。得分从 0.0 (邻居之间没有边) 到 1.0 (完全图)。
+整体集聚系数衡量了一个图的正确度。得分从 0.0 (邻居之间没有边) 到 1.0 (完全图)。
 
 #### 细节
-想了解集聚系数的详细解释，参阅[本地集聚系数](#local-clustering-coefficient) 库方法。全局集聚系数是整个图上的相连邻居的比率。拥有较高自由度的顶点对于该得分有比较大的权重，因为邻居对 (neighbor pairs) 数是自由数的二次方。
+想了解集聚系数的详细解释，参阅[本地集聚系数](#local-clustering-coefficient) 库方法。整体集聚系数是整个图上的相连邻居的比率。拥有较高自由度的顶点对于该得分有比较大的权重，因为邻居对 (neighbor pairs) 数是自由数的二次方。
 
 #### 用法
 有向和无向的变体均有提供。该分析接收一个简单图作为输入，并输出一个 `AnalyticResult`，该结果包含了图中三点组 (triplet) 和三角 (triangle) 的总数。该结果类提供了一个方法来计算整体集聚系数得分。图 ID 类型必须是 `Comparable` 和 `Copyable`。
