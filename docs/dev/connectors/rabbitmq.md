@@ -26,36 +26,35 @@ under the License.
 * This will be replaced by the TOC
 {:toc}
 
-## rabbitMQ连接器
+# RabbitMQ连接器许可证
 
-## RabbitMQ连接器许可证
+Flink下的rabbitMQ连接器位于一个maven依赖" RabbitMQ AMQP Java Clien"上，由[Mozilla Public License v1.1 (MPL 1.1)](https://www.mozilla.org/en-US/MPL/1.1/) 许可。
 
-  Flink下的rabbitMQ连接器位于一个maven依赖" RabbitMQ AMQP Java Clien"上，由[Mozilla Public License v1.1 (MPL 1.1)](https://www.mozilla.org/en-US/MPL/1.1/) 许可。
-  Flink本身不重写" RabbitMQ AMQP Java Clien"中的源码，也不对其进行打包成二进制文件。
-  用户基于flink的rabbitMQ连接器（即RabbitMQ AMQP Java Clien）创建和发布拓展开的工作，可能会受到Mozilla Public License v1.1 (MPL 1.1)说明的一些限制。
+Flink本身不重写" RabbitMQ AMQP Java Clien"中的源码，也不对其进行打包成二进制文件。
+用户基于flink的rabbitMQ连接器（即RabbitMQ AMQP Java Clien）创建和发布拓展开的工作，可能会受到Mozilla Public License v1.1 (MPL 1.1)说明的一些限制。
 
 
-## RabbitMQ连接器
+# RabbitMQ连接器
 
 该连接器访问流数据来源[RabbitMQ](http://www.rabbitmq.com/)。为使用连接器，请添加如下依赖在你的项目中，
 
-```
+{% highlight xml %}
 <dependency>
   <groupId>org.apache.flink</groupId>
   <artifactId>flink-connector-rabbitmq_2.10</artifactId>
   <version>1.2.0</version>
 </dependency>
-```
+{% endhighlight %}
 
 译者注：上述方法是由maven构建项目时使用，当使用sbt构建项目时，需要在build.sbt中的正确子项目中添加如下：
 
-```
+{% highlight xml %}
 ("org.apache.flink" %% "flink-connector-rabbitmq" % flinkVersion).
               exclude("org.apache.flink","flink-shaded-hadoop1_2.10"),
 如果使用scala2.10，则不需要exclude.
-```
+{% endhighlight %}
 
-注意的是，流连接器当前都不是二元分布。更多集群执行请看[这里](linking.html)。
+注意的是，流连接器当前都不是二元分布。更多集群执行请看[这里]({{site.baseurl}}/dev/linking.html)。
 
 {% top %}
 
@@ -83,7 +82,9 @@ under the License.
 
 如下代码是设置成仅一次消费的例子。注释内容解释哪部分设置可忽略，以得到更多灵活保证。
 
-```
+<div class="codetabs" markdown="1">
+<div data-lang="java" markdown="1">
+{% highlight java %}
 final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 env.enableCheckpointing(...);// 仅一次或至少一次，检查点是必须的
 
@@ -100,10 +101,10 @@ final DataStream<String> stream = env
         true,                        // 使用相关编号，至少一次时设置为false
         new SimpleStringSchema()))   // 反序列化成java的对象
     .setParallelism(1);              // 非并行是仅一次所必须的
-```
-
-in scala
-```
+{% endhighlight %}
+</div>
+<div data-lang="scala" markdown="1">
+{% highlight scala %}
 val env = StreamExecutionEnvironment.getExecutionEnvironment
 env.enableCheckpointing(...)
 
@@ -120,7 +121,9 @@ val stream = env
         true,                        // 使用相关编号
         new SimpleStringSchema))     // 反序列化
     .setParallelism(1)               // 非序列化
-```
+{% endhighlight %}
+</div>
+</div>
 
 {% top %}
 
@@ -128,7 +131,9 @@ val stream = env
 
 连接器提供类RMQSink来发送消息到rabbitmq队列里，以下代码是一个rabbitmq接收的配置例子，
 
-```
+<div class="codetabs" markdown="1">
+<div data-lang="java" markdown="1">
+{% highlight java %}
 final DataStream<String> stream = ...
 
 final RMQConnectionConfig connectionConfig = new RMQConnectionConfig.Builder()
@@ -142,9 +147,10 @@ connectionConfig,
     "queueName",
 new SimpleStringSchema()));  //序列化
 val stream: DataStream[String] = ...
-```
-
-```
+{% endhighlight %}
+</div>
+<div data-lang="scala" markdown="1">
+{% highlight scala %}
 val connectionConfig = new RMQConnectionConfig.Builder()
     .setHost("localhost")
     .setPort(5000)
@@ -155,7 +161,9 @@ stream.addSink(new RMQSink[String](
     connectionConfig,
 "queueName",
     new SimpleStringSchema))
-```
+{% endhighlight %}
+</div>
+</div>
 
 更多rabbitmq可从此[了解](http://www.rabbitmq.com/)。
 
