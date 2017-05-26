@@ -186,20 +186,17 @@ verticesWithCommunity.print
 ### 平均聚类系数 (Average Clustering Coefficient)
 
 #### 概览
-The average clustering coefficient measures the mean connectedness of a graph. Scores range from 0.0 (no edges between
-neighbors) to 1.0 (complete graph).
+平均聚类系数衡量一个图的平均正确度。得分从 0.0 (邻居之间没有边) 到 1.0 (完全图)。
 
 #### 细节
-See the [Local Clustering Coefficient](#local-clustering-coefficient) library method for a detailed explanation of
-clustering coefficient. The Average Clustering Coefficient is the average of the Local Clustering Coefficient scores
-over all vertices with at least two neighbors. Each vertex, independent of degree, has equal weight for this score.
+想了解聚类系数的详细解释，参阅[本地聚类系数](#local-clustering-coefficient) 库方法。平均聚类系数是所有拥有至少两个邻居的顶点上的本地聚类系数得分的平均值。每一个顶点，无论自由度如何，对于该得分有相等的权重。
 
 #### 用法
+有向和无向的变体均有提供。该分析接收一个简单图作为输入，并输出一个 `AnalyticResult`，该结果包含了顶点的总数和图的平均聚类系数。图ID类型必须是
 Directed and undirected variants are provided. The analytics take a simple graph as input and output an `AnalyticResult`
-containing the total number of vertices and average clustering coefficient of the graph. The graph ID type must be
-`Comparable` and `Copyable`.
+containing the total number of vertices and average clustering coefficient of the graph. The graph ID type must be `Comparable` 和 `Copyable`。
 
-* `setLittleParallelism`: override the parallelism of operators processing small amounts of data
+* `setLittleParallelism`: 覆盖处理少量数据的算子的平行度
 
 ### 全局聚类系数 (Global Clustering Coefficient)
 
@@ -218,7 +215,7 @@ Directed and undirected variants are provided. The analytics take a simple graph
 containing the total number of triplets and triangles in the graph. The result class provides a method to compute the
 global clustering coefficient score. The graph ID type must be `Comparable` and `Copyable`.
 
-* `setLittleParallelism`: override the parallelism of operators processing small amounts of data
+* `setLittleParallelism`: 覆盖处理少量数据的算子的平行度
 
 ### 本地聚类系数 (Local Clustering Coefficient)
 
