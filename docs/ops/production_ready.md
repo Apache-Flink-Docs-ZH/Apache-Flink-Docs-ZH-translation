@@ -1,5 +1,5 @@
 ---
-title: "Production Readiness Checklist"
+title: "生产环境检查清单"
 nav-parent_id: setup
 nav-pos: 20
 ---
@@ -25,37 +25,37 @@ under the License.
 * ToC
 {:toc}
 
-## Production Readiness Checklist
+## 生产环境检查清单
 
-Purpose of this production readiness checklist is to provide a condensed overview of configuration options that are
-important and need **careful considerations** if you plan to bring your Flink job into **production**. For most of these options
-Flink provides out-of-the-box defaults to make usage and adoption of Flink easier. For many users and scenarios, those
-defaults are good starting points for development and completely sufficient for "one-shot" jobs. 
+生产环境检查清单的目的是，当发布Flink任务到**生产环境**时，清单提供简要概述一些重要且需要**仔细考虑**配置项。 
+大多数参数Flink在安装时提供了的默认设置，使Flink的使用和采用更加容易。 
+对于大多数用户和场景，那些默认参数是一个好的起点，完全适用于一次性的任务。 
 
-However, once you are planning to bring a Flink appplication to production the requirements typically increase. For example,
-you want your job to be (re-)scalable and to have a good upgrade story for your job and new Flink versions.
+然而，一旦计划将Flink应用程序发布到生产环境，对配置的要求就会提高。 
+例如，如果需要（重新）扩展或升级Flink任务，又或者升级Flink的版本。 
 
-In the following, we present a collection of configuration options that you should check before your job goes into production.
+下文中，我们将介绍一系列配置选项，发布到生产环境前，必须先检查这些配置选项。
 
-### Set maximum parallelism for operators explicitly
+### 设置 operator 的最大并行度
 
-Maximum parallelism is a configuration parameter that is newly introduced in Flink 1.2 and has important implications
-for the (re-)scalability of your Flink job. This parameter, which can be set on a per-job and/or per-operator granularity,
-determines the maximum parallelism to which you can scale operators. It is important to understand that (as of now) there
-is **no way to change** this parameter after your job has been started, except for restarting your job completely 
-from scratch (i.e. with a new state, and not from a previous checkpoint/savepoint). Even if Flink would provide some way
-to change maximum parallelism for existing savepoints in the future, you can already assume that for large states this is 
-likely a long running operation that you want to avoid. At this point, you might wonder why not just to use a very high
-value as default for this parameter. The reason behind this is that high maximum parallelism can have some impact on your
-application's performance and even state sizes, because Flink has to maintain certain metadata for its ability to rescale which
-can increase with the maximum parallelism. In general, you should choose a max parallelism that is high enough to fit your
-future needs in scalability, but keeping it as low as possible can give slightly better performance. In particular,
-a maximum parallelism higher that 128 will typically result in slightly bigger state snapshots from the keyed backends.
+最大并行度是Flink 1.2中新引入的配置参数，对Flink任务（重新）扩展性具有重要的意义。
+该参数可以对每个job和/或每个 operator 的粒度来设置您可以扩展operator的最大并行度。
+需要知道的是一旦任务运行后，将**没有办法改变**这个参数，除非完全重新启动你的任务（比如重一个新状态开始，而不是来自先前的checkpoint/savepoint）。
 
-Notice that maximum parallelism must fulfill the following conditions:
+即使Flink将来可能提供一些方法对现有savepoints改变的最大并行性，但是你需要知道的是这将是你需要避免的长运行操作。
+在这一点上，您可能会想知道为什么不给该参数一个非常高的值的默认值。
+这样做的原因是高最大并行度可以对你有一些影响应用程序的性能甚至状态大小，
+因为Flink必须维护一定元数据来保证它有重新伸缩的能力，从而可以提升最大的平行度增加。
+
+一般来说，你应该选择一个最大的并行度足以保证你的未来的可扩展性需求，
+但保持尽可能低的值可以提供略微更好的性能。尤其是，最大并行度高于128将通常导致 keyed backends 产生稍微更大的状态快照。
+
+请注意，最大并行度必须满足以下条件： 
 
 `0 < parallelism  <= max parallelism <= 2^15`
 
+可以通过 `setMaxParallelism（int maxparallelism)` 设置最大并行度。 
+默认情况下，Flink会选择最大值并行性作为工作首次启动时的:
 You can set the maximum parallelism by `setMaxParallelism(int maxparallelism)`. By default, Flink will choose the maximum
 parallelism as a function of the parallelism when the job is first started:
 
