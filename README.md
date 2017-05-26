@@ -52,9 +52,9 @@ Apache Flink官网：[http://flink.apache.org](http://flink.apache.org/index.htm
 
 *翻译* [认领](https://github.com/Apache-Flink-Docs-ZH/Apache-Flink-Docs-ZH-translation/wiki)
 
-已合并翻译成果名单：
+已合并翻译成果名单(更新到 2017-05-23)：
 
-- [tuhaihe](https://github.com/tuahihe)
+ - [tuhaihe](https://github.com/tuahihe)
  - [vinsyuan7788](https://github.com/vinsyuan7788)
  - [lsvih](https://github.com/lsvih)
  - [stubird](https://github.com/stubird)
@@ -66,6 +66,15 @@ Apache Flink官网：[http://flink.apache.org](http://flink.apache.org/index.htm
  - [Jay357089](https://github.com/Jay357089)
  - [fanzhidongyzby](https://github.com/fanzhidongyzby)
  - [Cluluxiu](https://github.com/Cluluxiu)
+ - [siyu828](https://github.com/siyu828)
+ - [chengat1314](https://github.com/chengat1314)
+ - [alixGuo](https://github.com/alixGuo)
+ - [iadmirezhe](https://github.com/iadmirezhe)
+ - [stevenwu2017](https://github.com/stevenwu2017)
+ - [Wennn](https://github.com/Wennn)
+ - [chlyzzo](https://github.com/chlyzzo)
+ - [jinglining](https://github.com/jinglining)
+ 
 
 ---
 

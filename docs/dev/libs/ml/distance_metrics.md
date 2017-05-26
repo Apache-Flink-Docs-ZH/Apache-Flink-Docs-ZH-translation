@@ -1,6 +1,6 @@
 ---
 mathjax: include
-title: Distance Metrics
+title: 距离度量
 nav-parent_id: ml
 ---
 <!--

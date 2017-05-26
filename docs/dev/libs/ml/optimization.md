@@ -1,6 +1,6 @@
 ---
 mathjax: include
-title: Optimization
+title: 优化
 # Sub navigation
 sub-nav-group: batch
 sub-nav-parent: flinkml
@@ -288,7 +288,7 @@ val lossFunction = GenericLossFunction(SquaredLoss, LinearPrediction)
 
 - $\lambda$ 是正则化常量
 
-- $\tau$ 是衰退常量, 该常量会使得学习率变成一个递减函数 $j$，也就是说，随着迭代次数的增加，学习率会衰减。衰减的精准率是由函数特定的，请参阅 **反缩放 (Inverse Scaling) ** 和 **Wei Xu 方法 (Wei Xu's Method)** (该方法是 **反缩放** 方法的一个延伸)。 
+- $\tau$ 是衰退常量, 该常量会使得学习率变成一个递减函数 $j$，也就是说，随着迭代次数的增加，学习率会衰减。衰减的精准率是由函数特定的，请参阅 **反缩放 (Inverse Scaling) ** 和 **Wei Xu 方法 (Wei Xu's Method)** (该方法是 **反缩放** 方法的一个延伸)。
 
 <table class="table table-bordered">
     <thead>
