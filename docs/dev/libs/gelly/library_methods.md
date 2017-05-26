@@ -333,7 +333,7 @@ verticesWithCommunity.print
 ### AA指数 (Adamic-Adar)
 
 #### 概览
-AA指数衡量顶点对之间的相似度，其结果作为共享邻居上的自由度的逆对数的和。得分是非负且无界的。拥有较高自由度的顶点总体上有较大的影响，但每对邻居则没那么有影响。
+AA指数衡量顶点对之间的相似度，通过共享邻居上的自由度的逆对数的和来计算。得分是非负且无界的。拥有较高自由度的顶点总体上有较大的影响，但每对邻居则没那么有影响。
 
 #### 细节
 该算法首先用顶点自由度的逆对数标注每个顶点，然后用源点把该分数合并到边上。在源点上分组，发送每一对邻居与其顶点得分。在顶点组上分组，然后计算AA指数的得分。
@@ -350,22 +350,15 @@ AA指数衡量顶点对之间的相似度，其结果作为共享邻居上的自
 ### 杰卡德指数 (Jaccard Index)
 
 #### 概览
-The Jaccard Index measures the similarity between vertex neighborhoods and is computed as the number of shared neighbors
-divided by the number of distinct neighbors. Scores range from 0.0 (no shared neighbors) to 1.0 (all neighbors are
-shared).
+杰卡德指数衡量顶点邻居间的相似度，通过共享的邻居数除以各自不同的邻居数来计算。分数范围从 0.0 (没有共享邻居) 到 1.0 (所有邻居均共享)。
 
 #### 细节
-Counting shared neighbors for pairs of vertices is equivalent to counting connecting paths of length two. The number of
-distinct neighbors is computed by storing the sum of degrees of the vertex pair and subtracting the count of shared
-neighbors, which are double-counted in the sum of degrees.
+计算顶点对的共享邻居相当于计算长度为 2 的相连通路。各自不同的邻居通过存储顶点对的自由度的总和并减去共享邻居的数目来计算，这在自由度的和上是双倍计算。
 
-The algorithm first annotates each edge with the target vertex's degree. Grouping on the source vertex, each pair of
-neighbors is emitted with the degree sum. Grouping on vertex pairs, the shared neighbors are counted.
+该算法先用目标顶点的自由度标注每一条边。在源点上分组，发送每一对邻居与其自由度和。在顶点组上分组，然后计算共享邻居。
 
 #### 用法
-The algorithm takes a simple undirected graph as input and outputs a `DataSet` of tuples containing two vertex IDs,
-the number of shared neighbors, and the number of distinct neighbors. The result class provides a method to compute the
-Jaccard Index score. The graph ID type must be `Copyable`.
+该算法接收一个简单的无向图作为输入，并输出一个元组 (tuple) 组成的 `DataSet`，其中包含了两个顶点 ID，共享邻居的数量，和不同邻居的数量。该结果类提供一个方法来计算杰卡德指数得分。图 ID 类型必须是 `Copyable`。
 
 * `setLittleParallelism`: 覆盖处理少量数据的算子的平行度
 * `setMaximumScore`: 过滤大于等于给定最大值的得分
