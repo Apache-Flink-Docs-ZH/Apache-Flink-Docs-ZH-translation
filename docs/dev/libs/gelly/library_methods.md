@@ -241,20 +241,14 @@ verticesWithCommunity.print
 ### 三角罗列 (Triangle Listing)
 
 #### 概览
-Enumerates all triangles in the graph. A triangle is composed of three edges connecting three vertices into cliques of
-size 3.
+枚举图中所有的三角。一个三角由三条把三个点连接成一个尺寸为3的團 (clique) 组成。
 
 #### 细节
-Triangles are listed by joining open triplets (two edges with a common neighbor) against edges on the triplet endpoints.
-This implementation uses optimizations from
-[Schank's algorithm](http://i11www.iti.uni-karlsruhe.de/extra/publications/sw-fclt-05_t.pdf) to improve performance with
-high-degree vertices. Triplets are generated from the lowest degree vertex since each triangle need only be listed once.
-This greatly reduces the number of generated triplets which is quadratic in vertex degree.
+通过对三点组终端点 (endpoint) 合并开三点组 (open triplets) (有一个公共的邻居的两个边) 来列出三角。
+该实现使用来自 [Schank's algorithm](http://i11www.iti.uni-karlsruhe.de/extra/publications/sw-fclt-05_t.pdf) 的优化来提高高自由度顶点的表现。三点组从低自由度的顶点中产生，因为每个三角只有需要被列出来一次。这会显著减少产生的三点组的数量，三点组是顶点自由度的二次方。
 
 #### 用法
-Directed and undirected variants are provided. The algorithms take a simple graph as input and output a `DataSet` of
-`TertiaryResult` containing the three triangle vertices and, for the directed algorithm, a bitmask marking each of the
-six potential edges connecting the three vertices. The graph ID type must be `Comparable` and `Copyable`.
+有向和无向的变体均有提供。该算法接收一个简单图作为输入，并输出一个 `TertiaryResult` 组成的 `DataSet`， 其中包含了三个三角定点。对于有向算法，还包含一个位掩码，该位掩码标记六个潜在的连接三角的点的边。图 ID 类型必须是 `Comparable` 和 `Copyable`。
 
 * `setLittleParallelism`: 覆盖处理少量数据的算子的平行度
 * `setSortTriangleVertices`: normalize the triangle listing such that for each result (K0, K1, K2) the vertex IDs are sorted K0 < K1 < K2
