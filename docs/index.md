@@ -1,5 +1,5 @@
 ---
-title: "Apache Flink Documentation"
+title: "Apache Flink 中文文档"
 nav-pos: 0
 nav-title: '<i class="fa fa-home title" aria-hidden="true"></i> Home'
 nav-parent_id: root
@@ -25,22 +25,21 @@ under the License.
 
 
 
-This documentation is for Apache Flink version {{ site.version }}. These pages have been built at: {% build_time %}.
+本文档是 Apache Flink {{ site.version }}. 本页面的编译时间: {% build_time %}.
 
-Apache Flink is an open source platform for distributed stream and batch data processing. Flink’s core is a streaming dataflow engine that provides data distribution, communication, and fault tolerance for distributed computations over data streams. Flink also builds batch processing on top of the streaming engine, overlaying native iteration support, managed memory, and program optimization.
+Apache Flink 是一个开源的分布式流处理和批处理系统。Flink 的核心是在数据流上提供数据分发、通信、具备容错的分布式计算。同时，Flink 在流处理引擎上构建了批处理引擎，原生支持了迭代计算、内存管理和程序优化。
 
-## First Steps
+## 第一步
 
-- **Concepts**: Start with the basic concepts of Flink's [Dataflow Programming Model](concepts/programming-model.html) and [Distributed Runtime Environment](concepts/runtime.html). This will help you to fully understand the other parts of the documentation, including the setup and programming guides. It is highly recommended to read these sections first.
+- **概念**: 从 Flink 的[数据流编程模型](concepts/programming-model.html)和[分布式运行环境](concepts/runtime.html)的基本概念开始。 这将有助于您充分了解其他部分的文档，包括安装以及编程指南。强烈推荐先阅读这部分的文档。
 
-- **Quickstarts**: [Run an example program](quickstart/setup_quickstart.html) on your local machine or [write a simple program](quickstart/run_example_quickstart.html) working on live Wikipedia edits.
+- **快速起步**: 在你的本地机器上[运行一个实例](quickstart/setup_quickstart.html) 或者 [编写一个简单的程序](quickstart/run_example_quickstart.html) 来操作 Wikipedia 的编辑日志。
 
-- **Programming Guides**: You can check out our guides about [basic concepts](dev/api_concepts.html) and the [DataStream API](dev/datastream_api.html) or [DataSet API](dev/batch/index.html) to learn how to write your first Flink programs.
+- **编程指南**: 你可以在本指南里面找到一些 [基本概念](dev/api_concepts.html) 和 [DataStream API](dev/datastream_api.html) 或者 [DataSet API](dev/batch/index.html) 学习如何编写第一个 Flink 程序。
 
-## Migration Guide
+## 迁移指南
 
-For users of earlier versions of Apache Flink we recommend the [API migration guide](dev/migration.html).
-While all parts of the API that were marked as public and stable are still supported (the public API is backwards compatible), we suggest migrating applications to the
-newer interfaces where applicable.
+对于那些使用比较早期版本的 Apache Flink 用户，我们推荐你阅读 [API 迁移指南](dev/migration.html)。
+虽然 API 中标记为 public 和 stable 的所有部分仍然被支持 (标记为 public 的 API 是向后兼容的)，我们仍然建议将应用程序迁移到较新接口。
 
-For users that plan to upgrade a Flink system in production, we recommend reading the guide on [upgrading Apache Flink](ops/upgrading.html).
+对于计划在生产环境中升级 Flink 的用户，我们推荐你阅读[升级 Apache Flink](ops/upgrading.html)指南。
