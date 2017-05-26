@@ -1,5 +1,5 @@
 ---
-title: Concepts
+title: 概念
 nav-id: concepts
 nav-pos: 1
 nav-title: '<i class="fa fa-map-o title appetizer" aria-hidden="true"></i> Concepts'
