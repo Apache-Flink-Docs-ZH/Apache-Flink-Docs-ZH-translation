@@ -313,19 +313,17 @@ verticesWithCommunity.print
 ### 边指标 (Edge Metrics)
 
 #### 概览
-This graph analytic computes the following statistics:
-- number of triangle triplets
-- number of rectangle triplets
-- maximum number of triangle triplets
-- maximum number of rectangle triplets
+该图分析对有向图和无向图计算下列统计：
+- 三角三点组数 (number of triangle triplets)
+- 长方三点组数 (number of rectangle triplets)
+- 三角三点组的最大数量 (maximum number of triangle triplets)
+- 长方三点组的最大数量 (maximum number of rectangle triplets)
 
 #### 细节
-The statistics are computed over edge degrees generated from `degree.annotate.directed.EdgeDegreesPair` or
-`degree.annotate.undirected.EdgeDegreePair` and grouped by vertex.
+该统计被计算在从 `degree.annotate.directed.EdgeDegreesPair` 或 `degree.annotate.undirected.EdgeDegreePair` 产生的边自由度 (vertex degree) 上并通过顶点分组。
 
 #### 用法
-Directed and undirected variants are provided. The analytics take a simple graph as input and output an `AnalyticResult`
-with accessor methods for the computed statistics. The graph ID type must be `Comparable`.
+有向和无向的变体均有提供。该分析接收一个简单图作为输入，并为计算过的统计输出一个带有 accessor 方法的 `AnalyticResult`。图 ID 类型必须是 `Comparable`。
 
 * `setParallelism`: 覆盖算子的平行度
 * `setReduceOnTargetId` (仅对无向图): 自由度可以从边的源点 ID 或 目标点 ID 计算。默认情况下用源头 ID 计算。如果输入边列表通过目标点 ID 排序，在目标点上的归约可能优化该算法
