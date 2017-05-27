@@ -71,21 +71,7 @@ under the License.
 ### 选择state backend
 目前，Flink有一个局限性，它只能从保存点的同一状态后端 恢复到的savepoint的state。 
 例如，这意味着我们无法使用内存的state backend做savepoint，因此任务更改为使用RocksDB tate backend并进行还原。 
-虽然我们计划在不久的将来使 backend 间可以交互，但现在还没有实现。 所以在生产环境中，您应该仔细考虑选择对应任务的backend。
+虽然我们计划在不久的将来使 backend 间可以交互，但现在还没有实现。 这也意味着在生产环境中，应该仔细考虑给你的任务使用对应的backend。 
 
-Currently, Flink has the limitation that it can only restore the state from a savepoint for the same state backend that
-took the savepoint. For example, this means that we can not take a savepoint with a memory state backend, then change
-the job to use a RocksDB state backend and restore. While we are planning to make backends interoperable in the near
-future, they are not yet. This means you should carefully consider which backend you use for your job before going to
-production.
-
-一般来说，我们建议使用RocksDB，因为这是目前唯一支持大状态（即状态超过可用主内存）和异步快照的状态后端。 根据我们的经验，异步快照对于大型状态非常重要，因为它们不会阻塞运算符，Flink可以在不停止流处理的情况下写入快照。 然而，RocksDB可能会比例如基于内存的状态后端更差。 如果您确定您的状态永远不会超过主内存并阻止流处理写入不是问题，
-你可以考虑**来使用RocksDB后端。 但是，在这一点上，我们强烈建议您使用RocksDB进行生产。
-
-In general, we recommend using RocksDB because this is currently the only state backend that supports large states (i.e.
-state that exceeds the available main memory) and asynchronous snapshots. From our experience, asynchronous snapshots are
-very important for large states because they do not block the operators and Flink can write the snapshots without stopping 
-stream processing. However, RocksDB can have worse performance than, for example, the memory-based state backends. If
-you are sure that your state will never exceed main memory and blocking the stream processing to write it is not an issue,
-you **could consider** to not use the RocksDB backends. However, at this point, we **strongly recommend** using RocksDB
-for production.
+一般来说，我们建议使用RocksDB，因为这是目前唯一的一种state backend能够支持大状态(state)（例如，状态（state）超过可用主内存）和异步快照。 根据我们的经验，异步快照对于大型状态（state）非常重要，因为它们不会阻塞 operator ，Flink可以在不停止流处理的情况下写入快照（snapshot）。 然而，RocksDB的性能可能会比例如基于内存的 state backend 要差。 如果能保证你的状态（state）永远不会超过主内存，也不阻碍数据流的写入，它就不是问题，
+你**可以考虑**来使用RocksDB backend。 但是，在这一点上，我们**强烈建议**生产环境中使用RocksDB。
