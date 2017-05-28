@@ -27,8 +27,9 @@ under the License.
 # Savepoints
 ## 概况
 保存点（savepoint）是用于恢复和更新 Flink 作业而特定保存的检查点。保存点（savepoint）使用 Flink 的检查点机制来创建程序以及相应状态的一个快照，并把快照保存到外存中。
-当前页面包含了触发、还原以及处理保存点（savepoint）的步骤。为了能够在作业的不同版本之间以及 Flink 的不同版本之间顺利升级，需要重点的阅读 [给算子赋予 ID](https://ci.apache.org/projects/flink/flink-docs-release-1.2/setup/savepoints.html#assigning-operator-ids)这一小节
-## 给算子赋予 ID
+当前页面包含了触发、还原以及处理保存点（savepoint）的步骤。为了能够在作业的不同版本之间以及 Flink 的不同版本之间顺利升级，需要重点的阅读 [给你的算子赋 ID](#assigning-operator-ids) 这一小节。
+想了解更多关于 Flink 如何处理状态以及失败的信息，请移步 [流处理系统中的状态]({{ site.baseurl }}/dev/stream/state.html) 页面。
+## Assigining Operator IDs
 **强烈推荐**读者按照本节中的描述进行修改，从而保证你的程序在未来可以顺利升级。主要的区别在于需要通过 uid(String) 方法手动的给算子赋予 ID。这些 ID 将用于确定每一个算子的状态范围。
 
 ```
@@ -68,20 +69,32 @@ DataStream<String> stream = env.
 			```
 			保存点（savepoint）文件通常会比真正的检查点状态要小很多。注意：如果你使用 `MemoryStateBackend`，那么保存点（savepoint）文件将会由自己管理，并且状态也全部有自己管理。
 #### Trigger a Savepoint
-			`$ bin/flink savepoint :jobId [:targetDirectory]`
+			
+			```
+			$ bin/flink savepoint :jobId [:targetDirectory]
+			```
 			上面的代码将会为 `:jobid` 触发一个保存点（savepoint）。另外，你还可以指定一个目标路径用于保存保存点（savepoint）文件。这个路径需要给 JobMangager 赋予相应的权限。
 			如果没有指定目标路径，你需要有一个 [已经配置好的默认路径](https://ci.apache.org/projects/flink/flink-docs-release-1.2/setup/savepoints.html#configuration)。否则，触发保存点（savepoint）将会失败。
 #### Cancel Job with Savepoint
-			`$ bin/flink cancel -s [:targetDirectory] :jobId`
+			
+			```
+			$ bin/flink cancel -s [:targetDirectory] :jobId
+			```
 			上面的代码将会自动触发 ID 为 `:jobid` 的作业的一个保存点（savepoint），并且将作业取消掉。另外，你可以指定一个目标路径用于保存保存点（savepoint）文件。这个路径需要给 JobMangager 赋予相应的权限。
 			如果没有指定目标路径，你需要有一个 [已经配置好的默认路径](https://ci.apache.org/projects/flink/flink-docs-release-1.2/setup/savepoints.html#configuration)。否则，取消 Job 并触发保存点（savepoint）将会失败。
 ### Resuming from Savepoints
-			`$ bin/flink run -s :savepointPath [:runArgs]`
+			
+			```
+			$ bin/flink run -s :savepointPath [:runArgs]
+			```
 			上面的语句将提交一个作业，并指定一个保存点（savepoint）路径。作业将从对应的保存点（savepoint）状态进行恢复。保存点（savepoint）文件保存了检查点文件相关的元信息并指向真正的检查点文件。这也是为什么保存点（savepoint）文件通常比检查点文件要小的原因。
 #### Allowing Non-Restored State
 			默认将从保存点（savepoint）文件中进行所有算子的状态恢复。如果你新版的程序中不再有某个算子，那么可以通过 `--allowNonRestoredState` (简写 -n)跳过这些算子。
 ### Disposing Savepoints
-	`$ bin/flink savepoint -d :savepointPath`
+	
+			```
+			$ bin/flink savepoint -d :savepointPath
+			```
 	上述命令将会处理掉对应目录的保存点（savepoint）文件。
 	一般来说保存点（savepoint）文件会保存在文件系统中，因此用户可以通过操作系统文件来删除保存点（savepoint）。记住保存点（savepoint）仅仅保存了指向检查点数据的元数据。所以，如果你想手动的删除某个保存点（savepoint），你还需要删除检查点文件。由于现在没有直接的方式知道保存点（savepoint）指向那个检查点，因此建议通过系统自带的工具来完成该项工作。
 ### Configuration
@@ -104,7 +117,10 @@ DataStream<String> stream = env.
 ### What happens if I delete an operator that has state from my job?
 	默认从保存点（savepoint）恢复的时候，会尝试恢复所有的状态。从一个包含了被删除算子的状态的保存点（savepoint）进行作业恢复将会失败。
 	你也可以在运行下面的命令时设置 `--allowNonRestoredState(简称 -n)` 跳过从保存点（savepoint）进行恢复作业:
-	`$ bin/flink run -s :savepointPath -n [:runArgs]`
+	
+	```
+	$ bin/flink run -s :savepointPath -n [:runArgs]
+	```
 ### What happens if I reorder stateful operators in my job?
 	如果你给这些算子赋予了独立的 ID，那么就不影响作业的恢复。
 	如果你没有给算子赋予独立的 ID，通常算子进行重排序之后，系统分发的 ID 将会改变，这将会导致从保存点（savepoint）文件恢复失败。
