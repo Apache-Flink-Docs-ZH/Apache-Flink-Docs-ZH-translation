@@ -68,7 +68,7 @@ DataStream<String> stream = env.
 			/checkpoints/:jobid/chk-:id/...
 			```
 			保存点（savepoint）文件通常会比真正的检查点状态要小很多。注意：如果你使用 `MemoryStateBackend`，那么保存点（savepoint）文件将会由自己管理，并且状态也全部有自己管理。
-#### Trigger a Savepoint
+#### 触发一个保存点
 			
 			```
 			$ bin/flink savepoint :jobId [:targetDirectory]
