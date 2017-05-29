@@ -24,41 +24,38 @@ under the License.
 -->
 
 
-This documentation provides instructions on how to setup Flink fully automatically with Hadoop 1 or Hadoop 2 on top of a [Google Compute Engine](https://cloud.google.com/compute/) cluster. This is made possible by Google's [bdutil](https://cloud.google.com/hadoop/bdutil) which starts a cluster and deploys Flink with Hadoop. To get started, just follow the steps below.
+本文介绍了如何在 [Google Compute Engine](https://cloud.google.com/compute/) 集群上基于 Hadoop 1 或者 Hadoop 2 自动部署 Flink. 借助 Google 的 [bdutil](https://cloud.google.com/hadoop/bdutil) 工具可以启动一个集群并基于 Hadoop 部署 Flink, 根据下列步骤开始吧.
 
 * This will be replaced by the TOC
 {:toc}
 
-# Prerequisites
+# 前提条件
 
-## Install Google Cloud SDK
+## 安装 Google Cloud SDK
 
-Please follow the instructions on how to setup the [Google Cloud SDK](https://cloud.google.com/sdk/). In particular, make sure to authenticate with Google Cloud using the following command:
+请根据该指南了解如何安装 [Google Cloud SDK](https://cloud.google.com/sdk/). 需要特别注意的是, 使用下列命令确保 Google Cloud 验证成功:
 
     gcloud auth login
 
-## Install bdutil
+## 安装 bdutil
 
-At the moment, there is no bdutil release yet which includes the Flink
-extension. However, you can get the latest version of bdutil with Flink support
-from [GitHub](https://github.com/GoogleCloudPlatform/bdutil):
+目前, bdutil 发布版本中并不包含 Flink 扩展. 不过, 你可以从 [GitHub] (https://github.com/GoogleCloudPlatform/bdutil) 获得最新版本 bdutil:
 
     git clone https://github.com/GoogleCloudPlatform/bdutil.git
 
-After you have downloaded the source, change into the newly created `bdutil` directory and continue with the next steps.
+在源码下载完成之后, 进入新创建的 `bdutil` 目录然后按着以下的步骤继续.
 
-# Deploying Flink on Google Compute Engine
+# 在 Google Compute Engine 之上部署 Flink
 
-## Set up a bucket
+## 设置一个bucket
 
-If you have not done so, create a bucket for the bdutil config and staging files. A new bucket can be created with gsutil:
+如果没有的话, 需要创建一个 bucket 用于配置 bdutil 和 staging 文件. gsutil 可以创建一个新的 bucket:
 
     gsutil mb gs://<bucket_name>
 
-## Adapt the bdutil config
+## 调整bdutil的配置
 
-To deploy Flink with bdutil, adapt at least the following variables in
-bdutil_env.sh.
+使用 bdutil 部署 Flink, 在 bdutil_env.sh 中至少需要配置下列参数.
 
     CONFIGBUCKET="<bucket_name>"
     PROJECT="<compute_engine_project_name>"
@@ -70,24 +67,24 @@ bdutil_env.sh.
     # for example: "europe-west1-d"
     GCE_ZONE="<gce_zone>"
 
-## Adapt the Flink config
+## 调整Flink的配置
 
-bdutil's Flink extension handles the configuration for you. You may additionally adjust configuration variables in `extensions/flink/flink_env.sh`. If you want to make further configuration, please take a look at [configuring Flink](config.html). You will have to restart Flink after changing its configuration using `bin/stop-cluster` and `bin/start-cluster`.
+bdutil的 Flink 拓展组件已经为你处理好配置了. 你还可以在 `extensions/flink/flink_env.sh`中添加其他的配置参数. 如果想进一步了解配置参数,请见 [Flink 配置](config.html). 在修改配置之后需要使用 `bin/stop-cluster` 和 `bin/start-cluster`来重启Flink.
 
-## Bring up a cluster with Flink
+## 启动一个 Flink 集群
 
-To bring up the Flink cluster on Google Compute Engine, execute:
+在 Google Compute Engine 上启动一个 Flink 集群,执行命令:
 
     ./bdutil -e extensions/flink/flink_env.sh deploy
 
-## Run a Flink example job:
+## 运行Flink示例程序:
 
     ./bdutil shell
     cd /home/hadoop/flink-install/bin
     ./flink run ../examples/batch/WordCount.jar gs://dataflow-samples/shakespeare/othello.txt gs://<bucket_name>/output
 
-## Shut down your cluster
+## 关闭集群
 
-Shutting down a cluster is as simple as executing
+关闭一个 Flink 集群只需执行
 
     ./bdutil -e extensions/flink/flink_env.sh delete
