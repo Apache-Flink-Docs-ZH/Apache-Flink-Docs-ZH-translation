@@ -136,29 +136,41 @@ This keeps a single value that represents the aggregation of all values
 added to the state. The interface is the same as for `ListState` but elements added using
 `add(T)` are reduced to an aggregate using a specified `ReduceFunction`.
 
-* `FoldingState<T, ACC>`: This keeps a single value that represents the aggregation of all values
-added to the state. Contrary to `ReducingState`, the aggregate type may be different from the type
+* `FoldingState<T, ACC>`: 这里存储着一个单一的数值，代表了所有被加到这个状态(state)里面的元素共同聚合后的值，与
+`ReducingState` 不同的是，这个聚合的值的类型也许与被加进状态(state)中的值的类型不同。它的接口和`ListState`是
+一样的，只是元素用`add(T)`加进状态（state)，用 `FoldFunction`来做具体的聚合操作。
+This keeps a single value that represents the aggregation of all values added to the state. Contrary to `ReducingState`, the aggregate type may be different from the type
 of elements that are added to the state. The interface is the same as for `ListState` but elements
 added using `add(T)` are folded into an aggregate using a specified `FoldFunction`.
 
-* `MapState<UK, UV>`: This keeps a list of mappings. You can put key-value pairs into the state and
+* `MapState<UK, UV>`: 这里存储着一个mapping的列表，你可以将一个个键值对加入状态(state)然后用`Iterable`来检索当前存储的所有的mappings,您可以使用`put(UK, UV)` 或者`putAll(Map<UK, UV>)`加入键值对，与键对应的数值可以用 `get(UK)`检索，迭代的mappings,键和值可以分别用`entries()`, `keys()` 和 `values()`检索。
+This keeps a list of mappings. You can put key-value pairs into the state and
 retrieve an `Iterable` over all currently stored mappings. Mappings are added using `put(UK, UV)` or 
 `putAll(Map<UK, UV>)`. The value associated with a user key can be retrieved using `get(UK)`. The iterable
 views for mappings, keys and values can be retrieved using `entries()`, `keys()` and `values()` respectively.
 
+所有类型的状态(state)都可以用`clear()`来清除当前有效键（例如，当前输入元素的键）对应的状态(state)。 
 All types of state also have a method `clear()` that clears the state for the currently
 active key, i.e. the key of the input element.
 
-<span class="label label-danger">Attention</span> `FoldingState` will be deprecated in one of
+<span class="label label-danger">Attention</span> 在未来的某一个Flink版本中我们将不再建议使用`FoldingState`，
+它会被完全移除。我们将会提供一个更加有代表性的选择来方便大家使用。
+will be deprecated in one of
 the next versions of Flink and will be completely removed in the future. A more general
 alternative will be provided.
 
+您需要记住的第一点是您只能在状态(state)接口中使用这些状态对象，它们并非必须存储在内部却有可能在磁盘或者其他地方重置。
+第二点是您得到的状态(state)的值是依赖于它所对应的键的，因此如果键不同的话那您在每一个函数调用中所得到的值也会不同。
 It is important to keep in mind that these state objects are only used for interfacing
 with state. The state is not necessarily stored inside but might reside on disk or somewhere else.
 The second thing to keep in mind is that the value you get from the state
 depends on the key of the input element. So the value you get in one invocation of your
 user function can differ from the value in another invocation if the keys involved are different.
 
+为了对状态(state)进行操作，您必须要创建一个 `StateDescriptor`，它保存了这个状态(state)的名称，（接下来您会看到您
+可以创建多个状态(state)，但是它们必须有相同的名字，以便你今后关联它们），状态(state)保存着的值的类型，有可能还有和一个
+用户自定义的函数，比如说一个 `ReduceFunction`。您可以根据您想检索的状态(state)的类型，来决定您是创建一个`ValueStateDescriptor`,
+还是一个`ListStateDescriptor`，或者是`ReducingStateDescriptor`或者`FoldingStateDescriptor` 或者 `MapStateDescriptor`。
 To get a state handle, you have to create a `StateDescriptor`. This holds the name of the state
 (as we will see later, you can create several states, and they have to have unique names so
 that you can reference them), the type of the values that the state holds, and possibly
@@ -166,6 +178,8 @@ a user-specified function, such as a `ReduceFunction`. Depending on what type of
 want to retrieve, you create either a `ValueStateDescriptor`, a `ListStateDescriptor`,
 a `ReducingStateDescriptor`, a `FoldingStateDescriptor` or a `MapStateDescriptor`.
 
+您可以通过`RuntimeContext`来存取状态(state)，所以它只能用在*rich functions*中。请点击[这里]({{ site.baseurl }}/dev/api_concepts.html#rich-functions) 来获得更多信息，但我们也先简短地看一个小例子， `RichFunction`中的
+`RuntimeContext`有以下几个方法来存取状态(state)：
 State is accessed using the `RuntimeContext`, so it is only possible in *rich functions*.
 Please see [here]({{ site.baseurl }}/dev/api_concepts.html#rich-functions) for
 information about that, but we will also see an example shortly. The `RuntimeContext` that
@@ -177,7 +191,8 @@ is available in a `RichFunction` has these methods for accessing state:
 * `FoldingState<T, ACC> getFoldingState(FoldingStateDescriptor<T, ACC>)`
 * `MapState<UK, UV> getMapState(MapStateDescriptor<UK, UV>)`
 
-This is an example `FlatMapFunction` that shows how all of the parts fit together:
+这里是一个`FlatMapFunction`的例子，让我们看看这几部分是如何协调工作的：
+that shows how all of the parts fit together:
 
 {% highlight java %}
 public class CountWindowAverage extends RichFlatMapFunction<Tuple2<Long, Long>, Tuple2<Long, Long>> {
