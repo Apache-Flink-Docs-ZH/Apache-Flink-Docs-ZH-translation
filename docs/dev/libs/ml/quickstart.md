@@ -1,7 +1,7 @@
 ---
 mathjax: include
-title: Quickstart Guide
-nav-title: Quickstart
+title: 快速入门指南
+nav-title: 快速入门
 nav-parent_id: ml
 nav-pos: 0
 ---

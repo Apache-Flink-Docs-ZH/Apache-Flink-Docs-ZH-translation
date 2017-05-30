@@ -1,8 +1,8 @@
 ---
-title: "FlinkML - Machine Learning for Flink"
+title: "FlinkML - Flink 机器学习库"
 nav-id: ml
 nav-show_overview: true
-nav-title: Machine Learning
+nav-title: 机器学习
 nav-parent_id: libs
 nav-pos: 4
 ---
@@ -91,7 +91,7 @@ Flink目前支持以下算法：
 val trainingData: DataSet[LabeledVector] = ...
 val testingData: DataSet[Vector] = ...
 
-//可以选用Splitter来将一个数据集分割成训练集和测试集。 
+//可以选用Splitter来将一个数据集分割成训练集和测试集。
 val dataSet: DataSet[LabeledVector] = ...
 val trainTestData: DataSet[TrainTestDataSet] = Splitter.trainTestSplit(dataSet)
 val trainingData: DataSet[LabeledVector] = trainTestData.training

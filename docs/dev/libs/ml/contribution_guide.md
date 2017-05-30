@@ -1,6 +1,6 @@
 ---
 mathjax: include
-title: How to Contribute
+title: 贡献指南
 nav-parent_id: ml
 ---
 <!--

@@ -24,6 +24,7 @@ under the License.
 
 * This will be replaced by the TOC
 {:toc}
+
 ## 描述
 
  多元线性回归的目标是找到一个最佳拟合输入数据的线性函数。通过输入数据集： $(\mathbf{x}, y)$，多元线性回归将得到一个向量 $\mathbf{w}$，使得残差平方(squared residuals)和最小化：
@@ -82,7 +83,7 @@ under the License.
         <th class="text-center">描述</th>
       </tr>
     </thead>
-    
+
     <tbody>
       <tr>
         <td><strong>Iterations</strong></td>

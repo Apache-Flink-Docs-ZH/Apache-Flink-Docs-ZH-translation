@@ -1,6 +1,6 @@
 ---
 mathjax: include
-title: k-Nearest Neighbors Join
+title: K近邻算法（KNN）
 nav-parent_id: ml
 ---
 <!--
