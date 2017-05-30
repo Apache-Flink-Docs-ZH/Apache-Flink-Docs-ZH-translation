@@ -91,9 +91,7 @@ POJO类非常有意思，因为POJO类可以支持复杂类型的创建，并且
 
 
 #### 创建一个TypeInformation对象或序列化器
-#### Creating a TypeInformation or TypeSerializer
 创建一个TypeInformation对象时，不同编程语言的创建方法具体如下：
- 
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
