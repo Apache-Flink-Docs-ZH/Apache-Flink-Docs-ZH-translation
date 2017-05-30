@@ -244,6 +244,9 @@ env.fromElements(Tuple2.of(1L, 3L), Tuple2.of(1L, 5L), Tuple2.of(1L, 7L), Tuple2
 // the printed output will be (1,4) and (1,5)
 {% endhighlight %}
 
+这个例子实现的是一个简单的窗口计数。我们把元组第一列作为键（在例子中所有的键都是1）。方法中存储着计数，
+在`ValueState`里面不断累计着总数。一旦计数值达到2它就会计算平均数并且清除状态(state)以便我们重新从`0`开始。
+需要注意的是如果我们的元组的第一个元素拥有不同的值的话，那么对于不同的键，也会保存着不同的状态值。
 This example implements a poor man's counting window. We key the tuples by the first field
 (in the example all have the same key `1`). The function stores the count and a running sum in
 a `ValueState`. Once the count reaches 2 it will emit the average and clear the state so that
@@ -252,6 +255,9 @@ key if we had tuples with different values in the first field.
 
 ### State in the Scala DataStream API
 
+除了上述的接口以外，Scala API对于`KeyedStream`上带有单一`ValueState`的有状态的(stateful)的`map()` 
+或者 `flatMap()`方法有一个快捷方法。用户定义的函数在一个`Option`中得到当前`ValueState`的当前值，然后
+返回一个用来更新状态(state)的值。
 In addition to the interface described above, the Scala API has shortcuts for stateful
 `map()` or `flatMap()` functions with a single `ValueState` on `KeyedStream`. The user function
 gets the current value of the `ValueState` in an `Option` and must return an updated value that
@@ -269,13 +275,16 @@ val counts: DataStream[(String, Int)] = stream
     })
 {% endhighlight %}
 
-## Using Managed Operator State
+## 运用管理的算子状态(state) Using Managed Operator State
 
+要想运用管理的算子状态（managed operator state）,我们可以通过实现一个更一般化的`CheckpointedFunction`
+接口或者实现`ListCheckpointed<T extends Serializable>`接口来达到我们的目的。
 To use managed operator state, a stateful function can implement either the more general `CheckpointedFunction`
 interface, or the `ListCheckpointed<T extends Serializable>` interface.
 
-#### CheckpointedFunction
+#### 检查点函数(CheckpointedFunction)
 
+通过`CheckpointedFunction`接口我们可以存取一个无键的拥有重分布模式的状态(state)。它需要实现两个方法：
 The `CheckpointedFunction` interface provides access to non-keyed state with different
 redistribution schemes. It requires the implementation of two methods:
 
@@ -285,27 +294,41 @@ void snapshotState(FunctionSnapshotContext context) throws Exception;
 void initializeState(FunctionInitializationContext context) throws Exception;
 {% endhighlight %}
 
+无论何时要用到检查点，都要调用`snapshotState()`。而计数部分:`initializeState()`是在每次用户自定义函数初始化的时候被调用，无论是
+函数第一次被初始化还是函数真的从之前的检查点恢复过来而初始化，都要被调用。由此，`initializeState()`不仅仅是一个用来初始化不同
+类型的状态(state)的地方，它里面还包含着状态(state)恢复逻辑。
 Whenever a checkpoint has to be performed, `snapshotState()` is called. The counterpart, `initializeState()`,
 is called every time the user-defined function is initialized, be that when the function is first initialized
 or be that when the function is actually recovering from an earlier checkpoint. Given this, `initializeState()` is not
 only the place where different types of state are initialized, but also where state recovery logic is included.
 
+现在，Flink已经支持列表形式的管理的算子状态(state)了。这个状态(state)是一个一些*seriablizable(序列化)*对象的列表，这些对象彼此相互独立,
+因此很适合重新调整分布。换句话说，这些对象时非键值状态(non-keyed state)用来重分布的最小粒度。根据不同的存取状态(state)的方法，我们可以定义
+一下的几种分布模式：
 Currently, list-style managed operator state is supported. The state
 is expected to be a `List` of *serializable* objects, independent from each other,
 thus eligible for redistribution upon rescaling. In other words, these objects are the finest granularity at which
 non-keyed state can be redistributed. Depending on the state accessing method,
 the following redistribution schemes are defined:
 
-  - **Even-split redistribution:** Each operator returns a List of state elements. The whole state is logically a concatenation of
+  - **Even-split redistribution（均分重分布）:** 每一个算子返回一个包含状态元素的列表。整个状态(state)是所有列表的一个串联.在恢复/重分布
+    的时候，这个列表会均匀分布为多个子列表，数量与并行算子的数量相同。每个算子得到一个子列表，它可能为空，或者包含一个或多个元素。举个栗子，
+    如果并行度为1的时候，这个算子的检查点状态(checkpointed state)含有元素1`element1`和元素2`element2`，那么当并行度增加至2时，元素1`element1`
+    可能被分给算子0，而元素2`element2`可能会取算子1。
+    Each operator returns a List of state elements. The whole state is logically a concatenation of
     all lists. On restore/redistribution, the list is evenly divided into as many sublists as there are parallel operators.
     Each operator gets a sublist, which can be empty, or contain one or more elements.
     As an example, if with parallelism 1 the checkpointed state of an operator
     contains elements `element1` and `element2`, when increasing the parallelism to 2, `element1` may end up in operator instance 0,
     while `element2` will go to operator instance 1.
 
-  - **Union redistribution:** Each operator returns a List of state elements. The whole state is logically a concatenation of
+  - **Union redistribution（联合重分布）:** 每一个算子返回一个包含状态元素的列表。整个状态(state)是所有列表的一个串联。在恢复/重分布的时候，
+    每个算子得到完整的包含状态元素的列表。
+    Each operator returns a List of state elements. The whole state is logically a concatenation of
     all lists. On restore/redistribution, each operator gets the complete list of state elements.
 
+下面是一个有状态的(stateful)的`SinkFunction`运用`CheckpointedFunction`在将元素送出去之前先将它们缓存起来的例子。它表明了基本的均分重分布
+(even-split redistribution)型列表状态(list state)：
 Below is an example of a stateful `SinkFunction` that uses `CheckpointedFunction`
 to buffer elements before sending them to the outside world. It demonstrates
 the basic even-split redistribution list state:
@@ -371,10 +394,14 @@ public class BufferingSink
 }
 {% endhighlight %}
 
+`initializeState` 方法将`FunctionInitializationContext`作为参数，用来初始化非键值状态(non-keyed state)的"容器"。
+这个容器属于`ListState`, 用来依据检查点存储非键值状态(non-keyed state)对象。
 The `initializeState` method takes as argument a `FunctionInitializationContext`. This is used to initialize
 the non-keyed state "containers". These are a container of type `ListState` where the non-keyed state objects
 are going to be stored upon checkpointing.
 
+请注意一下状态(state)被初始化的方式，与键值状态(keyed state)类似，也是
+用一个带有状态名字和状态存储的值的类型的`StateDescriptor`来初始化的。
 Note how the state is initialized, similar to keyed state,
 with a `StateDescriptor` that contains the state name and information
 about the type of the value that the state holds:
