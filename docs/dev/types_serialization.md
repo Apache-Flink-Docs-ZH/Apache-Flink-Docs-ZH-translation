@@ -60,19 +60,7 @@ Flink会尝试推断出在分布式计算过程中被交换和存储的数据类
 
 ## FLink的TypeInformation类
  {% gh_link /flink-core/src/main/java/org/apache/flink/api/common/typeinfo/TypeInformation.java "TypeInformation" %}类是所有类型描述类的基类。它包括了类型的一些基本属性，并可以通过它来生成序列化构造器（serializer），特殊情况下还可以生成类型的比较器。（*注意：Flink中的比较器不仅仅是定义大小顺序，更是处理keys的基本辅助工具*）
- 在FLink内部，类型有以下区别：
  
- 1.    基本类型：所有Java基本数据类型和对应装箱类型，加上void, String, Date
-2.    基本数组和Object数组
-3.    复合类型：
-a.     Flink Java Tuple（Flink Java API的一部分）
-b.    Scala case 类（包括Scala Tuple）
-c.     POJO类：遵循类bean模式的类
-4.    Scala辅助类型（Option，Either，Lists，Maps…）
-5.    泛型（Generic）：这些类型将不会由Flink自己序列化，而是借助Kryo来序列化
-
-Internally, Flink makes the following distinctions between types:
-
 * 基本类型：所有Java基本数据类型和对应装箱类型，加上`void`, `String`, `Date`, `BigDecimal`和 `BigInteger`.
 
 * 基本数组和对象数组
@@ -100,13 +88,7 @@ POJO类非常有意思，因为POJO类可以支持复杂类型的创建，并且
 * 该类是public的并且是独立的（即没有非静态的内部类）
 * 该类有一个public的无参构造函数
 * 该类（及该类的父类）的所有成员要么是public的，要么是拥有按照标准java bean命名规则命名的public getter和 public setter方法。
-* 
 
-* The class is public and standalone (no non-static inner class)
-* The class has a public no-argument constructor
-* All fields in the class (and all superclasses) are either public (and non-final)
-  or have a public getter- and a setter- method that follows the Java beans
-  naming conventions for getters and setters.
 
 
 #### Creating a TypeInformation or TypeSerializer
