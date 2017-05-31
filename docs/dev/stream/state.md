@@ -42,7 +42,7 @@ Flink中共有两类状态（state）:`带有键值的状态（Keyed State）` �
 
 ### 带有键值的状态（Keyed State）
 
-*带有键值的状态（Keyed State）*总是和键（keys）有关并且只能用在`带有键值的流（KeyedStream）`的函数和操作符中。
+*带有键值的状态（Keyed State)*总是和键（keys）有关并且只能用在`带有键值的流（KeyedStream）`的函数和操作符中。
 
 你可以认为带有键值的状态(Keyed State)像算子状态(Operator State)一样已经被
 分区或者分片过了，每一个键值有唯一的一个状态（state）划分。每一个带有键值的状态（Keyed-state）逻辑上与
