@@ -52,13 +52,13 @@ under the License.
 
 请注意，最大并行度必须满足以下条件： 
 
-`0 < parallelism  <= max parallelism <= 2^15`
+`0 < 并行度  <= 最大并行度 <= 2^15`
 
 可以通过 `setMaxParallelism（int maxparallelism)` 设置最大并行度。 
 默认情况下，Flink任务首次启动时会选择最大并行度作为并行性的函数: 
 
-- `128` : for all parallelism <= 128.
-- `MIN(nextPowerOfTwo(parallelism + (parallelism / 2)), 2^15)` : for all parallelism > 128.
+- `128` : 并行度 小于128时.
+- `MIN(nextPowerOfTwo(并行度 + (并行度 / 2)), 2^15)` : 并行度 大于128时.
 
 ### 给 operators 设置 UUID
 
