@@ -22,7 +22,7 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-This page gives a guide how to configure and tune applications that use large state.  
+This page gives a guide how to configure and tune applications that use large state  
 
 * ToC
 {:toc}
