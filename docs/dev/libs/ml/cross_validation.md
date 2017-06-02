@@ -1,6 +1,6 @@
 ---
 mathjax: include
-title: Cross Validation
+title: 交叉验证
 nav-parent_id: ml
 ---
 <!--
@@ -24,6 +24,7 @@ under the License.
 
 * This will be replaced by the TOC
 {:toc}
+
 ## 描述
 
 使用机器学习时，过拟合是一个很常见的问题。你可以理解为算法“记住”了训练集数据，但是不能很好地推断样本数据之外的规律。为了解决过拟合，人们经常会将训练集中的一些数据取出，在训练完成后使用这些取出的数据对算法的性能进行评估。这种方法被称为**交叉验证**。一个好的训练模型应该通过数据的部分子集进行训练，并且对数据的其它部分也同样**有效**。
@@ -72,7 +73,7 @@ Wiki: <a href="https://en.wikipedia.org/wiki/Cross-validation_(statistics)#k-fol
 
 ## 参数
 
-多种 `Splitter`(分割器) 共有一些参数。
+以上各种 `Splitter`(分割器) 共同拥有一些参数。
 
  <table class="table table-bordered">
   <thead>

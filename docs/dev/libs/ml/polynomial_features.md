@@ -1,6 +1,6 @@
 ---
 mathjax: include
-title: Polynomial Features
+title: 多项式特征转换
 nav-parent_id: ml
 ---
 <!--

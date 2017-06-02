@@ -25,9 +25,9 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-Connectors provide code for interfacing with various third-party systems.
+Connectors 模块提供了与各种第三方系统连接的代码。
 
-Currently these systems are supported: (Please select the respective documentation page from the navigation on the left.)
+当前，只支持下面的系统：（请从左侧导航栏中选择相应的文档。）
 
  * [Apache Kafka](https://kafka.apache.org/) (sink/source)
  * [Elasticsearch](https://elastic.co/) (sink)
@@ -39,8 +39,4 @@ Currently these systems are supported: (Please select the respective documentati
  * [Apache Cassandra](https://cassandra.apache.org/) (sink)
 
 
-
-To run an application using one of these connectors, additional third party
-components are usually required to be installed and launched, e.g. the servers
-for the message queues. Further instructions for these can be found in the
-corresponding subsections.
+如果需要在应用程序里面使用到其中一个 connectors，一般需要安装和启动额外的第三方组件，比如消息队列系统。有关这些系统的进一步说明可以在相应的小节中找到。

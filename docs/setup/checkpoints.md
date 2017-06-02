@@ -26,12 +26,14 @@ under the License.
 * toc
 {:toc}
 
-## Overview
+## 概述
 
 TBD
 
 
 ## Externalized Checkpoints
+
+您可以将定期检查点配置为在外部持久化。 外部检查点将其元数据写入永久存储，并且在作业失败时不会自动清除。 这样，如果您的工作失败，您将有一个检查点来恢复。
 
 You can configure periodic checkpoints to be persisted externally. Externalized checkpoints write their meta data out to persistent storage and are *not* automatically cleaned up when the job fails. This way, you will have a checkpoint around to resume from if your job fails.
 

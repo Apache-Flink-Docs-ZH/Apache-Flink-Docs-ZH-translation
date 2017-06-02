@@ -37,10 +37,9 @@ under the License.
 
 在使用 maven 时，如果想要打包的依赖不在 Flink 包中，建议使用以下两种方法:
 
-1.maven 的 assembly 插件构建了一个所谓的高级 jar 包（可执行 jar 包），可以包含你的所有依赖项。
+1. maven 的 assembly 插件构建了一个所谓的高级 jar 包（可执行 jar 包），可以包含你的所有依赖项。
  assembly 的配置方法很明了，但是得到的 jar 包可能会变得笨重。
 了解更多信息，请查看[maven-assembly-plugin](http://maven.apache.org/plugins/maven-assembly-plugin/usage.html) 。
-
 2. 使用 maven 的 unpack 解包插件把相关依赖解包出来，然后打包进你的代码。
 
 使用较新的方法来捆绑 Kafka 连接器`flink-connector-kafka`,为此
