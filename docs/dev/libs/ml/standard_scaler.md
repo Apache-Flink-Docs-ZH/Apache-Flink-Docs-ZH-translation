@@ -63,7 +63,7 @@ StandardScaler 将 `Vector` 或 `LabeledVector` 的子类型数据集转换到�
 
 ## 参数
 
-标准化缩放器可由下面两个参数进行控制。、
+标准化缩放器可由下面两个参数进行控制。
 
  <table class="table table-bordered">
   <thead>
