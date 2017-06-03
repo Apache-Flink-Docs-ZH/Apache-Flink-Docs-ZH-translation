@@ -31,24 +31,24 @@ Apache Flink 处理数据类型和序列化的方式较特别，包括自带的�
 
 ## Flink 中的类型处理
 
-Flink会尝试推断出在分布式计算过程中被交换和存储的数据类型的大量信息，你可以想想就像数据库推断表的模式(schema)一样。在大多数情况下，Flink能够完美地推断出所有必须的信息，这些类型信息使得Flink可以做一些很酷的事情： 
+Flink会尝试推断出在分布式计算过程中被交换和存储的数据类型的大量信息，你可以想象这就像数据库推断表的模式(schema)一样。在大多数情况下，Flink能够完美地推断出所有必须的信息，这些类型信息使得Flink可以做一些很酷的事情： 
 
 * 使用POJOs类型并通过推断的字段名字(如：`dataSet.keyBy("username")`)完成分组(group)/连接(join)/
 聚合(aggregate)操作。这些类型信息使得Flink能够提前检查(如拼写错误和类型兼容性)，避免运行时才发现错误。
 
-* Flink知道的数据类型信息越多，序列化和数据布局方案(data layout scheme) 就越好。这对Flink的内存使用范式（memory usage paradigm）非常重要(memory usage paradigm 用于序列化出入堆中的数据，使得序列化的开销非常低)
+* Flink知道的数据类型信息越多，序列化和数据布局方案(data layout scheme) 就越好。这对Flink的内存使用范式（memory usage paradigm）非常重要(无论在堆内还是堆外都可以操作序列化数据，并且使得序列化的开销非常低)
 
-* 最后，这些信息可以将用户从考虑序列化框架的选择，以及如何类型注册到这些框架中解脱。
+* 最后，这些信息可以将用户从考虑序列化框架的选择和注册类型中解脱。
 
 
-一般而言，数据类型的相关信息是在预处理阶段（pre-flight phase）需要，此时程序刚刚调用了 DataStream 和 DataSet，但是还没调用 execute(), print(), count(), 或 collect()方法.
+一般而言，数据类型的相关信息是在`预处理阶段（pre-flight phase）`需要，此时程序刚刚调用了 `DataStream` 和 `DataSet`，但是还没调用 `execute()`, `print()`, `count()`, 或 `collect()`方法.
 
  
 
 ## 常见问题
-用户在需要使用Flink的数据类型处理时，最常见问题是:
+用户如果需要介入 Flink 类型框架的话，一般是在遇到下面这些情况的时候：
  
-* **注册子类型：** 如果方法签名只在父类型中申明，但实际执行中使用的是这些类型的子类型，让Flink知道这些子类型能够提升不少性能。因此，在`StreamExecutionEnvironment`或`ExecutionEnvironment`中应当为每个子类型调用`.registerType(clazz)`方法。
+* **注册子类型：** 如果方法签名只描述了父类型，但实际执行中用到了该类型的子类型，让Flink知道这些子类型能够提升不少性能。因此，在`StreamExecutionEnvironment`或`ExecutionEnvironment`中应当为每个子类型调用`.registerType(clazz)`方法。
 
 * **注册自定义序列化器：** Flink会将自己不能处理的类型转交给[Kryo](https://github.com/EsotericSoftware/kryo),但并不是所有的类型都能被Kryo完美处理（也就是说：不是所有类型都能被Flink处理），比如，许多 Google Guava 的集合类型默认情况下是不能正常工作的。针对存在这个问题的这些类型，其解决方案
 是通过在`StreamExecutionEnvironment` 或 `ExecutionEnvironment`中调用`.getConfig().addDefaultKryoSerializer(clazz, serializer)`方法，注册辅助的序列化器。许多库都提供了Kryo序列化器，关于自定义序列化器的更多细节请参考[Custom Serializers]({{ site.baseurl }}/dev/custom_serializers.html)。
@@ -73,7 +73,7 @@ Flink会尝试推断出在分布式计算过程中被交换和存储的数据类
 
   * Row: 包含任意多个字段的元组并且支持null成员
 
-  * POJOs: 参照类bean模式的类方法
+  * POJOs: 遵循类bean模式的类
 
 * 辅助类型  (Option, Either, Lists, Maps, ...)
 
@@ -83,7 +83,7 @@ POJO类非常有意思，因为POJO类可以支持复杂类型的创建，并且
   
 
 #### POJO类型的规则
-在满足如下条件时，Flink会将这种数据类型识别成POJO类型（并允许以成员名引用）：
+在满足如下条件时，Flink会将这种数据类型识别成POJO类型（并允许以成员名引用字段）：
 
 * 该类是public的并且是独立的（即没有非静态的内部类）
 * 该类有一个public的无参构造方法
@@ -110,8 +110,6 @@ TypeInformation<Tuple2<String, Double>> info = TypeInformation.of(new TypeHint<T
 
 <div data-lang="scala" markdown="1">
 在Scala中，Flink使用在编译时运行的*宏*，在宏可供调用时去捕获所有泛型信息。
-In Scala, Flink uses *macros* that runs at compile time and captures all generic type information while it is
-still available.
 {% highlight scala %}
 // 重要: 为了能够访问'createTypeInformation' 的宏方法，这个import是必须的
 import org.apache.flink.streaming.api.scala._
@@ -126,7 +124,7 @@ val tupleInfo: TypeInformation[(String, Double)] = createTypeInformation[(String
 
 为了创建一个`序列化器（TypeSerializer）`，只需要在`TypeInformation` 对象上调用`typeInfo.createSerializer(config)`方法。
 
-`config`参数的类型是`ExecutionConfig`，它保留了程序的注册的自定义序列化器的相关信息。在可能用到TypeSerializer的地方，尽量传入程序的ExecutionConfig，你可以调用`DataStream` 或 `DataSet`的 `getExecutionConfig()`方法获取ExecutionConfig。一些内部方法（如：`Map方法`）中，你可以通过将该方法变成一个[富 方法]()，然后调用`getRuntimeContext().getExecutionConfig()`获取ExecutionConfig.
+`config`参数的类型是`ExecutionConfig`，它保留了程序的注册的自定义序列化器的相关信息。在可能用到TypeSerializer的地方，尽量传入程序的ExecutionConfig，你可以调用`DataStream` 或 `DataSet`的 `getExecutionConfig()`方法获取ExecutionConfig。一些内部方法（如：`MapFunction`）中，你可以通过将该方法变成一个[Rich Function]()，然后调用`getRuntimeContext().getExecutionConfig()`获取ExecutionConfig.
 
 --------
 --------
@@ -135,18 +133,18 @@ val tupleInfo: TypeInformation[(String, Double)] = createTypeInformation[(String
 通过*类型清单(manifests)* and *类标签*功能，Scala对于运行时的类型信息有着非常详细的概念。通常，Scala对象的类型和方法可以访问其泛型参数的类型，因此，Scala程序不会有Java程序那样的类型擦除问题。
 
 此外，Scala允许通过Scala的宏在Scala编译器中运行自定义代码，这意味着当你编译针对Flink的Scala API编写的Scala程序时，会执行一些Flink代码。
-在编译期间，我们使用宏来查看所有用户方法的参数类型和返回类型，这也是所有类型信息完全可用的时间点。在宏中，我们为方法的返回类型（或参数类型）创建一个*TypeInformation*，并将其作为宏定义的一部分。 
+在编译期间，我们使用宏来查看所有用户方法的参数类型和返回类型，编译期也是所有类型信息完全可用的时候。在宏中，我们为方法的返回类型（或参数类型）创建一个*TypeInformation*，并将其作为方法的一部分。 
 
-####  证据参数（Evidence Parameter）缺少隐式值错误
+####  无隐式值导致的证据参数（Evidence Parameter）错误
 如果无法创建TypeInformation，程序编译报错：“could not find implicit value for evidence parameter of type TypeInformation”。
 
-常见的原因是生成TypeInformation的代码没有被导入，确保导入了完整的flink.api.scala包。
-如果生成TypeInformation的代码还没有被导入，这是一个常见的原因 
+常见的原因是生成TypeInformation的代码没有被导入，请确保导入了完整的flink.api.scala包。
+
 {% highlight scala %}
 import org.apache.flink.api.scala._
 {% endhighlight %}
 
-另外一个常见原因是泛型方法，这种可以通过以下部分的内容进行修复。
+另外一个常见原因是泛型方法，这种情况可以通过下面的方法进行修复。
 
 #### 泛型方法
 
@@ -163,7 +161,7 @@ val result = selectFirst(data)
 
 例子中的这种泛型方法，方法参数和返回类型的数据类型对每次调用可能不一样，并且定义方法的地方也不知道。这就会导致上面的代码产生一个没有足够的隐式证据可用的错误。
  
-在这种情况下，类型信息必须在调用的站点生成并传给方法。Scala为此提供了*隐式参数*。
+在这种情况下，类型信息必须在调用的地方生成并传给方法。Scala为此提供了*隐式参数*。
  
 下面的代码告诉Scala把*T*的类型信息带入方法，然后类型信息会在方法被调用的地方生成，而不是在方法定义的位置生成。 
 
@@ -179,7 +177,7 @@ def selectFirst[T : TypeInformation](input: DataSet[(T, _)]) : DataSet[T] = {
 
 
 ## Java API中的类型信息
-一般情况下，Java会擦除泛型的类型信息。Flink会尝试使用java的保留字节（主要是方法签名和子类信息），通过反射重建尽可能多的类型信息，于方法的返回类型取决于其输入类型的情况，这个逻辑还包含了一些简单的类型推断：
+一般情况下，Java会擦除泛型的类型信息。Flink会尝试使用Java的保留字节（主要是方法签名和子类信息），通过反射重建尽可能多的类型信息， 这个逻辑还包含了一些简单的类型推断，比如方法的返回类型取决于其输入类型的情况：
 {% highlight java %}
 public class AppendOne<T> extends MapFunction<T, Tuple2<T, Long>> {
 
@@ -203,7 +201,7 @@ DataSet<SomeType> result = dataSet
         .returns(SomeType.class);
 {% endhighlight %}
 
-由返回语句指定生成的类型，在本例中是通过一个类。type hint支持以下方式定义类型：
+由`return`方法指定生成的类型，在本例中是通过一个类。type hint支持以下方式定义类型：
 * 类，针对无参数的类型（非泛型）
 * 以TypeHints的形式返回`returns(new TypeHint<Tuple2<Integer, SomeType>>(){})`。
  `TypeHint`类可以捕获泛型信息，并将其保留至运行时（通过匿名子类）。
@@ -213,7 +211,7 @@ DataSet<SomeType> result = dataSet
 #### 针对Java 8 Lambda表达式的类型抽取
 由于Lambda表达式不涉及继承方法接口的实现类，Java 8 Lambda的类型抽取与非lambda表达式的工作方式并不相同。 
 
-当前，Flink正在尝试如何实现Lambda表达式，并使用Java的泛型签名（generic signature）来决定参数类型和返回类型。但是，并不是所有的编译器中的签名都是为了Lambda表达式生成的（本文写作时该文档仅完全适用在Eclipse JDT编译器4.5及以前的编译器下）
+当前，Flink正在尝试如何实现Lambda表达式，并使用Java的泛型签名（generic signature）来决定参数类型和返回类型。但是， 并不是所有的编译器都为Lambda 表达式生成了签名（本文写作时只有 Eclipse JDT编译器 4.5 以上版本支持了）
 
 
 #### POJO类型的序列化
@@ -246,7 +244,7 @@ env.getConfig().addDefaultKryoSerializer(Class<?> type, Class<? extends Serializ
 
 ## 禁用 Kryo 作为备选
 
-在某些情况下，程序可能希望明确地避免使用Kryo作为泛型类型的后备。 最常见的情况是想确保所有类型都可以通过Flink自己的序列化器或通过用户定义的自定义序列器有效序列化。
+在某些情况下，程序可能希望明确地避免使用Kryo作为泛型类型的备选。 最常见的情况是想确保所有类型都可以通过Flink自己的序列化器或通过用户定义的自定义序列器有效序列化。
  
 当遇到需要通过Kryo序列化的数据类型时，以下设置会引发异常:
 {% highlight java %}
@@ -254,17 +252,17 @@ env.getConfig().disableGenericTypes();
 {% endhighlight %}
 
 
-## 使用工厂定义类型信息对象
-类型信息工厂允许在Flink类型系统中插入用户定义的类型信息，你需要实现`org.apache.flink.api.common.typeinfo.TypeInfoFactory` 用于返回你自定义类型信息。
-如果对应的类型已经使用`@org.apache.flink.api.common.typeinfo.TypeInfo`进行注释，则在类型提取阶段会调用你实现的工厂。
+## 使用工厂定义类型信息
+类型信息工厂允许以插件的形式自定义类型信息到 Flink 类型系统中，你需要实现`org.apache.flink.api.common.typeinfo.TypeInfoFactory` 用于返回你自定义类型信息。
+当对应的类型已经注解了` @org.apache.flink.api.common.typeinfo.TypeInfo`，那么在类型提取阶段 Flink 就会调用你实现的工厂。
  
 类型信息工厂在Java和Scala API中均可使用。
 
-在类型的层次结构中，在向上层（子类往父类）移动的过程中会选择最近的工厂，但是内置的工厂具有最高的层次。一个工厂可以比Flink的内置类型还有更高的层次，因为此你应该知道你在做什么。
+在类型的层次结构中，在向上层（子类往父类）移动的过程中会选择最近的工厂，但是内置的工厂具有最高的层次。一个工厂可以比Flink的内置类型还有更高的层次，所以你应该知道你在做什么。
 
-下面的例子展示了在Java中如何注释一个自定义类型`MyTuole`，并且通过工厂创建自定义的类型信息对象。
+下面的例子展示了在Java中如何注解一个自定义类型`MyTuole`，并且通过工厂创建自定义的类型信息对象。
 
-注释自定义类型:
+注解后的自定义类型:
 {% highlight java %}
 @TypeInfo(MyTupleTypeInfoFactory.class)
 public class MyTuple<T0, T1> {
