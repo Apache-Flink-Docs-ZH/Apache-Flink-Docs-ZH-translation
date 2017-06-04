@@ -22,121 +22,89 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-This page gives a guide how to configure and tune applications that use large state  
-
+本页面针对大型应用场景下的配置和调优提供指导
 * ToC
 {:toc}
 
-## Overview
-
-For Flink applications to run reliably at large scale, two conditions must be fulfilled:
-
-  - The application needs to be able to take checkpoints reliably
-
-  - The resources need to be sufficient catch up with the input data streams after a failure
-
-The first sections discuss how to get well performing checkpoints at scale.
-The last section explains some best practices concerning planning how many resources to use.
+## 概述
 
 
-## Monitoring State and Checkpoints
+要保证Flink应用程序在大型应用中的可靠性，两个条件必须要满足：
 
-The easiest way to monitor checkpoint behavior is via the UI's checkpoint section. The documentation
-for [checkpoint monitoring](checkpoint_monitoring.html) shows how to access the available checkpoint
-metrics.
+  - 应用需要能可靠地获取检查点(checkpoints)
 
-The two numbers that are of particular interest when scaling up checkpoints are:
+  - 资源需要充足，当出现错误后能及时跟上输入数据流
 
-  - The time until operators start their checkpoint: This time is currently not exposed directly, but corresponds
-    to:
+第一部分讨论了规模应用下如何得到高性能的检查点。
+最后部分分析了一些最佳实践，关注于资源使用规划。
+
+
+## 监控状态和检查点
+
+监控检查点行为的最简单的方法，是通过UI的检查点部分(checkpoint section)。文档[检查点监控](checkpoint_monitoring.html)
+展示了如何获取有效的检查点参数
+
+当检查点数量规模在不多扩大时，有两个数字需要特别关注：
+
+  - 算子开始处理它们的检查点的延迟时间：这个时间目前没有直接暴露出来，但是这个时间等同于：
     
     `checkpoint_start_delay = end_to_end_duration - synchronous_duration - asynchronous_duration`
 
-    When the time to trigger the checkpoint is constantly very high, it means that the *checkpoint barriers* need a long
-    time to travel from the source to the operators. That typically indicates that the system is operating under a
-    constant backpressure.
+    当触发检查点的时间值维持很高的状态时，就意味着 *checkpoint barriers* 需要花费较长时间从数据源传输到算子。这通常表明当前系统正运行在
+    持续的压力下。
 
-  - The amount of data buffered during alignments. For exactly-once semantics, Flink *aligns* the streams at
-    operators that receive multiple input streams, buffering some data for that alignment.
-    The buffered data volume is ideally low - higher amounts means that checkpoint barriers are reveived at
-    very different times from the different input streams.
+  - 数据排列过程中的数据缓冲量。对于exactly-once 语义来说，Flink 在接收多个输入数据流的算子中进行 *aligns* 数据流的同时，会为排列操作缓存一些数据。这个缓存数据容量理论上时很低的 —— 更大的数量意味着从不同的输入流中接收到的checkpoint barriers 
+  的时间差异很大。
 
-Note that when the here indicated numbers can be occasionally high in the presence of transient backpressure, data skew,
-or network issues. However, if the numbers are constantly very high, it means that Flink puts many resources into checkpointing.
+注意，在临时性的系统压力，数据倾斜或网络故障情况下，此处提到的数字会表现出临时性增高。但是，如果这些数字一直都很高，那就意味着Flink将太多的资源放到checkpointing了。
 
+## 调整 Checkpointing
 
-## Tuning Checkpointing
+检查点通常在应用程序可配置的时间区间内被触发。当完成一个检查点所花费的时间超过了检查点的时间间隔，那么下一个检查点在当前检查点处理过程尚未完成前不会被触发。默认情况下，当前正在处理的检查点一旦结束，下一个检查点会立即被触发。
 
-Checkpoints are triggered at regular intervals that applications can configure. When a checkpoint takes longer
-to complete than the checkpoint interval, the next checkpoint is not triggered before the in-progress checkpoint
-completes. By default the next checkpoint will then be triggered immediately once the ongoing checkpoint completes.
+当检查点结束时间超过基本的时间区间的情况变得很频繁时（比如由于数据规模增长超过预期，或保存检查点的存储突然变慢），系统会持续地获取检查点（一旦处于执行状态的检查点结束，新的检查点立即启动）。这也就意味着太多的资源被持续的绑定到了checkpointing中，并且运算进展缓慢。这种情况对使用异步检查状态来处理流式数据的应用产生的影响较小，但还是可能对整个应用的效率造成影响。
 
-When checkpoints end up frequently taking longer than the base interval (for example because state
-grew larger than planned, or the storage where checkpoints are stored is temporarily slow),
-the system is constantly taking checkpoints (new ones are started immediately once ongoing once finish).
-That can mean that too many resources are constantly tied up in checkpointing and that the operators make too
-little progress. This behavior has less impact on streaming applications that use asynchronously checkpointed state,
-but may still have an impact on overall application performance.
-
-To prevent such a situation, applications can define a *minimum duration between checkpoints*:
+为了避免这种情况发生，应用需要定义一个*minimum duration between checkpoints*（检查点之间的最小时间间隔）:
 
 `StreamExecutionEnvironment.getCheckpointConfig().setMinPauseBetweenCheckpoints(milliseconds)`
 
-This duration is the minimum time interval that must pass between the end of the latest checkpoint and the beginning
-of the next. The figure below illustrates how this impacts checkpointing.
+这个间隔时间是是一个最小的时间区间，时间跨度是从上一个检查点结束到下一个检查点开始。下图说明了这个间隔时间是如何影响checkpointing的。
 
 <img src="../fig/checkpoint_tuning.svg" class="center" width="80%" alt="Illustration how the minimum-time-between-checkpoints parameter affects checkpointing behavior."/>
 
-*Note:* Applications can be configured (via the `CheckpointConfig`) to allow multiple checkpoints to be in progress at
-the same time. For applications with large state in Flink, this often ties up too many resources into the checkpointing.
-When a savepoint is manually triggered, it may be in process concurrently with an ongoing checkpoint.
+*注意:* 应用可进行配置（通过`CheckpointConfig`）以允许多个检查点同时被处理。对于使用Flink的大型应用，通常会绑定太多的资源到
+checkpointing中。当一个保存点被手动触发，它将跟正在处理过程中的检查点同时处理。
+
+## 调整 网络缓存（Network Buffers）
+
+在大型应用中，网络缓存的数量能很容易地影响checkpointing。Flink社区正致力于在下一个Flink版本中努力消除这个参数。
+
+网络缓存的数量定义了一个TaskManager运行过程中，在被背压压垮前，能容纳多少in-flight数据量。
+一个非常高的网络缓存意味着当检查点启动时，有大量数据存储于流式网络通道中。由于checkpoint barriers会带着这些数据传输(参见 [description of how checkpointing works](../internals/stream_checkpointing.html))，大量的in-flight数据意味着barriers必须等待这些数据在到达目标算子前先被传输/处理完毕。
+
+拥有大量的in-flight数据在整体上并不能提高数据处理速度。它仅意味着从数据源（日志，文件，消息队列）获取数据会更快，并且在Flink中被缓存的更久。拥有较少的网络缓存意味着
+在数据被真正处理前，我们更直接地从数据源获取数据，这通常也是我们希望的。
+因此，网络缓存数量不应该被设置为任意大，而应该设置成所需缓存数最小值的低倍数（比如2倍）。
 
 
-## Tuning Network Buffers
+## 尽可能的将状态检查设置为异步操作
 
-The number of network buffers is a parameter that can currently have an effect on checkpointing at large scale.
-The Flink community is working on eliminating that parameter in the next versions of Flink.
+当状态是*asynchronously*（异步）快照的，检查点的计算效率会比*synchronously*（同步）快照的更高。特别是在包含了多个join操作、Co-functions或window操作的复杂流应用中，会产生很大的影响。
 
-The number of network buffers defines how much data a TaskManager can hold in-flight before back-pressure kicks in.
-A very high number of network buffers means that a lot of data may be in the stream network channels when a checkpoint
-is started. Because the checkpoint barriers travel with that data (see [description of how checkpointing works](../internals/stream_checkpointing.html)),
-a lot of in-flight data means that the barriers have to wait for that data to be transported/processed before arriving
-at the target operator.
+为了获取异步快照的状态，应用需要做两件事情：
 
-Having a lot of data in-flight also does not speed up the data processing as a whole. It only means that data is picked up faster
-from the data source (log, files, message queue) and buffered longer in Flink. Having fewer network buffers means that
-data is picked up from the source more immediately before it is actually being processed, which is generally desirable.
-The number of network buffers should hence not be set arbitrarily large, but to a low multiple (such as 2x) of the
-minimum number of required buffers.
+  1. 使用[managed by Flink](../dev/stream/state.html)的状态:托管的状态意味着Flink提供状态存储时的数据结构。当前，*keyed state*（包含键值的状态）是这样的，这类状态是对相关接口的抽象，比如`ValueState`, `ListState`, `ReducingState`, ...
 
+  2. 使用支持异步快照的状态后端。在Flink 1.2版本，只有RocksDB状态后端使用了完全的异步快照。
 
-## Make state checkpointing Asynchronous where possible
+上述两点表明，（在Flink 1.2版本中）大数据量的状态通常应该以基于键值的状态存储，而不是运算状态。
+这将随着对 *managed operator state* （运算状态托管）的引入计划而改变。
 
-When state is *asynchronously* snapshotted, the checkpoints scale better than when the state is *synchronously* snapshotted.
-Especially in more complex streaming applications with multiple joins, Co-functions, or windows, this may have a profound
-impact.
+## 调整 RocksDB
 
-To get state to be snapshotted asynchronously, applications have to do two things:
+很多大规模Flink流处理应用的状态存储器，都使用了*RocksDB State Backend*。这个后端的运行效果已经超过了主内存，并且能可靠存储大规模的[keyed state](../dev/stream/state.html)。
 
-  1. Use state that is [managed by Flink](../dev/stream/state.html): Managed state means that Flink provides the data
-     structure in which the state is stored. Currently, this is true for *keyed state*, which is abstracted behind the
-     interfaces like `ValueState`, `ListState`, `ReducingState`, ...
-
-  2. Use a state backend that supports asynchronous snapshots. In Flink 1.2, only the RocksDB state backend uses
-     fully asynchronous snapshots.
-
-The above two points imply that (in Flink 1.2) large state should generally be kept as keyed state, not as operator state.
-This is subject to change with the planned introduction of *managed operator state*.
-
-
-## Tuning RocksDB
-
-The state storage workhorse of many large scale Flink streaming applications is the *RocksDB State Backend*.
-The backend scales well beyond main memory and reliably stores large [keyed state](../dev/stream/state.html).
-
-Unfortunately, RocksDB's performance can vary with configuration, and there is little documentation on how to tune
-RocksDB properly. For example, the default configuration is tailored towards SSDs and performs suboptimal
-on spinning disks.
+但糟糕的是，RocksDB的运行效果会随配置不同而变化，而且几乎没有文档说明如何合适的调整RockDB的配置。比如，默认的配置是针对固态硬盘而设置的，在旋转磁盘上的运行效果不佳。
 
 **Passing Options to RocksDB**
 
@@ -165,53 +133,40 @@ public class MyOptions implements OptionsFactory {
 }
 {% endhighlight %}
 
-**Predefined Options**
+**预定义的 配置项**
 
-Flink provides some predefined collections of option for RocksDB for different settings, which can be set for example via
+Flink为RocksDB的不同设置提供了一些预定义的配置项集合，这些配置项集合的配置方式如：
 `RocksDBStateBacked.setPredefinedOptions(PredefinedOptions.SPINNING_DISK_OPTIMIZED_HIGH_MEM)`.
 
-We expect to accumulate more such profiles over time. Feel free to contribute such predefined option profiles when you
-found a set of options that work well and seem representative for certain workloads.
+我们希望逐渐积累更多的这类配置。当你发现一组配置项很好用，并且针对某些工作场景具有代表性，那么我们希望你能贡献这些预定义的配置项。
 
-**Important:** RocksDB is a native library, whose allocated memory not from the JVM, but directly from the process'
-native memory. Any memory you assign to RocksDB will have to be accounted for, typically by decreasing the JVM heap size
-of the TaskManagers by the same amount. Not doing that may result in YARN/Mesos/etc terminating the JVM processes for
-allocating more memory than configures.
+**重要说明** RocksDB是一个本地的库，它分配的内存不是来自于JVM，而是直接来自于进程的本地内存。任何你分配给RocksDB 的内存都需要被算到进程的本地内存里，通常是通过减少相同数量的TaskManagers的JVM堆内存来实现。不要去分配比配置里面更多的内存，这会导致YARN/Mesos/等终止JVM 进程。
 
 
-## Capacity Planning
+## 性能规划
 
-This section discusses how to decide how many resources should be used for a Flink job to run reliably.
-The basic rules of thumb for capacity planning are:
+这部分探讨了如何决定每个Flink job该使用多少资源，以保证稳定运行。
+性能规划的首要基本规则如下：
 
-  - Normal operation should have enough capacity to not operate under constant *back pressure*.
-    See [back pressure monitoring](back_pressure.html) for details on how to check whether the application runs under back pressure.
+  - 普通的运算需要拥有足够的容量，以避免运算长期运行在*back pressure* 下。
+    参考[back pressure monitoring](back_pressure.html)，了解更多关于如何检测应用是否工作在back pressure下。
 
-  - Provision some extra resources on top of the resources needed to run the program back-pressure-free during failure-free time.
-    These resources are needed to "catch up" with the input data that accumulated during the time the application
-    was recovering.
-    How much that should be depends on how long recovery operations usually take (which depends on the size of the state
-    that needs to be loaded into the new TaskManagers on a failover) and how fast the scenario requires failures to recover.
+  - 在无故障期间，在应用无压力运行时所需的最大资源的基础上，准备一些额外的资源。
+    这些资源在应用恢复期间及时处理掉堆积的输入数据时很有必要。
+    至于需要准备多少资源，取决于恢复计算通常花费多少时间（这个时间一般取决于有多少状态数据需要加载到新的TaskManager里），以及方案要求的故障恢复时间。
 
-    *Important*: The base line should to be established with checkpointing activated, because checkpointing ties up
-    some amount of resources (such as network bandwidth).
+    *重要说明*: 基线应该在checkpointing 处于启动状态时发布，因为checkpointing 会绑定一定数量的资源（比如网络带宽）。
 
-  - Temporary back pressure is usually okay, and an essential part of execution flow control during load spikes,
-    during catch-up phases, or when external systems (that are written to in a sink) exhibit temporary slowdown.
+  - 暂时出现的运行压力通常是不会有问题的，这是负载高峰期、catch-up阶段，或外部系统（即在一个sink里进行写入的系统）表现出临时性降速时的一个重要部分。
 
-  - Certain operations (like large windows) result in a spiky load for their downstream operators: 
-    In the case of windows, the downstream operators may have little to do while the window is being built,
-    and have a load to do when the windows are emitted.
-    The planning for the downstream parallelism needs to take into account how much the windows emit and how
-    fast such a spike needs to be processed.
+  - 某些操作（比如大数据量的window操作）会导致其下游操作出现负载峰值：
+    在出现这类window操作的情况下，当这类window被创建时，其下游操作几乎没有什么事做，而当这类窗口被放出时，下游操作会遇到一个负载峰值。
+    在规划下游操作的并行方案时，需要考虑到这类窗口放出的数量，以及这类负载峰值需要以多快的速度被处理掉。
 
-**Important:** In order to allow for adding resources later, make sure to set the *maximum parallelism* of the
-data stream program to a reasonable number. The maximum parallelism defines how high you can set the programs
-parallelism when re-scaling the program (via a savepoint).
+**重要说明** 为了能支持后续资源扩展，需要确保为数据流程序设置了合理的*maximum parallelism* （最大并发数参数）。最大并发数参数定义了在re-scaling应用程序时（通过一个savepoint 保存点），我们能设置多高的并发度。
 
-Flink's internal bookkeeping tracks parallel state in the granularity of max-parallelism-many *key groups*.
-Flink's design strives to make it efficient to have a very high value for the maximum parallelism, even if
-executing the program with a low parallelism. 
+Flink的内部记录系统会以max-parallelism-many *key groups* 的粒度跟踪并发状态。
+Flink的设计力求在设置了很大的最大并发度参数时仍有效率，即使是以一个低并发度执行程序。
 
 
 
