@@ -26,14 +26,14 @@ under the License.
 * This will be replaced by the TOC
 {:toc}
 
-## ¿ìËÙ¿ªÊ¼
+## å¿«é€Ÿå¼€å§‹
 
-### ÔÚYARNÉÏÆô¶¯Ò»¸ö³¤ÆÚµÄFlink¼¯Èº
+### åœ¨YARNä¸Šå¯åŠ¨ä¸€ä¸ªé•¿æœŸçš„Flinké›†ç¾¤
 
-Æô¶¯Ò»¸öÓµÓÐ4¸öTask ManagerµÄyarn»á»°£¬Ã¿¸öTask ManagerÓÐ4gbµÄ¶ÑÄÚ´æ:
+å¯åŠ¨ä¸€ä¸ªæ‹¥æœ‰4ä¸ªTask Managerçš„yarnä¼šè¯ï¼Œæ¯ä¸ªTask Manageræœ‰4gbçš„å †å†…å­˜:
 
 ~~~bash
-# ´ÓflinkÏÂÔØÒ³»ñÈ¡haddoop2°ü
+# ä»Žflinkä¸‹è½½é¡µèŽ·å–haddoop2åŒ…
 # http://flink.apache.org/downloads.html
 curl -O <flink_hadoop2_download_url>
 tar xvzf flink-{{ site.version }}-bin-hadoop2.tgz
@@ -41,13 +41,13 @@ cd flink-{{ site.version }}/
 ./bin/yarn-session.sh -n 4 -jm 1024 -tm 4096
 ~~~
 
-ÌØ±ðÖ¸³ö£¬-s²ÎÊý±íÊ¾Ã¿¸öTask ManagerÉÏ¿ÉÓÃµÄ´¦Àí²Û£¨processing slot£©ÊýÁ¿¡£ÎÒÃÇ½¨Òé°Ñ²ÛÊýÁ¿ÉèÖÃ³ÉÃ¿¸ö»úÆ÷´¦ÀíÆ÷µÄ¸öÊý¡£
-Ò»µ©»á»°±»Æô¶¯£¬Äã¿ÉÒÔÊ¹ÓÃ./bin/flink¹¤¾ßÌá½»ÈÎÎñµ½¼¯ÈºÉÏ¡£
+ç‰¹åˆ«æŒ‡å‡ºï¼Œ-så‚æ•°è¡¨ç¤ºæ¯ä¸ªTask Managerä¸Šå¯ç”¨çš„å¤„ç†æ§½ï¼ˆprocessing slotï¼‰æ•°é‡ã€‚æˆ‘ä»¬å»ºè®®æŠŠæ§½æ•°é‡è®¾ç½®æˆæ¯ä¸ªæœºå™¨å¤„ç†å™¨çš„ä¸ªæ•°ã€‚
+ä¸€æ—¦ä¼šè¯è¢«å¯åŠ¨ï¼Œä½ å¯ä»¥ä½¿ç”¨./bin/flinkå·¥å…·æäº¤ä»»åŠ¡åˆ°é›†ç¾¤ä¸Šã€‚
 
-### ÔÚYARNÉÏÔËÐÐÒ»¸öFlinkµÄÈÎÎñ
+### åœ¨YARNä¸Šè¿è¡Œä¸€ä¸ªFlinkçš„ä»»åŠ¡
 
 ~~~bash
-# ´ÓflinkÏÂÔØÒ³»ñÈ¡haddoop2°ü
+# ä»Žflinkä¸‹è½½é¡µèŽ·å–haddoop2åŒ…
 # http://flink.apache.org/downloads.html
 curl -O <flink_hadoop2_download_url>
 tar xvzf flink-{{ site.version }}-bin-hadoop2.tgz
@@ -55,142 +55,142 @@ cd flink-{{ site.version }}/
 ./bin/flink run -m yarn-cluster -yn 4 -yjm 1024 -ytm 4096 ./examples/batch/WordCount.jar
 ~~~
 
-## Flink YARN »á»°
+## Flink YARN ä¼šè¯
 
-Apache [Hadoop YARN](http://hadoop.apache.org/)ÊÇÒ»¸ö×ÊÔ´¹ÜÀí¿ò¼Ü£¬ÔÊÐíÒ»¸ö¼¯ÈºÉÏÔËÐÐ¶àÖÖ·Ö²¼Ê½Ó¦ÓÃ³ÌÐò¡£
-Flink ¿ÉÒÔºÍÆäËûÓ¦ÓÃ³ÌÐòÒ»ÆðÔÚ YARN ÉÏÔËÐÐ¡£Èç¹ûÒÑ¾­Æô¶¯ÁËYARN£¬ÓÃ»§¾Í²»ÐèÔÙÆô¶¯»ò°²×°ÈÎºÎ¶«Î÷¡£
+Apache [Hadoop YARN](http://hadoop.apache.org/)æ˜¯ä¸€ä¸ªèµ„æºç®¡ç†æ¡†æž¶ï¼Œå…è®¸ä¸€ä¸ªé›†ç¾¤ä¸Šè¿è¡Œå¤šç§åˆ†å¸ƒå¼åº”ç”¨ç¨‹åºã€‚
+Flink å¯ä»¥å’Œå…¶ä»–åº”ç”¨ç¨‹åºä¸€èµ·åœ¨ YARN ä¸Šè¿è¡Œã€‚å¦‚æžœå·²ç»å¯åŠ¨äº†YARNï¼Œç”¨æˆ·å°±ä¸éœ€å†å¯åŠ¨æˆ–å®‰è£…ä»»ä½•ä¸œè¥¿ã€‚
 
-**ÒªÇó**
+**è¦æ±‚**
 
-- Apache Hadoop°æ±¾ÖÁÉÙ2.2
-- HDFS£¨Hadoop·Ö²¼Ê½ÎÄ¼þÏµÍ³£©£¨»òÆäËûÓÉHadoopÖ§³ÖµÄ·Ö²¼Ê½ÎÄ¼þÏµÍ³£©.
+- Apache Hadoopç‰ˆæœ¬è‡³å°‘2.2
+- HDFSï¼ˆHadoopåˆ†å¸ƒå¼æ–‡ä»¶ç³»ç»Ÿï¼‰ï¼ˆæˆ–å…¶ä»–ç”±Hadoopæ”¯æŒçš„åˆ†å¸ƒå¼æ–‡ä»¶ç³»ç»Ÿï¼‰.
 
-Èç¹ûÄãÔÚÊ¹ÓÃFlink YARN¿Í»§¶ËÓÐÎÊÌâÊ±£¬Çë¿´´Ë[ÎÊÌâÂÛÌ³](http://flink.apache.org/faq.html#yarn-deployment).
+å¦‚æžœä½ åœ¨ä½¿ç”¨Flink YARNå®¢æˆ·ç«¯æœ‰é—®é¢˜æ—¶ï¼Œè¯·çœ‹æ­¤[é—®é¢˜è®ºå›](http://flink.apache.org/faq.html#yarn-deployment).
 
-### Æô¶¯Flink»á»°
+### å¯åŠ¨Flinkä¼šè¯
 
-¸úËæÒÔÏÂ½éÉÜÑ§Ï°ÔõÑùÔÚÄãµÄyran¼¯ÈºÖÐÆô¶¯Ò»¸öFlink»á»°.
+è·Ÿéšä»¥ä¸‹ä»‹ç»å­¦ä¹ æ€Žæ ·åœ¨ä½ çš„yrané›†ç¾¤ä¸­å¯åŠ¨ä¸€ä¸ªFlinkä¼šè¯.
 
-Ò»¸ö»á»°½«Æô¶¯ËùÓÐFlink·þÎñ£¨JobManager and TaskManagers£©£¬ÕâÑùÄã¾Í¿ÉÒÔÌá½»³ÌÐò¸ø¼¯ÈºÔËÐÐ£¬¼Ç×¡ÔÚÒ»¸ö»á»°ÖÐ¿ÉÒÔÔËÐÐ
-¶à¸ö³ÌÐò¡£
+ä¸€ä¸ªä¼šè¯å°†å¯åŠ¨æ‰€æœ‰FlinkæœåŠ¡ï¼ˆJobManager and TaskManagersï¼‰ï¼Œè¿™æ ·ä½ å°±å¯ä»¥æäº¤ç¨‹åºç»™é›†ç¾¤è¿è¡Œï¼Œè®°ä½åœ¨ä¸€ä¸ªä¼šè¯ä¸­å¯ä»¥è¿è¡Œ
+å¤šä¸ªç¨‹åºã€‚
 
-#### ÏÂÔØFlink
+#### ä¸‹è½½Flink
 
-ÏÂÔØÒ»¸öHadoop°æ±¾´óÓÚ2µÄFlink°ü£¬¿É´Ó[¸ÃÏÂÔØÒ³](http://flink.apache.org/downloads.html)»ñµÃ¡£Ëü°üº¬ÁËËùÐèµÄÎÄ¼þ¡£
-ÌáÈ¡ÏÂÔØ°üµÄ·½·¨:
+ä¸‹è½½ä¸€ä¸ªHadoopç‰ˆæœ¬å¤§äºŽ2çš„FlinkåŒ…ï¼Œå¯ä»Ž[è¯¥ä¸‹è½½é¡µ](http://flink.apache.org/downloads.html)èŽ·å¾—ã€‚å®ƒåŒ…å«äº†æ‰€éœ€çš„æ–‡ä»¶ã€‚
+æå–ä¸‹è½½åŒ…çš„æ–¹æ³•:
 
 ~~~bash
 tar xvzf flink-1.4-SNAPSHOT-bin-hadoop2.tgz
 cd flink-1.4-SNAPSHOT/
 ~~~
 
-#### Æô¶¯Ò»¸ö»á»°
+#### å¯åŠ¨ä¸€ä¸ªä¼šè¯
 
-Ê¹ÓÃÈçÏÂÃüÁîÀ´Æô¶¯Ò»¸ö»á»°£¬
+ä½¿ç”¨å¦‚ä¸‹å‘½ä»¤æ¥å¯åŠ¨ä¸€ä¸ªä¼šè¯ï¼Œ
 
 ~~~bash
 ./bin/yarn-session.sh
 ~~~
 
-¸ÃÃüÁîµÄ¸ÅÀÀÈçÏÂ£º
+è¯¥å‘½ä»¤çš„æ¦‚è§ˆå¦‚ä¸‹ï¼š
 
 ~~~bash
-Ê¹ÓÃ:
-   ÒªÇó:
-     -n,--container <arg>   YARNÉÏÈÝÆ÷¸öÊý (=taskmanagerµÄ¸öÊý£©
-   ¿ÉÑ¡²ÎÊý
-     -D <arg>                        ¶¯Ì¬ÊôÐÔ
-     -d,--detached                   Æô¶¯·ÖÀë£¨Ìá½»jobµÄ»úÆ÷Óëyarn¼¯Èº·ÖÀë£©
-     -jm,--jobManagerMemory <arg>    JobManager ContainerÄÚ´æ´óÐ¡ [in MB]
-     -nm,--name                      ×Ô¶¨ÒåÌá½»jobµÄÃû×Ö
-     -q,--query                      Õ¹Ê¾yarnµÄ¿ÉÓÃ×ÊÔ´£¬ÄÚ´æºÍºËÊý (memory, cores)
-     -qu,--queue <arg>               Ö¸¶¨yarn¶ÓÁÐ.
-     -s,--slots <arg>                Ã¿¸öTaskManagerµÄ´¦Àí²ÛÊý
-     -tm,--taskManagerMemory <arg>   Ã¿¸öTaskManager ContainerµÄÄÚ´æ´óÐ¡ [in MB]
-     -z,--zookeeperNamespace <arg>   ÔÚ¸ß¿ÉÓÃÄ£Ê½ÏÂ£¬ÃüÃû¿Õ¼äÎªzookeeper´´½¨×ÓÂ·¾¶
+ä½¿ç”¨:
+   è¦æ±‚:
+     -n,--container <arg>   YARNä¸Šå®¹å™¨ä¸ªæ•° (=taskmanagerçš„ä¸ªæ•°ï¼‰
+   å¯é€‰å‚æ•°
+     -D <arg>                        åŠ¨æ€å±žæ€§
+     -d,--detached                   å¯åŠ¨åˆ†ç¦»ï¼ˆæäº¤jobçš„æœºå™¨ä¸Žyarné›†ç¾¤åˆ†ç¦»ï¼‰
+     -jm,--jobManagerMemory <arg>    JobManager Containerå†…å­˜å¤§å° [in MB]
+     -nm,--name                      è‡ªå®šä¹‰æäº¤jobçš„åå­—
+     -q,--query                      å±•ç¤ºyarnçš„å¯ç”¨èµ„æºï¼Œå†…å­˜å’Œæ ¸æ•° (memory, cores)
+     -qu,--queue <arg>               æŒ‡å®šyarné˜Ÿåˆ—.
+     -s,--slots <arg>                æ¯ä¸ªTaskManagerçš„å¤„ç†æ§½æ•°
+     -tm,--taskManagerMemory <arg>   æ¯ä¸ªTaskManager Containerçš„å†…å­˜å¤§å° [in MB]
+     -z,--zookeeperNamespace <arg>   åœ¨é«˜å¯ç”¨æ¨¡å¼ä¸‹ï¼Œå‘½åç©ºé—´ä¸ºzookeeperåˆ›å»ºå­è·¯å¾„
 ~~~
 
-Çë×¢Òâ£¬¿Í»§¶ËÐèÒª YARN_CONF_DIR »ò HADOOP_CONF_DIR »·¾³±äÁ¿±»ÉèÖÃºÃ£¬¿ÉÒÔÍ¨¹ýËü¶ÁÈ¡ YARN ºÍ HDFS µÄÅäÖÃ¡£
+è¯·æ³¨æ„ï¼Œå®¢æˆ·ç«¯éœ€è¦ YARN_CONF_DIR æˆ– HADOOP_CONF_DIR çŽ¯å¢ƒå˜é‡è¢«è®¾ç½®å¥½ï¼Œå¯ä»¥é€šè¿‡å®ƒè¯»å– YARN å’Œ HDFS çš„é…ç½®ã€‚
 
-**Àý×Ó:** ÈçÏÂÃüÁî·ÖÅä10¸öTask Manager£¬Ã¿¸öÓµÓÐ8GBÄÚ´æºÍ32¸ö´¦Àí²Û£º
+**ä¾‹å­:** å¦‚ä¸‹å‘½ä»¤åˆ†é…10ä¸ªTask Managerï¼Œæ¯ä¸ªæ‹¥æœ‰8GBå†…å­˜å’Œ32ä¸ªå¤„ç†æ§½ï¼š
 
 ~~~bash
 ./bin/yarn-session.sh -n 10 -tm 8192 -s 32
 ~~~
 
-ÏµÍ³½«Ê¹ÓÃconf/flink-conf.yamlÏÂµÄÅäÖÃ¡£Èç¹ûÄãÏë¸ü¸ÄÒ»Ð©ÅäÖÃ£¬Çë²Î¿¼ÅäÖÃÊÖ²á¡£
+ç³»ç»Ÿå°†ä½¿ç”¨conf/flink-conf.yamlä¸‹çš„é…ç½®ã€‚å¦‚æžœä½ æƒ³æ›´æ”¹ä¸€äº›é…ç½®ï¼Œè¯·å‚è€ƒé…ç½®æ‰‹å†Œã€‚
 
-FlinkÔÚYARNÉÏ£¬½«»áÖØÐ´ÈçÏÂÅäÖÃ²ÎÊýµÄÖµ£¬jobmanager.rpc.address£¨ÒòÎªJob Manager×ÜÊÇ·ÖÅäÔÚ²»Í¬»úÆ÷ÉÏ£©£¬
-taskmanager.tmp.dirs£¨ÎÒÃÇÊ¹ÓÃYARN¸øµÄtmpÄ¿Â¼£©£¬parallelism.default£¨Èç¹û²Û¸öÊý±»Ö¸¶¨£©¡£
+Flinkåœ¨YARNä¸Šï¼Œå°†ä¼šé‡å†™å¦‚ä¸‹é…ç½®å‚æ•°çš„å€¼ï¼Œjobmanager.rpc.addressï¼ˆå› ä¸ºJob Manageræ€»æ˜¯åˆ†é…åœ¨ä¸åŒæœºå™¨ä¸Šï¼‰ï¼Œ
+taskmanager.tmp.dirsï¼ˆæˆ‘ä»¬ä½¿ç”¨YARNç»™çš„tmpç›®å½•ï¼‰ï¼Œparallelism.defaultï¼ˆå¦‚æžœæ§½ä¸ªæ•°è¢«æŒ‡å®šï¼‰ã€‚
 
-Èç¹ûÄã²»Ïë¸Ä±äÅäÖÃÎÄ¼þÀ´ÉèÖÃÅäÖÃ²ÎÊý£¬ÕâÀïÓÐ¸ö·½·¨À´»ñµÃ¶¯Ì¬ÊôÐÔ£¬Í¨¹ý-D±êÊ¾¡£ÕâÑù¿ÉÒÔÍ¨¹ýÒÔÏÂ·½·¨À´´«µÝ²ÎÊý£¬
+å¦‚æžœä½ ä¸æƒ³æ”¹å˜é…ç½®æ–‡ä»¶æ¥è®¾ç½®é…ç½®å‚æ•°ï¼Œè¿™é‡Œæœ‰ä¸ªæ–¹æ³•æ¥èŽ·å¾—åŠ¨æ€å±žæ€§ï¼Œé€šè¿‡-Dæ ‡ç¤ºã€‚è¿™æ ·å¯ä»¥é€šè¿‡ä»¥ä¸‹æ–¹æ³•æ¥ä¼ é€’å‚æ•°ï¼Œ
 -Dfs.overwrite-files=true -Dtaskmanager.network.memory.min=536346624.
 
-Àý×Ó½«ÇëÇóÆô¶¯11¸öÈÝÆ÷£¨¾¡¹Ü½öÐè10¸öÈÝÆ÷£©£¬ÒòÎªÕâÐèÒª¶îÍâµÄ1¸öÈÝÆ÷¸øApplicationMaster and Job Manager.
+ä¾‹å­å°†è¯·æ±‚å¯åŠ¨11ä¸ªå®¹å™¨ï¼ˆå°½ç®¡ä»…éœ€10ä¸ªå®¹å™¨ï¼‰ï¼Œå› ä¸ºè¿™éœ€è¦é¢å¤–çš„1ä¸ªå®¹å™¨ç»™ApplicationMaster and Job Manager.
 
-Ö»ÒªFlink²¿ÊðÔÚYARN¼¯ÈºÉÏ£¬Ëü»áÈÃÄã¿´µ½Job Manager¼äµÄÁ¬½ÓÏ¸½Ú¡£
+åªè¦Flinkéƒ¨ç½²åœ¨YARNé›†ç¾¤ä¸Šï¼Œå®ƒä¼šè®©ä½ çœ‹åˆ°Job Manageré—´çš„è¿žæŽ¥ç»†èŠ‚ã€‚
 
-Í¨¹ýÍ£Ö¹unix½ø³Ì£¨Ê¹ÓÃCTRL+CÃüÁî£©À´Í£Ö¹YARN»á»°£¬»òÕßÔÚ¿Í»§¶ËÊäÈëstop¡£
+é€šè¿‡åœæ­¢unixè¿›ç¨‹ï¼ˆä½¿ç”¨CTRL+Cå‘½ä»¤ï¼‰æ¥åœæ­¢YARNä¼šè¯ï¼Œæˆ–è€…åœ¨å®¢æˆ·ç«¯è¾“å…¥stopã€‚
 
-FlinkÔÚYARNÉÏ½ö½öÆô¶¯ËùÇëÇóµÄÈÝÆ÷£¬Èç¹ûYARN¼¯ÈºÉÏÓÐ×ã¹»µÄ¿ÉÓÃ×ÊÔ´¡£´ó¶àYARNµ÷¶È³ÌÐòÎªÈÝÆ÷£¬¼ÆËãÇëÇóÄÚ´æ£¬Ò»Ð©»¹¼ÆËãvcoresÊýÁ¿¡£
+Flinkåœ¨YARNä¸Šä»…ä»…å¯åŠ¨æ‰€è¯·æ±‚çš„å®¹å™¨ï¼Œå¦‚æžœYARNé›†ç¾¤ä¸Šæœ‰è¶³å¤Ÿçš„å¯ç”¨èµ„æºã€‚å¤§å¤šYARNè°ƒåº¦ç¨‹åºä¸ºå®¹å™¨ï¼Œè®¡ç®—è¯·æ±‚å†…å­˜ï¼Œä¸€äº›è¿˜è®¡ç®—vcoresæ•°é‡ã€‚
 
-Ä¬ÈÏÇé¿ö£¬vcoresÊýÁ¿µÈÓÚ´¦Àí½ÚµãÊý£¨-s£©£¬yarn.containers.vcoresÔÊÐí×Ô¶¨ÒåÖµÖØÐ´vcoresÊýÁ¿¡£
+é»˜è®¤æƒ…å†µï¼Œvcoresæ•°é‡ç­‰äºŽå¤„ç†èŠ‚ç‚¹æ•°ï¼ˆ-sï¼‰ï¼Œyarn.containers.vcoreså…è®¸è‡ªå®šä¹‰å€¼é‡å†™vcoresæ•°é‡ã€‚
 
-#### ¸ôÀëYARN»á»°
+#### éš”ç¦»YARNä¼šè¯
 
-Èç¹ûÄã²»Ïë±£³ÖFlink YARN¿Í»§¶ËÒ»Ö±ÔËÐÐ£¬¿ÉÒÔÆô¶¯¸ôÀëYARN»á»°À´´ïµ½Ä¿µÄ¡£Õâ¸ö²ÎÊý¼´ÊÇ-d»ò--detached¡£
-ÔÚ´ËÇé¿öÏÂ£¬Flink YARN¿Í»§¶Ë½«½öÌá½»Flinkµ½¼¯ÈºÖÐ£¬È»ºó¹Ø±ÕÁ¬½Ó¡£×¢ÒâµÄÊÇÔÚ´ËÇé¿öÏÂ£¬½«²»¿ÉÄÜÊ¹ÓÃFlinkÀ´Í£Ö¹YARN»á»°¡£
-Ê¹ÓÃYARNÃüÁî£¨yarn application --kill <appId>£©À´Í£Ö¹YARN»á»°¡£
+å¦‚æžœä½ ä¸æƒ³ä¿æŒFlink YARNå®¢æˆ·ç«¯ä¸€ç›´è¿è¡Œï¼Œå¯ä»¥å¯åŠ¨éš”ç¦»YARNä¼šè¯æ¥è¾¾åˆ°ç›®çš„ã€‚è¿™ä¸ªå‚æ•°å³æ˜¯-dæˆ–--detachedã€‚
+åœ¨æ­¤æƒ…å†µä¸‹ï¼ŒFlink YARNå®¢æˆ·ç«¯å°†ä»…æäº¤Flinkåˆ°é›†ç¾¤ä¸­ï¼Œç„¶åŽå…³é—­è¿žæŽ¥ã€‚æ³¨æ„çš„æ˜¯åœ¨æ­¤æƒ…å†µä¸‹ï¼Œå°†ä¸å¯èƒ½ä½¿ç”¨Flinkæ¥åœæ­¢YARNä¼šè¯ã€‚
+ä½¿ç”¨YARNå‘½ä»¤ï¼ˆyarn application --kill <appId>ï¼‰æ¥åœæ­¢YARNä¼šè¯ã€‚
 
-#### ¹ØÁªÏÖÓÐ»á»°
+#### å…³è”çŽ°æœ‰ä¼šè¯
 
-Ê¹ÓÃÈçÏÂÃüÁîÆô¶¯Ò»¸ö»á»°
+ä½¿ç”¨å¦‚ä¸‹å‘½ä»¤å¯åŠ¨ä¸€ä¸ªä¼šè¯
 
 ~~~bash
 ./bin/yarn-session.sh
 ~~~
-Õâ¸öÃüÁî½«Õ¹Ê¾ÈçÏÂ¸ÅÀÀ£º
+è¿™ä¸ªå‘½ä»¤å°†å±•ç¤ºå¦‚ä¸‹æ¦‚è§ˆï¼š
 
 ~~~bash
-²ÎÊý±ØÐë:
+å‚æ•°å¿…é¡»:
      -id,--applicationId <yarnAppId> YARN application Id
 ~~~
-ÈçÖ®Ç°ËùÊö£¬YARN_CONF_DIR »ò HADOOP_CONF_DIR»·¾³±äÁ¿ÐèÉèÖÃÄÜÈÃYARN ºÍ HDFS ÅäÖÃ¶ÁÈ¡µ½¡£
+å¦‚ä¹‹å‰æ‰€è¿°ï¼ŒYARN_CONF_DIR æˆ– HADOOP_CONF_DIRçŽ¯å¢ƒå˜é‡éœ€è®¾ç½®èƒ½è®©YARN å’Œ HDFS é…ç½®è¯»å–åˆ°ã€‚
 
-**Àý×Ó:** ¼ÙÉèÒÔÏÂÃüÁî¹ØÁªÒ»¸öÕýÔËÐÐµÄFlink YARN»á»°application_1463870264508_0029
+**ä¾‹å­:** å‡è®¾ä»¥ä¸‹å‘½ä»¤å…³è”ä¸€ä¸ªæ­£è¿è¡Œçš„Flink YARNä¼šè¯application_1463870264508_0029
 
 ~~~bash
 ./bin/yarn-session.sh -id application_1463870264508_0029
 ~~~
 
-Ê¹ÓÃYARN ×ÊÔ´¹ÜÀíÆ÷À´¾ö¶¨Job ManagerµÄRPC¶Ë¿Ú´Ó¶ø¹ØÁªÒ»¸öÔËÐÐµÄ»á»°¡£
-Í£Ö¹YARN»á»°¿ÉÍ¨¹ýÍ£Ö¹unix½ø³Ì£¨CTRL+C£©»òÍ¨¹ýÔÙ¿Í»§¶ËÊäÈëstop¡£
+ä½¿ç”¨YARN èµ„æºç®¡ç†å™¨æ¥å†³å®šJob Managerçš„RPCç«¯å£ä»Žè€Œå…³è”ä¸€ä¸ªè¿è¡Œçš„ä¼šè¯ã€‚
+åœæ­¢YARNä¼šè¯å¯é€šè¿‡åœæ­¢unixè¿›ç¨‹ï¼ˆCTRL+Cï¼‰æˆ–é€šè¿‡å†å®¢æˆ·ç«¯è¾“å…¥stopã€‚
 
-### Ìá½»jobµ½Flink
+### æäº¤jobåˆ°Flink
 
-Ê¹ÓÃÈçÏÂÃüÁîÌá½»Ò»¸öFlink³ÌÐòµ½YARN¼¯Èº£º
+ä½¿ç”¨å¦‚ä¸‹å‘½ä»¤æäº¤ä¸€ä¸ªFlinkç¨‹åºåˆ°YARNé›†ç¾¤ï¼š
 
 ~~~bash
 ./bin/flink
 ~~~
 
-Çë²Î¿¼ÃüÁîÐÐ¿Í»§¶ËÎÄµµ¡£
-ÃüÁîÐÐ°ïÖú²Ëµ¥ÈçÏÂ£º
+è¯·å‚è€ƒå‘½ä»¤è¡Œå®¢æˆ·ç«¯æ–‡æ¡£ã€‚
+å‘½ä»¤è¡Œå¸®åŠ©èœå•å¦‚ä¸‹ï¼š
 
 ~~~bash
 [...]
-run²Ù×÷±àÒëºÍÔËÐÐ³ÌÐò¡£
+runæ“ä½œç¼–è¯‘å’Œè¿è¡Œç¨‹åºã€‚
 
- Óï·¨: run [OPTIONS] <jar-file> <arguments>
-  "run" ²Ù×÷²ÎÊý:
-     -c,--class <classname>           ³ÌÐòÈë¿ÚµÄÀà ("main"·½·¨ »ò "getPlan()" ·½·¨.jarÎÄ¼þÃ»ÓÐÔÚÆäÇåµ¥ÖÐÖ¸¶¨Àà²ÅÐèÒª.
-     -m,--jobmanager <host:port>      Á¬½ÓJob Manager£¨master£©µÄµØÖ·. Ê¹ÓÃ´Ë²ÎÊýÁ¬½ÓÒ»¸ö²»Í¬µÄjob¹ÜÀíÆ÷£¬¶ø²»ÊÇÔÚÅäÖÃÖÐÖ¸Ã÷.
-     -p,--parallelism <parallelism>   ÔËÐÐ³ÌÐòµÄ²¢ÐÐ¶È. Õâ¸ö¿ÉÑ¡²ÎÊý¿É¸²¸ÇÅäÖÃÖÐÖ¸¶¨µÄÄ¬ÈÏÖµ¡£
+ è¯­æ³•: run [OPTIONS] <jar-file> <arguments>
+  "run" æ“ä½œå‚æ•°:
+     -c,--class <classname>           ç¨‹åºå…¥å£çš„ç±» ("main"æ–¹æ³• æˆ– "getPlan()" æ–¹æ³•.jaræ–‡ä»¶æ²¡æœ‰åœ¨å…¶æ¸…å•ä¸­æŒ‡å®šç±»æ‰éœ€è¦.
+     -m,--jobmanager <host:port>      è¿žæŽ¥Job Managerï¼ˆmasterï¼‰çš„åœ°å€. ä½¿ç”¨æ­¤å‚æ•°è¿žæŽ¥ä¸€ä¸ªä¸åŒçš„jobç®¡ç†å™¨ï¼Œè€Œä¸æ˜¯åœ¨é…ç½®ä¸­æŒ‡æ˜Ž.
+     -p,--parallelism <parallelism>   è¿è¡Œç¨‹åºçš„å¹¶è¡Œåº¦. è¿™ä¸ªå¯é€‰å‚æ•°å¯è¦†ç›–é…ç½®ä¸­æŒ‡å®šçš„é»˜è®¤å€¼ã€‚
 ~~~
 
-ÓÃrun²Ù×÷Ìá½»Ò»¸öjobµ½YARNÉÏ¡£¿Í»§¶Ë¿ÉÒÔ¾ö¶¨Job ManagerµÄµØÖ·¡£º±¼ûÇé¿öÏÂ£¬Äã¿ÉÊ¹ÓÃ-m²ÎÊýÖ¸¶¨Job ManagerµØÖ·¡£Job ManagerµØÖ·¿ÉÔÚYARN¿ØÖÆÌ¨¼ûµ½¡£
+ç”¨runæ“ä½œæäº¤ä¸€ä¸ªjobåˆ°YARNä¸Šã€‚å®¢æˆ·ç«¯å¯ä»¥å†³å®šJob Managerçš„åœ°å€ã€‚ç½•è§æƒ…å†µä¸‹ï¼Œä½ å¯ä½¿ç”¨-må‚æ•°æŒ‡å®šJob Manageråœ°å€ã€‚Job Manageråœ°å€å¯åœ¨YARNæŽ§åˆ¶å°è§åˆ°ã€‚
 
-**Àý×Ó**
+**ä¾‹å­**
 
 ~~~bash
 wget -O LICENSE-2.0.txt http://www.apache.org/licenses/LICENSE-2.0.txt
@@ -198,131 +198,131 @@ hadoop fs -copyFromLocal LICENSE-2.0.txt hdfs:/// ...
 ./bin/flink run ./examples/batch/WordCount.jar \
         hdfs:///..../LICENSE-2.0.txt hdfs:///.../wordcount-result.txt
 ~~~
-Èç¹û´æÔÚÈçÏÂ´íÎó£¬ÇëÈ·±£ËùÓÐTask ManagerÒÑ¾­Æô¶¯:
+å¦‚æžœå­˜åœ¨å¦‚ä¸‹é”™è¯¯ï¼Œè¯·ç¡®ä¿æ‰€æœ‰Task Managerå·²ç»å¯åŠ¨:
 
 ~~~bash
 Exception in thread "main" org.apache.flink.compiler.CompilerException:
     Available instances could not be determined from job manager: Connection timed out.
 ~~~
 
-Äã¿ÉÒÔÔÚJob ManagerµÄweb½Ó¿ÚÖÐ²é¿´Task ManagerµÄÊýÁ¿¡£½Ó¿ÚµÄµØÖ·»áÔÚYARN»á»°µÄ¿ØÖÆÌ¨ÖÐÊä³ö¡£
-Èç¹ûTask ManagerÒ»·ÖÖÓÄÚÃ»ÓÐÏÔÊ¾³ö£¬ÄÇÃ´ÄãÓ¦¸ÃÔÚÈÕÖ¾ÎÄ¼þÖÐ¼ì²é´íÎóÔÚÄÄ¡£
+ä½ å¯ä»¥åœ¨Job Managerçš„webæŽ¥å£ä¸­æŸ¥çœ‹Task Managerçš„æ•°é‡ã€‚æŽ¥å£çš„åœ°å€ä¼šåœ¨YARNä¼šè¯çš„æŽ§åˆ¶å°ä¸­è¾“å‡ºã€‚
+å¦‚æžœTask Managerä¸€åˆ†é’Ÿå†…æ²¡æœ‰æ˜¾ç¤ºå‡ºï¼Œé‚£ä¹ˆä½ åº”è¯¥åœ¨æ—¥å¿—æ–‡ä»¶ä¸­æ£€æŸ¥é”™è¯¯åœ¨å“ªã€‚
 
-## ÔÚYARNÉÏÔËÐÐÒ»¸öFlink ÈÎÎñ
+## åœ¨YARNä¸Šè¿è¡Œä¸€ä¸ªFlink ä»»åŠ¡
 
-ÉÏÊöÎÄµµÃèÊöÁËÈçºÎÆô¶¯Ò»¸öFlink¼¯ÈºÔÚHadoop YARN»·¾³ÏÂ¡£ÕâÒ²¿ÉÒÔ½öÖ´ÐÐÒ»¸öjob¶øÆô¶¯FlinkÔÚYARNÏÂ¡£
-Çë×¢Òâ¿Í»§¶ËÐèÒª-ynÖµÀ´ÉèÖÃTask ManagerµÄÊýÁ¿¡£
+ä¸Šè¿°æ–‡æ¡£æè¿°äº†å¦‚ä½•å¯åŠ¨ä¸€ä¸ªFlinké›†ç¾¤åœ¨Hadoop YARNçŽ¯å¢ƒä¸‹ã€‚è¿™ä¹Ÿå¯ä»¥ä»…æ‰§è¡Œä¸€ä¸ªjobè€Œå¯åŠ¨Flinkåœ¨YARNä¸‹ã€‚
+è¯·æ³¨æ„å®¢æˆ·ç«¯éœ€è¦-ynå€¼æ¥è®¾ç½®Task Managerçš„æ•°é‡ã€‚
 
-***Àý×Ó:***
+***ä¾‹å­:***
 
 ~~~bash
 ./bin/flink run -m yarn-cluster -yn 2 ./examples/batch/WordCount.jar
 ~~~
 
-ÔÚYARN»á»°ÏÂÃüÁîÐÐ ./bin/flink toolÊÇ¿ÉÑ¡µÄ£¬ÒÔy»òyarnÇ°×º¡£
+åœ¨YARNä¼šè¯ä¸‹å‘½ä»¤è¡Œ ./bin/flink toolæ˜¯å¯é€‰çš„ï¼Œä»¥yæˆ–yarnå‰ç¼€ã€‚
 
-×¢Òâ£ºÄã¿ÉÒÔÍ¨¹ýÉèÖÃFLINK_CONF_DIR»·¾³±äÁ¿À´ÎªÃ¿¸öjobÊ¹ÓÃ²»Í¬µÄÅäÖÃÄ¿Â¼¡£
-Ê¹ÓÃÕâ¸ö½«¿½±´À´×ÔFlink·Ö²¼ÏÂconfÄ¿Â¼£¬²¢¸üÐÂÃ¿¸öjobµÄÈÕÖ¾¡£
+æ³¨æ„ï¼šä½ å¯ä»¥é€šè¿‡è®¾ç½®FLINK_CONF_DIRçŽ¯å¢ƒå˜é‡æ¥ä¸ºæ¯ä¸ªjobä½¿ç”¨ä¸åŒçš„é…ç½®ç›®å½•ã€‚
+ä½¿ç”¨è¿™ä¸ªå°†æ‹·è´æ¥è‡ªFlinkåˆ†å¸ƒä¸‹confç›®å½•ï¼Œå¹¶æ›´æ–°æ¯ä¸ªjobçš„æ—¥å¿—ã€‚
 
-×¢Òâ£º×éºÏ-m yarn-clusterºÍ¸ôÀëYARN»á»°£¨-yd£©ÃüÁî¿É"·Ù»ÙºÍÍüµô"Ìá½»Flink jobÔÚYARN¼¯ÈºÖÐ¡£
-ÔÚ´ËÇé¿öÏÂ£¬ÄãµÄÓ¦ÓÃ³ÌÐò½«µÃ²»µ½ÈÎºÎÈ·ÈÏ½á¹û»ò ÅÅ³ýExecutionEnvironment.execute()µÄÇëÇóÏûÏ¢¡£
+æ³¨æ„ï¼šç»„åˆ-m yarn-clusterå’Œéš”ç¦»YARNä¼šè¯ï¼ˆ-ydï¼‰å‘½ä»¤å¯"ç„šæ¯å’Œå¿˜æŽ‰"æäº¤Flink jobåœ¨YARNé›†ç¾¤ä¸­ã€‚
+åœ¨æ­¤æƒ…å†µä¸‹ï¼Œä½ çš„åº”ç”¨ç¨‹åºå°†å¾—ä¸åˆ°ä»»ä½•ç¡®è®¤ç»“æžœæˆ– æŽ’é™¤ExecutionEnvironment.execute()çš„è¯·æ±‚æ¶ˆæ¯ã€‚
 
-## Ê¹ÓÃjars&Classpath
+## ä½¿ç”¨jars&Classpath
 
-Ä¬ÈÏÏÂ£¬Flink»á°ÑÓÃµ½µÄjars´ø½øÏµÍ³Â·¾¶£¬µ±ÔËÐÐÒ»¸öjobÊ±¡£Õâ¸öÐÐÎª¿ÉÒÔÓÃyarn.per-job-cluster.include-user-jar
-²ÎÊýÀ´¿ØÖÆ¡£
+é»˜è®¤ä¸‹ï¼ŒFlinkä¼šæŠŠç”¨åˆ°çš„jarså¸¦è¿›ç³»ç»Ÿè·¯å¾„ï¼Œå½“è¿è¡Œä¸€ä¸ªjobæ—¶ã€‚è¿™ä¸ªè¡Œä¸ºå¯ä»¥ç”¨yarn.per-job-cluster.include-user-jar
+å‚æ•°æ¥æŽ§åˆ¶ã€‚
 
-µ±ÉèÖÃÕâ¸ö²ÎÊýÎªDISABLEDÊ±£¬Flink½«°ÑÓÃ»§Â·¾¶µÄjars´ø½ø¡£
+å½“è®¾ç½®è¿™ä¸ªå‚æ•°ä¸ºDISABLEDæ—¶ï¼ŒFlinkå°†æŠŠç”¨æˆ·è·¯å¾„çš„jarså¸¦è¿›ã€‚
 
-user-jarsÔÚÏµÍ³Â·¾¶Î»ÖÃ¿ÉÒÔÍ¨¹ýÉèÖÃ²ÎÊýÀ´¿ØÖÆ£º
-- ORDER£ºÄ¬ÈÏ£¬°´ÕÕ×ÖµäÂ·¾¶Ë³ÐòÌí¼Ójar½øÏµÍ³¡£
-- FIRST:ÏµÍ³Â·¾¶×îÇ°µÄÌí¼Ó¡£
-- LAST:ÏµÍ³Â·¾¶×îºóµÄÌí¼Ó¡£
+user-jarsåœ¨ç³»ç»Ÿè·¯å¾„ä½ç½®å¯ä»¥é€šè¿‡è®¾ç½®å‚æ•°æ¥æŽ§åˆ¶ï¼š
+- ORDERï¼šé»˜è®¤ï¼ŒæŒ‰ç…§å­—å…¸è·¯å¾„é¡ºåºæ·»åŠ jarè¿›ç³»ç»Ÿã€‚
+- FIRST:ç³»ç»Ÿè·¯å¾„æœ€å‰çš„æ·»åŠ ã€‚
+- LAST:ç³»ç»Ÿè·¯å¾„æœ€åŽçš„æ·»åŠ ã€‚
 
-## FlinkÔÚYARNÉÏµÄ»Ö¸´ÐÐÎª
+## Flinkåœ¨YARNä¸Šçš„æ¢å¤è¡Œä¸º
 
-FlinkµÄYARN¿Í»§¶ËÓÐÈçÏÂÅäÖÃ²ÎÊýÀ´¿ØÖÆÐÐÎªµ±ÈÝÆ÷Ê§°Üºó£¬ÕâÐ©²ÎÊý¿ÉÍ¨¹ýconf/flink-conf.yamlÉèÖÃ£¬Ò²¿ÉÒÔÍ¨¹ý
-ÔÚÆô¶¯YARN»á»°Ê±ÓÃ-D²ÎÊýÉèÖÃ¡£
+Flinkçš„YARNå®¢æˆ·ç«¯æœ‰å¦‚ä¸‹é…ç½®å‚æ•°æ¥æŽ§åˆ¶è¡Œä¸ºå½“å®¹å™¨å¤±è´¥åŽï¼Œè¿™äº›å‚æ•°å¯é€šè¿‡conf/flink-conf.yamlè®¾ç½®ï¼Œä¹Ÿå¯ä»¥é€šè¿‡
+åœ¨å¯åŠ¨YARNä¼šè¯æ—¶ç”¨-Då‚æ•°è®¾ç½®ã€‚
 
-- `yarn.reallocate-failed`: ¿ØÖÆFlinkÊÇ·ñÖØÐÂ·ÖÅäÊ§°ÜµÄTask Manager¡£Ä¬ÈÏtrue¡£
-- `yarn.maximum-failed-containers`: ApplicationMaster½ÓÊÜµÄ×î´óÈÝÆ÷Ê§°Ü¸öÊý£¬Ö±µ½YARN»á»°Ê§°Ü¡£Ä¬ÈÏÊÇ-nÉèÖÃµÄTask Manager¸öÊý¡£
-- `yarn.application-attempts`: ApplicationMaster£¨+ÆäÓµÓÐµÄTask Manager¸öÊý£©µÄ³¢ÊÔ´ÎÊý£¬Ä¬ÈÏ1£¬ApplicationMasterÊ§°ÜÔòYARN»á»°Õû¸öÊ§°Ü¡£ÔÚYARNÖÐÖ¸¶¨¸ü´óÖµÒÔ±ãÖØÆôApplicationMaster¡£
+- `yarn.reallocate-failed`: æŽ§åˆ¶Flinkæ˜¯å¦é‡æ–°åˆ†é…å¤±è´¥çš„Task Managerã€‚é»˜è®¤trueã€‚
+- `yarn.maximum-failed-containers`: ApplicationMasteræŽ¥å—çš„æœ€å¤§å®¹å™¨å¤±è´¥ä¸ªæ•°ï¼Œç›´åˆ°YARNä¼šè¯å¤±è´¥ã€‚é»˜è®¤æ˜¯-nè®¾ç½®çš„Task Managerä¸ªæ•°ã€‚
+- `yarn.application-attempts`: ApplicationMasterï¼ˆ+å…¶æ‹¥æœ‰çš„Task Managerä¸ªæ•°ï¼‰çš„å°è¯•æ¬¡æ•°ï¼Œé»˜è®¤1ï¼ŒApplicationMasterå¤±è´¥åˆ™YARNä¼šè¯æ•´ä¸ªå¤±è´¥ã€‚åœ¨YARNä¸­æŒ‡å®šæ›´å¤§å€¼ä»¥ä¾¿é‡å¯ApplicationMasterã€‚
 
-## µ÷ÊÔÒ»¸öÊ§°ÜµÄYARN»á»°
+## è°ƒè¯•ä¸€ä¸ªå¤±è´¥çš„YARNä¼šè¯
 
-ÓÐºÜ¶àÔ­ÒòÊ¹µÃÒ»¸öFlinkµÄYARN»á»°Ê§°Ü¡£Ò»¸ö´íÎóµÄHadoop°²×°£¨HDFSÈ¨ÏÞ£¬YARNÅäÖÃ£©£¬°æ±¾¼æÈÝ£¨ÔËÐÐFlinkÔÚvanillaµÄHadoopÉÏ£¬È´ÒÀÀµCloudera Hadoop£©»òÆäËûÔ­Òò¡£
+æœ‰å¾ˆå¤šåŽŸå› ä½¿å¾—ä¸€ä¸ªFlinkçš„YARNä¼šè¯å¤±è´¥ã€‚ä¸€ä¸ªé”™è¯¯çš„Hadoopå®‰è£…ï¼ˆHDFSæƒé™ï¼ŒYARNé…ç½®ï¼‰ï¼Œç‰ˆæœ¬å…¼å®¹ï¼ˆè¿è¡ŒFlinkåœ¨vanillaçš„Hadoopä¸Šï¼Œå´ä¾èµ–Cloudera Hadoopï¼‰æˆ–å…¶ä»–åŽŸå› ã€‚
 
-### ÈÕÖ¾ÎÄ¼þ
+### æ—¥å¿—æ–‡ä»¶
 
-²¿ÊðÊ±Flink YARN»á»°Ê§°Ü£¬ÓÃ»§±ØÐëÒÀ¿¿Hadoop YARNµÄÈÕÖ¾¡£
-×îÓÐÓÃµÄÊÇYARNÈÕÖ¾¼¯ºÏ¡£ÓÃ»§±ØÐëÔÚyarn-site.xmlÎÄ¼þÖÐ°Ñyarn.log-aggregation-enable²ÎÊýÖµÉèÖÃÎªtrue£¬
-Ê¹ÆäÉúÐ§¡£Ö»ÒªËüÒ»¾­ÉúÐ§£¬ÓÃ»§¿ÉÒÔÊ¹ÓÃÈçÏÂÃüÁîÀ´¼ìË÷Ò»¸ö£¨Ê§°Ü£©yarn»á»°µÄËùÓÐÈÕÖ¾ÎÄ¼þ¡£
+éƒ¨ç½²æ—¶Flink YARNä¼šè¯å¤±è´¥ï¼Œç”¨æˆ·å¿…é¡»ä¾é Hadoop YARNçš„æ—¥å¿—ã€‚
+æœ€æœ‰ç”¨çš„æ˜¯YARNæ—¥å¿—é›†åˆã€‚ç”¨æˆ·å¿…é¡»åœ¨yarn-site.xmlæ–‡ä»¶ä¸­æŠŠyarn.log-aggregation-enableå‚æ•°å€¼è®¾ç½®ä¸ºtrueï¼Œ
+ä½¿å…¶ç”Ÿæ•ˆã€‚åªè¦å®ƒä¸€ç»ç”Ÿæ•ˆï¼Œç”¨æˆ·å¯ä»¥ä½¿ç”¨å¦‚ä¸‹å‘½ä»¤æ¥æ£€ç´¢ä¸€ä¸ªï¼ˆå¤±è´¥ï¼‰yarnä¼šè¯çš„æ‰€æœ‰æ—¥å¿—æ–‡ä»¶ã€‚
 
 ~~~bash
 yarn logs -applicationId <application ID>
 ~~~
 
-ÔÚ»á»°½áÊøÊ±ÇëµÈ´ý¼¸ÃëÖÓÖ±µ½ÈÕÖ¾Õ¹Ê¾³öÀ´¡£
+åœ¨ä¼šè¯ç»“æŸæ—¶è¯·ç­‰å¾…å‡ ç§’é’Ÿç›´åˆ°æ—¥å¿—å±•ç¤ºå‡ºæ¥ã€‚
 
-### YARN¿Í»§¶Ë¿ØÖÆÌ¨&web½Ó¿Ú
+### YARNå®¢æˆ·ç«¯æŽ§åˆ¶å°&webæŽ¥å£
 
-Flink YARN¿Í»§¶ËÒ²¿ÉÒÔÔÚÖÕ¶ËÊä³ö´íÎóÐÅÏ¢£¬Èç¹ûÔÚÔËÐÐÊ±³ö´í£¨ÈçÄ³Ê±¼äTask ManagerÍ£Ö¹¹¤×÷£©.´ËÍâ£¬ÓÐYARN×ÊÔ´¹ÜÀíÆ÷µÄweb½Ó¿Ú£¨Ä¬ÈÏÊÇ8088¶Ë¿Ú£©£¬Õâ¸ö×ÊÔ´¹ÜÀíÆ÷web½Ó¿ÚµÄ¶Ë¿ÚÓÉ
-yarn.resourcemanager.webapp.address²ÎÊýÖµ¾ö¶¨¡£
+Flink YARNå®¢æˆ·ç«¯ä¹Ÿå¯ä»¥åœ¨ç»ˆç«¯è¾“å‡ºé”™è¯¯ä¿¡æ¯ï¼Œå¦‚æžœåœ¨è¿è¡Œæ—¶å‡ºé”™ï¼ˆå¦‚æŸæ—¶é—´Task Manageråœæ­¢å·¥ä½œï¼‰.æ­¤å¤–ï¼Œæœ‰YARNèµ„æºç®¡ç†å™¨çš„webæŽ¥å£ï¼ˆé»˜è®¤æ˜¯8088ç«¯å£ï¼‰ï¼Œè¿™ä¸ªèµ„æºç®¡ç†å™¨webæŽ¥å£çš„ç«¯å£ç”±
+yarn.resourcemanager.webapp.addresså‚æ•°å€¼å†³å®šã€‚
 
-ÔÚwebÒ³Ãæ¿É·ÃÎÊÔËÐÐYARNÓ¦ÓÃ³ÌÐòµÄÈÕÖ¾ÎÄ¼þ²¢¿ÉÏÔÊ¾Ê§°ÜÓ¦ÓÃ³ÌÐòµÄÕï¶ÏÐÅÏ¢¡£
+åœ¨webé¡µé¢å¯è®¿é—®è¿è¡ŒYARNåº”ç”¨ç¨‹åºçš„æ—¥å¿—æ–‡ä»¶å¹¶å¯æ˜¾ç¤ºå¤±è´¥åº”ç”¨ç¨‹åºçš„è¯Šæ–­ä¿¡æ¯ã€‚
 
-## ÎªÖ¸¶¨Hadoop°æ±¾¹¹½¨YARN¿Í»§¶Ë
+## ä¸ºæŒ‡å®šHadoopç‰ˆæœ¬æž„å»ºYARNå®¢æˆ·ç«¯
 
-ÓÃ»§Ê¹ÓÃÏñHortonworks, Cloudera or MapRµÈ¹«Ë¾·¢²¼µÄHadoop£¬ËüÃÇµÄHadoop£¨HDFS£©°æ±¾ºÍYARN°æ±¾¿ÉÄÜÓë¹¹½¨Flink³åÍ»£¬
-Çë²Î¿¼[¹¹½¨½éÉÜ](https://ci.apache.org/projects/flink/flink-docs-release-1.3/setup/building.html)»ñµÃ¸üÏ¸½éÉÜ¡£
+ç”¨æˆ·ä½¿ç”¨åƒHortonworks, Cloudera or MapRç­‰å…¬å¸å‘å¸ƒçš„Hadoopï¼Œå®ƒä»¬çš„Hadoopï¼ˆHDFSï¼‰ç‰ˆæœ¬å’ŒYARNç‰ˆæœ¬å¯èƒ½ä¸Žæž„å»ºFlinkå†²çªï¼Œ
+è¯·å‚è€ƒ[æž„å»ºä»‹ç»](https://ci.apache.org/projects/flink/flink-docs-release-1.3/setup/building.html)èŽ·å¾—æ›´ç»†ä»‹ç»ã€‚
 
-## ·À»ðÇ½ºóÔÚYARNÔËÐÐFlink
+## é˜²ç«å¢™åŽåœ¨YARNè¿è¡ŒFlink
 
-Ò»Ð©YARN¼¯ÈºÊ¹ÓÃ·À»ðÇ½À´¿ØÖÆ¼¯ÈººÍÓàÏÂÍøÂçÖ®¼äµÄÍøÂç´«Êä£¬ÔÚÕâÖÖÅäÖÃÏÂ£¬FlinkµÄjobÌá½»µ½YARN»á»°ÖÐÖ»ÄÜÍ¨¹ý¼¯ÈºÍøÂç£¨ÔÚ·À»ðÇ½±³ºó£©£¬
-Èç¹ûÔÚÉú²ú»·¾³ÏÂ²»¿ÉÐÐ£¬FlinkÔÊÐíÅäÖÃÒ»¶¨·¶Î§µÄ¶Ë¿Ú¸øÏà¹Ø·þÎñ£¬
-ÔÚÕâÐ©·¶Î§ÅäÖÃÏÂ£¬ÓÃ»§¿ÉÒÔ¿çÔ½·À»ðÇ½Ìá½»jobµ½Flink¡£
+ä¸€äº›YARNé›†ç¾¤ä½¿ç”¨é˜²ç«å¢™æ¥æŽ§åˆ¶é›†ç¾¤å’Œä½™ä¸‹ç½‘ç»œä¹‹é—´çš„ç½‘ç»œä¼ è¾“ï¼Œåœ¨è¿™ç§é…ç½®ä¸‹ï¼ŒFlinkçš„jobæäº¤åˆ°YARNä¼šè¯ä¸­åªèƒ½é€šè¿‡é›†ç¾¤ç½‘ç»œï¼ˆåœ¨é˜²ç«å¢™èƒŒåŽï¼‰ï¼Œ
+å¦‚æžœåœ¨ç”Ÿäº§çŽ¯å¢ƒä¸‹ä¸å¯è¡Œï¼ŒFlinkå…è®¸é…ç½®ä¸€å®šèŒƒå›´çš„ç«¯å£ç»™ç›¸å…³æœåŠ¡ï¼Œ
+åœ¨è¿™äº›èŒƒå›´é…ç½®ä¸‹ï¼Œç”¨æˆ·å¯ä»¥è·¨è¶Šé˜²ç«å¢™æäº¤jobåˆ°Flinkã€‚
 
-µ±Ç°£¬ÓÐÁ½¸ö·þÎñÐèÒªÌá½»job:
+å½“å‰ï¼Œæœ‰ä¸¤ä¸ªæœåŠ¡éœ€è¦æäº¤job:
 
- * Job Manager£¨YARNÉÏµÄApplicationMaster£©
- * ÔËÐÐJob ManagerµÄBlobServer
+ * Job Managerï¼ˆYARNä¸Šçš„ApplicationMasterï¼‰
+ * è¿è¡ŒJob Managerçš„BlobServer
 
-µ±Ìá½»Ò»¸öjobµ½Flink£¬BlobServer½«»á·Ö·¢ÓÃ»§´úÂëÖÐµÄjars¸øËùÓÐ¹¤×÷½Úµã£¨Task Manager£©£¬
-Job Manager½ÓÊÕjob±¾Éí²¢´¥·¢Ö´ÐÐ¡£
+å½“æäº¤ä¸€ä¸ªjobåˆ°Flinkï¼ŒBlobServerå°†ä¼šåˆ†å‘ç”¨æˆ·ä»£ç ä¸­çš„jarsç»™æ‰€æœ‰å·¥ä½œèŠ‚ç‚¹ï¼ˆTask Managerï¼‰ï¼Œ
+Job ManageræŽ¥æ”¶jobæœ¬èº«å¹¶è§¦å‘æ‰§è¡Œã€‚
 
-ÒÔÏÂÁ½¸öÅäÖÃ²ÎÊý¿ÉÖ¸¶¨¶Ë¿Ú:
+ä»¥ä¸‹ä¸¤ä¸ªé…ç½®å‚æ•°å¯æŒ‡å®šç«¯å£:
  * `yarn.application-master.port`
  * `blob.server.port`
 
-ÕâÁ½¸öÅäÖÃ¿É½ÓÊÕµ¥¸ö¶Ë¿ÚÖµ£¨Èç50010£©£¬Ò²¿ÉÒÔ½ÓÊÕ·¶Î§£¨50000-50025£©£¬»òÕß
-×éºÏ£¨50010,50011,50020-50025,50050-50075£©
+è¿™ä¸¤ä¸ªé…ç½®å¯æŽ¥æ”¶å•ä¸ªç«¯å£å€¼ï¼ˆå¦‚50010ï¼‰ï¼Œä¹Ÿå¯ä»¥æŽ¥æ”¶èŒƒå›´ï¼ˆ50000-50025ï¼‰ï¼Œæˆ–è€…
+ç»„åˆï¼ˆ50010,50011,50020-50025,50050-50075ï¼‰
 
-£¨HadoopÊ¹ÓÃÍ¬ÑùµÄ»úÖÆ£¬ÅäÖÃ²ÎÊýÊÇyarn.app.mapreduce.am.job.client.port-range£©
+ï¼ˆHadoopä½¿ç”¨åŒæ ·çš„æœºåˆ¶ï¼Œé…ç½®å‚æ•°æ˜¯yarn.app.mapreduce.am.job.client.port-rangeï¼‰
 
-## ±³ºó/ÄÚ²¿
+## èƒŒåŽ/å†…éƒ¨
 
-±¾Ð¡½Ú¼òÒªÃèÊöFlinkºÍYARNÈçºÎ½»»¥.
+æœ¬å°èŠ‚ç®€è¦æè¿°Flinkå’ŒYARNå¦‚ä½•äº¤äº’.
 
 <img src="{{ site.baseurl }}/fig/FlinkOnYarn.svg" class="img-responsive">
 
-YARN¿Í»§¶ËÐèÒª·ÃÎÊHadoopµÄÅäÖÃÒÔÁ¬½ÓYARN×ÊÔ´¹ÜÀíÆ÷ºÍHDFS,Õâ¾ö¶¨ÁËHadoopÅäÖÃ²ÉÈ¡ÈçÏÂ²ßÂÔ£¬
+YARNå®¢æˆ·ç«¯éœ€è¦è®¿é—®Hadoopçš„é…ç½®ä»¥è¿žæŽ¥YARNèµ„æºç®¡ç†å™¨å’ŒHDFS,è¿™å†³å®šäº†Hadoopé…ç½®é‡‡å–å¦‚ä¸‹ç­–ç•¥ï¼Œ
 
-* ²âÊÔYARN_CONF_DIR, HADOOP_CONF_DIR or HADOOP_CONF_PATH £¨°´´ËË³Ðò£©ÊÇ·ñÒÑÅäÖÃ£¬ÆäÖÐÒ»¸öÅäÖÃÁË£¬ËüÃÇ¾Í¿ÉÒÔ¶ÁÈ¡µ½ÅäÖÃ¡£
-* ÈçÈôÉÏÊö²ßÂÔÊ§°Ü£¨ÕýÈ·µÄYARN°²×°²»»á³öÏÖ´ËÇé¿ö£©£¬¿Í»§¶ËÊ¹ÓÃHADOOP_HOME»·¾³±äÁ¿¡£Èç»·¾³±äÁ¿ÉèÖÃÁË£¬¿Í»§¶Ë»á³¢ÊÔ·ÃÎÊ$HADOOP_HOME/etc/hadoop£¨hadoop2.*£©»ò $HADOOP_HOME/conf£¨hadoop1.*£©
+* æµ‹è¯•YARN_CONF_DIR, HADOOP_CONF_DIR or HADOOP_CONF_PATH ï¼ˆæŒ‰æ­¤é¡ºåºï¼‰æ˜¯å¦å·²é…ç½®ï¼Œå…¶ä¸­ä¸€ä¸ªé…ç½®äº†ï¼Œå®ƒä»¬å°±å¯ä»¥è¯»å–åˆ°é…ç½®ã€‚
+* å¦‚è‹¥ä¸Šè¿°ç­–ç•¥å¤±è´¥ï¼ˆæ­£ç¡®çš„YARNå®‰è£…ä¸ä¼šå‡ºçŽ°æ­¤æƒ…å†µï¼‰ï¼Œå®¢æˆ·ç«¯ä½¿ç”¨HADOOP_HOMEçŽ¯å¢ƒå˜é‡ã€‚å¦‚çŽ¯å¢ƒå˜é‡è®¾ç½®äº†ï¼Œå®¢æˆ·ç«¯ä¼šå°è¯•è®¿é—®$HADOOP_HOME/etc/hadoopï¼ˆhadoop2.*ï¼‰æˆ– $HADOOP_HOME/confï¼ˆhadoop1.*ï¼‰
 
-µ±Æô¶¯Ò»¸öÐÂµÄFlink YARN»á»°£¬¿Í»§¶Ë»áÏÈÈ·ÈÏÇëÇóµÄ×ÊÔ´£¨ÈÝÆ÷ºÍÄÚ´æ£©ÊÇ·ñÄÜ»ñµÃµ½¡£
-Ö®ºó£¬¿Í»§¶ËÉÏ´«°üº¬FlinkºÍHDFSÅäÖÃµÄjars£¨²½Öè1£©¡£
+å½“å¯åŠ¨ä¸€ä¸ªæ–°çš„Flink YARNä¼šè¯ï¼Œå®¢æˆ·ç«¯ä¼šå…ˆç¡®è®¤è¯·æ±‚çš„èµ„æºï¼ˆå®¹å™¨å’Œå†…å­˜ï¼‰æ˜¯å¦èƒ½èŽ·å¾—åˆ°ã€‚
+ä¹‹åŽï¼Œå®¢æˆ·ç«¯ä¸Šä¼ åŒ…å«Flinkå’ŒHDFSé…ç½®çš„jarsï¼ˆæ­¥éª¤1ï¼‰ã€‚
 
-ÏÂÒ»²½¿Í»§¶ËÇëÇóÒ»¸öYARNÈÝÆ÷£¨²½Öè2£©À´Æô¶¯ApplicationMaster£¨²½Öè3£©£¬
-¿Í»§¶Ë×¢²áÁËÅäÖÃºÍÈÝÆ÷×ÊÔ´µÄjarÎÄ¼þ£¬Ö¸¶¨»úÆ÷ÔËÐÐµÄYARN½Úµã¹ÜÀíÆ÷»á×¼±¸ºÃÈÝÆ÷£¨ÏÂÔØÎÄ¼þ£©£¬
-ÕâÐ©½áÊøÁË£¬ApplicationMaster (AM)¾ÍÆô¶¯ÁË¡£
+ä¸‹ä¸€æ­¥å®¢æˆ·ç«¯è¯·æ±‚ä¸€ä¸ªYARNå®¹å™¨ï¼ˆæ­¥éª¤2ï¼‰æ¥å¯åŠ¨ApplicationMasterï¼ˆæ­¥éª¤3ï¼‰ï¼Œ
+å®¢æˆ·ç«¯æ³¨å†Œäº†é…ç½®å’Œå®¹å™¨èµ„æºçš„jaræ–‡ä»¶ï¼ŒæŒ‡å®šæœºå™¨è¿è¡Œçš„YARNèŠ‚ç‚¹ç®¡ç†å™¨ä¼šå‡†å¤‡å¥½å®¹å™¨ï¼ˆä¸‹è½½æ–‡ä»¶ï¼‰ï¼Œ
+è¿™äº›ç»“æŸäº†ï¼ŒApplicationMaster (AM)å°±å¯åŠ¨äº†ã€‚
 
-Job ManagerºÍAMÔËÐÐÔÚÍ¬Ò»¸öÈÝÆ÷Àï£¬ËüÃÇ³É¹¦Æô¶¯ºó£¬AMÖªµÀjob¹ÜÀíÆ÷£¨ËüÓµÓÐµÄÖ÷»ú£©µÄµØÖ·¡£
+Job Managerå’ŒAMè¿è¡Œåœ¨åŒä¸€ä¸ªå®¹å™¨é‡Œï¼Œå®ƒä»¬æˆåŠŸå¯åŠ¨åŽï¼ŒAMçŸ¥é“jobç®¡ç†å™¨ï¼ˆå®ƒæ‹¥æœ‰çš„ä¸»æœºï¼‰çš„åœ°å€ã€‚
 
-Job ManagerÎªTask ManagerÉú³ÉÒ»¸öÐÂµÄFlinkÅäÖÃ£¨ÕâÑùtask¿ÉÁ¬½ÓJob Manager£©¡£
+Job Managerä¸ºTask Managerç”Ÿæˆä¸€ä¸ªæ–°çš„Flinké…ç½®ï¼ˆè¿™æ ·taskå¯è¿žæŽ¥Job Managerï¼‰ã€‚
 
-ÎÄ¼þÒ²ÉÏ´«µ½HDFSÉÏ¡£ÁíÍâAMÈÝÆ÷Ò²ÎªFlinkµÄweb½Ó¿Ú·þÎñ¡£YARN´úÂëµÄËùÓÐ¶Ë¿ÚÊÇ·ÖÅäµÄÁÙÊ±¶Ë¿Ú¡£
-Õâ¿ÉÈÃÓÃ»§²¢ÐÐÖ´ÐÐ¶à¸öyarn»á»°¡£
+æ–‡ä»¶ä¹Ÿä¸Šä¼ åˆ°HDFSä¸Šã€‚å¦å¤–AMå®¹å™¨ä¹Ÿä¸ºFlinkçš„webæŽ¥å£æœåŠ¡ã€‚YARNä»£ç çš„æ‰€æœ‰ç«¯å£æ˜¯åˆ†é…çš„ä¸´æ—¶ç«¯å£ã€‚
+è¿™å¯è®©ç”¨æˆ·å¹¶è¡Œæ‰§è¡Œå¤šä¸ªyarnä¼šè¯ã€‚
 
-È»ºó£¬AMÆô¶¯·ÖÅäµ½µÄÈÝÆ÷£¬ÕâÐ©ÈÝÆ÷¸øFlinkµÄTask Manager£¬½«»áÏÂÔØjarºÍ¸üÐÂÀ´×ÔHDFSÅäÖÃ
-£¬ÕâÐ©²½ÖèÍê³Éºó£¬Flink¾Í°²×°ÆðÀ´ÁË£¬¿ÉÒÔ½ÓÊÕjobÁË¡£
+ç„¶åŽï¼ŒAMå¯åŠ¨åˆ†é…åˆ°çš„å®¹å™¨ï¼Œè¿™äº›å®¹å™¨ç»™Flinkçš„Task Managerï¼Œå°†ä¼šä¸‹è½½jarå’Œæ›´æ–°æ¥è‡ªHDFSé…ç½®
+ï¼Œè¿™äº›æ­¥éª¤å®ŒæˆåŽï¼ŒFlinkå°±å®‰è£…èµ·æ¥äº†ï¼Œå¯ä»¥æŽ¥æ”¶jobäº†ã€‚
