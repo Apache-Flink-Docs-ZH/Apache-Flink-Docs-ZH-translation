@@ -1,5 +1,5 @@
 ---
-title: "Flink DataStream API Programming Guide"
+title: "Flink DataStream API 编程指南"
 nav-title: Streaming (DataStream API)
 nav-id: streaming
 nav-parent_id: dev
@@ -120,7 +120,7 @@ object WindowWordCount {
 nc -lk 9999
 ~~~
 
-然后输入一些单词，回车换行输入新一行的单词。这些输入将作为示例程序的输入。如果要使得某个单词的计数大于1，请在5秒钟内重复输入相同的字词（如果5秒钟输入相同单词对你来说太快，请把示例程序中的窗口大小从5秒调大）。
+然后输入一些单词，回车换行输入新一行的单词。这些输入将作为示例程序的输入。如果要使得某个单词的计数大于1，请在5秒钟内重复输入相同的字词（如果5秒钟输入相同单词对你来说太快，请把示例程序中的窗口大小从5秒调大 &#9786;）。
 
 {% top %}
 
@@ -202,13 +202,13 @@ dataStream.keyBy("someKey") // Key by field "someKey"
 dataStream.keyBy(0) // Key by the first element of a Tuple
     {% endhighlight %}
             <p>
-            <span class="label label-danger">注意</span> 
-            这种类型<strong>不能作为key</strong>:
-    	    <ol> 
-    	    <li> POJO类型，并且依赖于<em>Object.hashCode()</em>的实现，但是未覆写<em>hashCode()</em></li>
-    	    <li> 任意类型的数组</li>
-    	    </ol>
-    	    </p>
+            <span class="label label-danger">注意</span>
+            以下类型<strong>不能作为key</strong>:
+          <ol>
+          <li> POJO类型，并且依赖于<em>Object.hashCode()</em>的实现，但是未覆写<em>hashCode()</em></li>
+          <li> 任意类型的数组</li>
+          </ol>
+          </p>
           </td>
         </tr>
         <tr>
@@ -216,7 +216,7 @@ dataStream.keyBy(0) // Key by the first element of a Tuple
           <td>
             <p>在一个KeyedStream上不断进行reduce操作。将当前元素与上一个reduce后的值进行合并，再返回新合并的值。
                     <br/>
-            	<br/>
+              <br/>
             一个构造局部求和流的reduce function：</p>
             {% highlight java %}
 keyedStream.reduce(new ReduceFunction<Integer>() {
@@ -236,7 +236,7 @@ keyedStream.reduce(new ReduceFunction<Integer>() {
           <p>在一个KeyedStream上基于初始值不断进行变换操作，将当前值与上一个变换后的值进行变换，再返回新变换的值。
           <br/>
           <br/>
-          <p>在序列（1,2,3,4,5）上应用如下的fold function，返回的序列依次是“start-1”，“start-1-2”，“start-1-2-3”, ...：</p>
+          <p>>在序列（1,2,3,4,5）上应用如下的fold function，返回的序列依次是“start-1”，“start-1-2”，“start-1-2-3”, ...：</p>
           {% highlight java %}
 DataStream<String> result =
   keyedStream.fold("start", new FoldFunction<Integer, String>() {
@@ -579,7 +579,7 @@ dataStream.keyBy(0) // Key by the first element of a Tuple
           <td>
             <p>在一个KeyedStream上不断进行reduce操作。将当前元素与上一个reduce后的值进行合并，再返回新合并的值。
                     <br/>
-            	<br/>
+              <br/>
             一个构造局部求和流的reduce function：</p>
             {% highlight scala %}
 keyedStream.reduce { _ + _ }
@@ -632,7 +632,7 @@ dataStream.keyBy(0).window(TumblingEventTimeWindows.of(Time.seconds(5))) // Last
         <tr>
           <td><strong>WindowAll</strong><br>DataStream &rarr; AllWindowedStream</td>
           <td>
-              <p>Windows可定义在普通DataStream上。Windows根据一些特征（例如，在最近5秒内到达的数据）对所有流事件进行分组。有关Windows的完整说明请参阅<a href="windows.html">windows</a>。
+              <p>Windows可定义在普通DataStream上。Windows根据一些特征（例如，在最近5秒内到达的数据）对所有流事件进行分组。有关Windows的完整说明请参阅<a href="windows.html">windows</a></p>。
               <p><strong>警告：</strong>在多数情况下，这是<strong>非并行</strong>的transformation。所有记录将被聚集到运行windowAll操作的一个任务中。</p>
   {% highlight scala %}
 dataStream.windowAll(TumblingEventTimeWindows.of(Time.seconds(5))) // Last 5 seconds of data
@@ -671,7 +671,7 @@ val result: DataStream[String] =
     windowedStream.fold("start", (str, i) => { str + "-" + i })
           {% endhighlight %}
           </td>
-	</tr>
+  </tr>
         <tr>
           <td><strong>Aggregations on windows</strong><br>WindowedStream &rarr; DataStream</td>
           <td>
@@ -857,7 +857,6 @@ DataStream<Tuple2<String, Integer>> out = in.project(2,0);
 
 </div>
 </div>
-
 
 ### 物理分区
 
