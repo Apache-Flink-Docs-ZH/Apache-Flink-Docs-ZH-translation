@@ -1,7 +1,6 @@
 ---
 mathjax: include
-title: Alternating Least Squares
-nav-title: ALS
+title: 交替最小二乘法（Alternating Least Squares）
 nav-parent_id: ml
 ---
 <!--
@@ -26,150 +25,126 @@ under the License.
 * This will be replaced by the TOC
 {:toc}
 
-## Description
+## 描述
 
-The alternating least squares (ALS) algorithm factorizes a given matrix $R$ into two factors $U$ and $V$ such that $R \approx U^TV$.
-The unknown row dimension is given as a parameter to the algorithm and is called latent factors.
-Since matrix factorization can be used in the context of recommendation, the matrices $U$ and $V$ can be called user and item matrix, respectively.
-The $i$th column of the user matrix is denoted by $u_i$ and the $i$th column of the item matrix is $v_i$.
-The matrix $R$ can be called the ratings matrix with $$(R)_{i,j} = r_{i,j}$$.
-
-In order to find the user and item matrix, the following problem is solved:
-
+交替最小二乘法（ALS）算法将一个给定的R矩阵因式分解为$R$和V两个因子，例如$R \approx U^TV$。未知的行的维度被用作算法的参数，叫做潜在因子。自从矩阵因式分解可以用在推荐系统的场景，$U$和$V$矩阵可以分别称为用户和商品矩阵。用户矩阵的第i列用$u_i$表示，商品矩阵的第i列用$v_i$表示。R矩阵可以用$$(R)_{i,j} = r_{i,j}$$称为评价矩阵。为了找到用户和商品矩阵，如下问题得到了解决：
 $$\arg\min_{U,V} \sum_{\{i,j\mid r_{i,j} \not= 0\}} \left(r_{i,j} - u_{i}^Tv_{j}\right)^2 +
 \lambda \left(\sum_{i} n_{u_i} \left\lVert u_i \right\rVert^2 + \sum_{j} n_{v_j} \left\lVert v_j \right\rVert^2 \right)$$
 
-with $\lambda$ being the regularization factor, $$n_{u_i}$$ being the number of items the user $i$ has rated and $$n_{v_j}$$ being the number of times the item $j$ has been rated.
-This regularization scheme to avoid overfitting is called weighted-$\lambda$-regularization.
-Details can be found in the work of [Zhou et al.](http://dx.doi.org/10.1007/978-3-540-68880-8_32).
+$\lambda$作为因式分解的因子，$$n_{u_i}$$作为用户i评过分的商品数量， $$n_{v_j}$$作为商品$j$被评分的次数。这个因式分解方案避免了称作加权$\lambda​$因式分解的过拟合。细节可以在[Zhou et al.](http://dx.doi.org/10.1007/978-3-540-68880-8_32)的论文中找到。
+通过修复$U$ 和 $V$矩阵，我们获得可以直接解析的二次形式。问题的解决办法是保证总消耗函数的单调递减。通过对$U$ 或 $V$矩阵的这一步操作，我们逐步的改进了矩阵的因式分解。
+R矩阵作为(i,j,r)元组的疏松表示。i为行索引，j为列索引，r为(i,j)位置上的矩阵值。
 
-By fixing one of the matrices $U$ or $V$, we obtain a quadratic form which can be solved directly.
-The solution of the modified problem is guaranteed to monotonically decrease the overall cost function.
-By applying this step alternately to the matrices $U$ and $V$, we can iteratively improve the matrix factorization.
 
-The matrix $R$ is given in its sparse representation as a tuple of $(i, j, r)$ where $i$ denotes the row index, $j$ the column index and $r$ is the matrix value at position $(i,j)$.
+## 操作
 
-## Operations
+`SVM` 是一个预测模型（`Predictor`）。
+因此，它支持拟合（`fit`）与预测（`predict`）两种操作。
 
-`ALS` is a `Predictor`.
-As such, it supports the `fit` and `predict` operation.
+### 拟合
 
-### Fit
-
-ALS is trained on the sparse representation of the rating matrix:
+ALS用于评价矩阵的疏松表示过程的训练：
 
 * `fit: DataSet[(Int, Int, Double)] => Unit`
 
-### Predict
+### 预测
 
-ALS predicts for each tuple of row and column index the rating:
+ALS 会对每个元组行列的所有索引进行评分预测：
 
 * `predict: DataSet[(Int, Int)] => DataSet[(Int, Int, Double)]`
 
-## Parameters
 
-The alternating least squares implementation can be controlled by the following parameters:
+## 参数
 
-   <table class="table table-bordered">
-    <thead>
-      <tr>
-        <th class="text-left" style="width: 20%">Parameters</th>
-        <th class="text-center">Description</th>
-      </tr>
-    </thead>
+ALS的实现可以通过下面的参数进行控制：
 
-    <tbody>
-      <tr>
-        <td><strong>NumFactors</strong></td>
-        <td>
-          <p>
-            The number of latent factors to use for the underlying model.
-            It is equivalent to the dimension of the calculated user and item vectors.
-            (Default value: <strong>10</strong>)
-          </p>
-        </td>
-      </tr>
-      <tr>
-        <td><strong>Lambda</strong></td>
-        <td>
-          <p>
-            Regularization factor. Tune this value in order to avoid overfitting or poor performance due to strong generalization.
-            (Default value: <strong>1</strong>)
-          </p>
-        </td>
-      </tr>
-      <tr>
-        <td><strong>Iterations</strong></td>
-        <td>
-          <p>
-            The maximum number of iterations.
-            (Default value: <strong>10</strong>)
-          </p>
-        </td>
-      </tr>
-      <tr>
-        <td><strong>Blocks</strong></td>
-        <td>
-          <p>
-            The number of blocks into which the user and item matrix are grouped.
-            The fewer blocks one uses, the less data is sent redundantly.
-            However, bigger blocks entail bigger update messages which have to be stored on the heap.
-            If the algorithm fails because of an OutOfMemoryException, then try to increase the number of blocks.
-            (Default value: <strong>None</strong>)
-          </p>
-        </td>
-      </tr>
-      <tr>
-        <td><strong>Seed</strong></td>
-        <td>
-          <p>
-            Random seed used to generate the initial item matrix for the algorithm.
-            (Default value: <strong>0</strong>)
-          </p>
-        </td>
-      </tr>
-      <tr>
-        <td><strong>TemporaryPath</strong></td>
-        <td>
-          <p>
-            Path to a temporary directory into which intermediate results are stored.
-            If this value is set, then the algorithm is split into two preprocessing steps, the ALS iteration and a post-processing step which calculates a last ALS half-step.
-            The preprocessing steps calculate the <code>OutBlockInformation</code> and <code>InBlockInformation</code> for the given rating matrix.
-            The results of the individual steps are stored in the specified directory.
-            By splitting the algorithm into multiple smaller steps, Flink does not have to split the available memory amongst too many operators.
-            This allows the system to process bigger individual messages and improves the overall performance.
-            (Default value: <strong>None</strong>)
-          </p>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+<table class="table table-bordered">
+<thead>
+  <tr>
+    <th class="text-left" style="width: 20%">参数</th>
+    <th class="text-center">描述</th>
+  </tr>
+</thead>
 
-## Examples
+<tbody>
+  <tr>
+    <td><strong>NumFactors</strong></td>
+    <td>
+      <p>
+        底层模型中使用的潜在因子数目。等价于计算用户和商品向量的维度。 (默认值：<strong>10</strong>)
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td><strong>Lambda</strong></td>
+    <td>
+      <p>
+        因式分解的因子。 该值用于避免过拟合或者由于强生成导致的低性能。 (默认值：<strong>1</strong>)
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td><strong>Iterations</strong></td>
+    <td>
+      <p>
+        最大迭代次数。 
+        (默认值：<strong>10</strong>)
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td><strong>Blocks</strong></td>
+    <td>
+      <p>
+        设定用户和商品矩阵被分组后的块数量。块越少，发送的冗余数据越少。然而，块越大意味着堆中需要存储的更新消息越大。如果由于OOM导致算法失败，试着降低块的数量。  (默认值：<strong>None</strong>)
+      </p>
+    </td>
+  </tr>  
+  <tr>
+    <td><strong>Seed</strong></td>
+    <td>
+      <p>
+        用于算法生成初始矩阵的随机种子。
+        (默认值：<strong>0</strong>)
+      </p>
+    </td>
+  </tr>
+  <tr>
+    <td><strong>TemporaryPath</strong></td>
+    <td>
+      <p>
+        导致结果被立即存储到临时目录的路径。如果该值被设定，算法会被分为两个预处理阶段，ALS迭代和计算最后ALS半阶段的处理中阶段。预处理阶段计算给定评分矩阵的OutBlockInformation和InBlockInformation。每步的结果存储在特定的目录。通过将算法分为更多小的步骤，Flink不会在多个算子中分割可用的内存。这让系统可以处理更大的独立消息并提升总性能。  (默认值：<strong>None</strong>)
+      </p>
+    </td>
+  </tr>
+</tbody>
+</table>
 
-{% highlight scala %}
-// Read input data set from a csv file
+## 例子
+
+// 从CSV文件读取输入数据集
 val inputDS: DataSet[(Int, Int, Double)] = env.readCsvFile[(Int, Int, Double)](
   pathToTrainingFile)
 
-// Setup the ALS learner
+// 设定ALS学习器
 val als = ALS()
 .setIterations(10)
 .setNumFactors(10)
 .setBlocks(100)
 .setTemporaryPath("hdfs://tempPath")
 
-// Set the other parameters via a parameter map
+// 通过一个map参数设置其他参数
 val parameters = ParameterMap()
 .add(ALS.Lambda, 0.9)
 .add(ALS.Seed, 42L)
 
-// Calculate the factorization
+// 计算因式分解
 als.fit(inputDS, parameters)
 
-// Read the testing data set from a csv file
+// 从CSV文件读取测试数据
 val testingDS: DataSet[(Int, Int)] = env.readCsvFile[(Int, Int)](pathToData)
 
-// Calculate the ratings according to the matrix factorization
+// 通过矩阵因式分解计算评分
 val predictedRatings = als.predict(testingDS)
+
 {% endhighlight %}
