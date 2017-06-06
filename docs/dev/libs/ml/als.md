@@ -38,7 +38,7 @@ R矩阵作为(i,j,r)元组的疏松表示。i为行索引，j为列索引，r为
 
 ## 操作
 
-`SVM` 是一个预测模型（`Predictor`）。
+`ALS` 是一个预测模型（`Predictor`）。
 因此，它支持拟合（`fit`）与预测（`predict`）两种操作。
 
 ### 拟合
@@ -49,7 +49,7 @@ ALS用于评价矩阵的疏松表示过程的训练：
 
 ### 预测
 
-ALS 会对每个元组行列的所有索引进行评分预测：
+ALS会对每个元组行列的所有索引进行评分预测：
 
 * `predict: DataSet[(Int, Int)] => DataSet[(Int, Int, Double)]`
 
