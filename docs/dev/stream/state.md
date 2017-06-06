@@ -64,19 +64,18 @@ Kafka 连接器[Kafka Connector](../connectors/kafka.html) 是在Flink中使用�
 
 算子状态(Operator state）接口支持在并行化情况改变的时候对并行算子状态（state）进行重分布。我们还有不同的模式来支持重分布。
 
-## 原生的与管理的状态（Raw and Managed State） 
+## 原生的与托管的状态（Raw and Managed State） 
 
-*键值状态 (Keyed State)* 和 *算子状态(Operator State)* 存在两种形式： *管理的（managed)* and *原生的(raw)*.
+*键值状态 (Keyed State)* 和 *算子状态(Operator State)* 存在两种形式： *托管的（managed)* and *原生的(raw)*.
 
-*管理的状态(managed state)*表现为由Flink内部控制的一些数据结构，例如内部的哈希表，或者 RocksDB。对于"值状态（ValueState）"和"列表状态（Liststate）"这样的，Flink先内部对这些状态（State）进行编码，然后把它们写到检查点中。
+*托管的状态(managed state)*表现为由Flink内部控制的一些数据结构，例如内部的哈希表，或者 RocksDB。对于"值状态（ValueState）"和"列表状态（Liststate）"这样的，Flink先内部对这些状态（State）进行编码，然后把它们写到检查点中。
 
 *原生的状态 (Raw state)* 指的是算子可以保存着自己的数据结构的状态(state)。当被写成检查点的时候，它们只写入一些比特序列串，Flink对这些状态（State）的内部数据结构一无所知，只能看到那些原生的比特序列。
 
-Flink提供的所有的数据流函数都可以运用管理的状态(managed state)，但是原生的状态(raw state)接口只能在实现算子的时候使用。比起原生的状态(raw state)，我们更加推荐使用管理的状态(managed state)，因为在并行化的情况改变的时候，Flink可以自动的重新分布管理的状态(managed state)，并且也能够更好的做到内存管理。
+Flink提供的所有的数据流函数都可以运用托管的状态(managed state)，但是原生的状态(raw state)接口只能在实现算子的时候使用。比起原生的状态(raw state)，我们更加推荐使用托管的状态(managed state)，因为在并行化的情况改变的时候，Flink可以自动的重新分布托管的状态(managed state)，并且也能够更好的做到内存管理。
 
-## 运用管理的键值状态（Using Managed Keyed State）
 
-管理的键值状态（Managed Keyed State）接口提供了通过当前输入元素的键值来存取使用各种不同类型的状态（state)的方法。
+托管的键值状态（Managed Keyed State）接口提供了通过当前输入元素的键值来存取使用各种不同类型的状态（state)的方法。
 这就意味着这种类型的状态（state)只能在`带有键值的流（KeyedStream）`中使用，我们可以通过`stream.keyBy(…)`来创建它。
 
 现在，我们先来看看有哪些可供我们使用的不同类型的状态（state），然后再看如何在程序中使用它们。可以使用的状态（state)主要有以下几种：
@@ -100,7 +99,7 @@ Flink提供的所有的数据流函数都可以运用管理的状态(managed sta
 
 所有类型的状态(state)都可以用`clear()`来清除当前有效键（例如，当前输入元素的键）对应的状态(state)。 
 
-<span class="label label-danger">Attention</span> 在未来的某一个Flink版本中我们将不再建议使用`FoldingState`，
+<span class="label label-danger">注意！</span> 在未来的某一个Flink版本中我们将不再建议使用`FoldingState`，
 它会被完全移除。我们将会提供一个更加有代表性的其他选择来方便大家使用。
 
 您需要记住的第一点是您只能在状态(state)接口中使用这些状态对象，它们并非必须存储在内部也有可能在磁盘或者其他地方重置。
@@ -126,26 +125,26 @@ Flink提供的所有的数据流函数都可以运用管理的状态(managed sta
 public class CountWindowAverage extends RichFlatMapFunction<Tuple2<Long, Long>, Tuple2<Long, Long>> {
 
     /**
-     * The ValueState handle. The first field is the count, the second field a running sum.
+     * 保存处理ValueState,第一项为计数值，第二项为不断累加的和。
      */
     private transient ValueState<Tuple2<Long, Long>> sum;
 
     @Override
     public void flatMap(Tuple2<Long, Long> input, Collector<Tuple2<Long, Long>> out) throws Exception {
 
-        // access the state value
+        // 存取状态值
         Tuple2<Long, Long> currentSum = sum.value();
 
-        // update the count
+        // 更新计数值
         currentSum.f0 += 1;
 
-        // add the second field of the input value
+        // 将输入的元组值累计到第二项中
         currentSum.f1 += input.f1;
 
-        // update the state
+        // 更新状态
         sum.update(currentSum);
 
-        // if the count reaches 2, emit the average and clear the state
+        // 如果计数值达到2，计算平均数，清除状态值
         if (currentSum.f0 >= 2) {
             out.collect(new Tuple2<>(input.f0, currentSum.f1 / currentSum.f0));
             sum.clear();
@@ -156,27 +155,27 @@ public class CountWindowAverage extends RichFlatMapFunction<Tuple2<Long, Long>, 
     public void open(Configuration config) {
         ValueStateDescriptor<Tuple2<Long, Long>> descriptor =
                 new ValueStateDescriptor<>(
-                        "average", // the state name
-                        TypeInformation.of(new TypeHint<Tuple2<Long, Long>>() {}), // type information
-                        Tuple2.of(0L, 0L)); // default value of the state, if nothing was set
+                        "average", // 状态名
+                        TypeInformation.of(new TypeHint<Tuple2<Long, Long>>() {}), // 状态类型信息
+                        Tuple2.of(0L, 0L)); // 默认的状态值
         sum = getRuntimeContext().getState(descriptor);
     }
 }
 
-// this can be used in a streaming program like this (assuming we have a StreamExecutionEnvironment env)
+//在这里我们可以应用于数据流程序(假定我们有一个StreamExecutionEnvironment环境) 
 env.fromElements(Tuple2.of(1L, 3L), Tuple2.of(1L, 5L), Tuple2.of(1L, 7L), Tuple2.of(1L, 4L), Tuple2.of(1L, 2L))
         .keyBy(0)
         .flatMap(new CountWindowAverage())
         .print();
 
-// the printed output will be (1,4) and (1,5)
+// 输出将为(1,4)和(1,5)
 {% endhighlight %}
 
 这个例子实现的是一个简单的窗口计数。我们把元组第一项作为键（在例子中所有的键都是1）。我们在方法中的
 `ValueState`里面存储了一个计数值和一个不断累计着的总数和。一旦计数值达到2它就会计算平均数并且清除状态(state)
 以便我们重新从`0`开始。需要注意的是如果我们的元组的第一项值不同的话，那么对于不同的键，状态(state)值也会不同。
 
-### 在calar数据流API使用state（State in the Scala DataStream API）
+### 在Scala数据流API使用state（State in the Scala DataStream API）
 
 除了上述的接口以外，Scala API针对在有单一`ValueState`的`KeyedStream`上运用有状态的(stateful)的`map()` 
 或者 `flatMap()`方法还有一个快捷方法。用户定义的函数在一个`Option`中得到`ValueState`的当前值，然后
@@ -194,9 +193,9 @@ val counts: DataStream[(String, Int)] = stream
     })
 {% endhighlight %}
 
-## 运用管理的算子状态（Using Managed Operator State）
+## 运用托管的算子状态（Using Managed Operator State）
 
-要想运用管理的算子状态（managed operator state）,我们可以通过实现一个更一般化的`CheckpointedFunction`
+要想运用托管的算子状态（managed operator state）,我们可以通过实现一个更一般化的`CheckpointedFunction`
 接口或者实现`ListCheckpointed<T extends Serializable>`接口来达到我们的目的。
 
 #### 检查点函数(CheckpointedFunction)
@@ -213,7 +212,7 @@ void initializeState(FunctionInitializationContext context) throws Exception;
 函数第一次被初始化还是函数真的从之前的检查点恢复过来而进行的初始化，这个函数都要被调用。由此，`initializeState()`不仅仅是一个用来初始化不同
 类型的状态(state)的地方，它里面还包含着状态(state)恢复逻辑。
 
-现在，Flink已经支持列表形式的管理的算子状态(state)了。这个状态(state)是一个包含一些*seriablizable(序列化)*对象的列表，这些对象彼此相互独立,
+现在，Flink已经支持列表形式的托管的算子状态(state)了。这个状态(state)是一个包含一些*seriablizable(序列化)*对象的列表，这些对象彼此相互独立,
 因此很适合重新调整分布。换句话说，这些对象是非键值状态(non-keyed state)用来重分布的最小粒度。根据不同的存取状态(state)的方法，我们可以定义
 一下的几种分布模式：
 
@@ -250,7 +249,7 @@ public class BufferingSink
         bufferedElements.add(value);
         if (bufferedElements.size() == threshold) {
             for (Tuple2<String, Integer> element: bufferedElements) {
-                // send it to the sink
+                // 传给data sink
             }
             bufferedElements.clear();
         }
@@ -283,7 +282,7 @@ public class BufferingSink
 
     @Override
     public void restoreState(ArrayList<Tuple2<String, Integer>> state) throws Exception {
-        // this is from the CheckpointedRestoring interface.
+        // 这个函数是来自于CheckpointedRestoring接口
         this.bufferedElements.addAll(state);
     }
 }
@@ -343,10 +342,10 @@ public static class CounterSource
         extends RichParallelSourceFunction<Long>
         implements ListCheckpointed<Long> {
 
-    /**  current offset for exactly once semantics */
+    /**  目前距离实现有且只有一个语义（exactly once semantics）的偏差值 */
     private Long offset;
 
-    /** flag for job cancellation */
+    /** 取消job的标识*/
     private volatile boolean isRunning = true;
 
     @Override
