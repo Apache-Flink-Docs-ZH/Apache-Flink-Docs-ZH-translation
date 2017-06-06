@@ -1,5 +1,5 @@
 ---
-title: "Data Types & Serialization"
+title: "数据类型和序列化"
 nav-id: types
 nav-parent_id: dev
 nav-show_overview: true
@@ -24,178 +24,131 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-Apache Flink handles data types and serialization in a unique way, containing its own type descriptors,
-generic type extraction, and type serialization framework. This document describes the concepts and the rationale behind them.
+Apache Flink 处理数据类型和序列化的方式较特别，包括自带的类型描述，一般类型提取和类型序列化框架。本文档描述这些基本概念并解释背后的相关原理。
 
 * This will be replaced by the TOC
 {:toc}
 
+## Flink 中的类型处理
 
-## Type handling in Flink
+Flink会尝试推断出在分布式计算过程中被交换和存储的数据类型的大量信息，你可以想象这就像数据库推断表的模式(schema)一样。在大多数情况下，Flink能够完美地推断出所有必须的信息，这些类型信息使得Flink可以做一些很酷的事情： 
 
-Flink tries to infer a lot of information about the data types that are exchanged and stored during the distributed computation.
-Think about it like a database that infers the schema of tables. In most cases, Flink infers all necessary information seamlessly
-by itself. Having the type information allows Flink to do some cool things:
+* 使用POJOs类型并通过推断的字段名字(如：`dataSet.keyBy("username")`)完成分组(group)/连接(join)/
+聚合(aggregate)操作。这些类型信息使得Flink能够提前检查(如拼写错误和类型兼容性)，避免运行时才发现错误。
 
-* Using POJOs types and grouping / joining / aggregating them by referring to field names (like `dataSet.keyBy("username")`).
-  The type information allows Flink to check (for typos and type compatibility) early rather than failing later ar runtime.
+* Flink知道的数据类型信息越多，序列化和数据布局方案(data layout scheme) 就越好。这对Flink的内存使用范式（memory usage paradigm）非常重要(无论在堆内还是堆外都可以操作序列化数据，并且使得序列化的开销非常低)
 
-* The more Flink knows about data types, the better the serialization and data layout schemes are.
-  That is quite important for the memory usage paradigm in Flink (work on serialized data inside/outside the heap where ever possible
-  and make serialization very cheap).
-
-* Finally, it also spares users in the majority of cases from worrying about serialization frameworks and having to register types.
-
-In general, the information about data types is needed during the *pre-flight phase* - that is, when the program's calls on `DataStream`
-and `DataSet` are made, and before any call to `execute()`, `print()`, `count()`, or `collect()`.
+* 最后，这些信息可以将用户从考虑序列化框架的选择和注册类型中解脱。
 
 
-## Most Frequent Issues
+一般而言，数据类型的相关信息是在`预处理阶段（pre-flight phase）`需要，此时程序刚刚调用了 `DataStream` 和 `DataSet`，但是还没调用 `execute()`, `print()`, `count()`, 或 `collect()`方法.
 
-The most frequent issues where users need to interact with Flink's data type handling are:
+ 
 
-* **Registering subtypes:** If the function signatures describe only the supertypes, but they actually use subtypes of those during execution,
-  it may increase performance a lot to make Flink aware of these subtypes.
-  For that, call `.registerType(clazz)` on the `StreamExecutionEnvironment` or `ExecutionEnvironment` for each subtype.
+## 常见问题
+用户如果需要介入 Flink 类型框架的话，一般是在遇到下面这些情况的时候：
+ 
+* **注册子类型：** 如果方法签名只描述了父类型，但实际执行中用到了该类型的子类型，让Flink知道这些子类型能够提升不少性能。因此，在`StreamExecutionEnvironment`或`ExecutionEnvironment`中应当为每个子类型调用`.registerType(clazz)`方法。
 
-* **Registering custom serializers:** Flink falls back to [Kryo](https://github.com/EsotericSoftware/kryo) for the types that it does not handle transparently
-  by itself. Not all types are seamlessly handled by Kryo (and thus by Flink). For example, many Google Guava collection types do not work well
-  by default. The solution is to register additional serializers for the types that cause problems.
-  Call `.getConfig().addDefaultKryoSerializer(clazz, serializer)` on the `StreamExecutionEnvironment` or `ExecutionEnvironment`.
-  Additional Kryo serializers are available in many libraries. See [Custom Serializers]({{ site.baseurl }}/dev/custom_serializers.html) for more details on working with custom serializers.
-
-* **Adding Type Hints:** Sometimes, when Flink cannot infer the generic types despits all tricks, a user must pass a *type hint*. That is generally
-  only necessary in the Java API. The [Type Hints Section](#type-hints-in-the-java-api) describes that in more detail.
-
-* **Manually creating a `TypeInformation`:** This may be necessary for some API calls where it is not possible for Flink to infer
-  the data types due to Java's generic type erasure. See [Creating a TypeInformation or TypeSerializer](#creating-a-typeinformation-or-typeserializer)
-  for details.
+* **注册自定义序列化器：** Flink会将自己不能处理的类型转交给[Kryo](https://github.com/EsotericSoftware/kryo),但并不是所有的类型都能被Kryo完美处理（也就是说：不是所有类型都能被Flink处理），比如，许多 Google Guava 的集合类型默认情况下是不能正常工作的。针对存在这个问题的这些类型，其解决方案
+是通过在`StreamExecutionEnvironment` 或 `ExecutionEnvironment`中调用`.getConfig().addDefaultKryoSerializer(clazz, serializer)`方法，注册辅助的序列化器。许多库都提供了Kryo序列化器，关于自定义序列化器的更多细节请参考[Custom Serializers]({{ site.baseurl }}/dev/custom_serializers.html)。
+* **添加Type Hints：** 有时，Flink尝试了各种办法仍不能推断出泛型，这时用户就必须通过借助`type hint`来推断泛型，一般这种情况只是在Java API中需要添加的。[Type Hints Section(#type-hints-in-the-java-api) 中讲解更为详细。
+ 
+ * **手动创建一个 `TypeInformation`类：** 在某些API中，手动创建一个`TypeInformation`类可能是必须的，因为Java泛型的类型擦除特性会使得Flink无法推断数据类型。更多详细信息可以参考[Creating a TypeInformation or TypeSerializer](#creating-a-typeinformation-or-typeserializer)
+ 
 
 
-## Flink's TypeInformation class
+## FLink的TypeInformation类
+ {% gh_link /flink-core/src/main/java/org/apache/flink/api/common/typeinfo/TypeInformation.java "TypeInformation" %}类是所有类型描述类的基类。它包括了类型的一些基本属性，并可以通过它来生成序列化器（serializer），特殊情况下还可以生成类型的比较器。（*注意：Flink中的比较器不仅仅是定义大小顺序，更是处理keys的基本辅助工具*）
+ 
+* 基本类型：所有Java基本数据类型和对应装箱类型，加上`void`, `String`, `Date`, `BigDecimal`和 `BigInteger`.
 
-The class {% gh_link /flink-core/src/main/java/org/apache/flink/api/common/typeinfo/TypeInformation.java "TypeInformation" %}
-is the base class for all type descriptors. It reveals some basic properties of the type and can generate serializers
-and, in specializations, comparators for the types.
-(*Note that comparators in Flink do much more than defining an order - they are basically the utility to handle keys*)
+* 基本数组和对象数组
 
-Internally, Flink makes the following distinctions between types:
+* 复合类型：
 
-* Basic types: All Java primitives and their boxed form, plus `void`, `String`, `Date`, `BigDecimal`, and `BigInteger`.
+  * Flink Java Tuples (Flink Java API的一部分): 最多25个成员，不支持null成员
 
-* Primitive arrays and Object arrays
+  * Scala *case 类* (包括 Scala tuples): 最多25个成员, 不支持null成员
 
-* Composite types
+  * Row: 包含任意多个字段的元组并且支持null成员
 
-  * Flink Java Tuples (part of the Flink Java API): max 25 fields, null fields not supported
+  * POJOs: 遵循类bean模式的类
 
-  * Scala *case classes* (including Scala tuples): max 22 fields, null fields not supported
+* 辅助类型  (Option, Either, Lists, Maps, ...)
 
-  * Row: tuples with arbitrary number of fields and support for null fields
+* 泛型: Flink自身不会序列化泛型，而是借助Kryo进行序列化.
 
-  * POJOs: classes that follow a certain bean-like pattern
+POJO类非常有意思，因为POJO类可以支持复杂类型的创建，并且在定义keys时可以使用成员的名字：`dataSet.join(another).where("name").equalTo("personName")`。同时，POJO类对于运行时（runtime）是透明的，这使得Flink可以非常高效地处理它们。
+  
 
-* Auxiliary types (Option, Either, Lists, Maps, ...)
+#### POJO类型的规则
+在满足如下条件时，Flink会将这种数据类型识别成POJO类型（并允许以成员名引用字段）：
 
-* Generic types: These will not be serialized by Flink itself, but by Kryo.
-
-POJOs are of particular interest, because they support the creation of complex types and the use of field
-names in the definition of keys: `dataSet.join(another).where("name").equalTo("personName")`.
-They are also transparent to the runtime and can be handled very efficiently by Flink.
-
-
-#### Rules for POJO types
-
-Flink recognizes a data type as a POJO type (and allows "by-name" field referencing) if the following
-conditions are fulfilled:
-
-* The class is public and standalone (no non-static inner class)
-* The class has a public no-argument constructor
-* All fields in the class (and all superclasses) are either public (and non-final)
-  or have a public getter- and a setter- method that follows the Java beans
-  naming conventions for getters and setters.
+* 该类是public的并且是独立的（即没有非静态的内部类）
+* 该类有一个public的无参构造方法
+* 该类（及该类的父类）的所有成员要么是public的，要么是拥有按照标准java bean命名规则命名的public getter和 public setter方法。
 
 
-#### Creating a TypeInformation or TypeSerializer
-
-To create a TypeInformation object for a type, use the language specific way:
+#### 创建一个TypeInformation对象或序列化器
+创建一个TypeInformation对象时，不同编程语言的创建方法具体如下：
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
-Because Java generally erases generic type information, you need to pass the type to the TypeInformation
-construction:
-
-For non-generic types, you can pass the Class:
-{% highlight java %}
+因为Java会对泛型的类型信息进行类型擦除，所以在需要在TypeInformation的构造方法中传入具体类型:
+对于非泛型的类型, 你可以直接传入这个类:
+{% highlight java %}方法
 TypeInformation<String> info = TypeInformation.of(String.class);
 {% endhighlight %}
 
-For generic types, you need to "capture" the generic type information via the `TypeHint`:
+对于泛型类型,你需要借助`TypeHint`去“捕获”泛型的类型信息:
 {% highlight java %}
 TypeInformation<Tuple2<String, Double>> info = TypeInformation.of(new TypeHint<Tuple2<String, Double>>(){});
 {% endhighlight %}
-Internally, this creates an anonymous subclass of the TypeHint that captures the generic information to preserve it
-until runtime.
+在内部，这个操作创建了一个TypeHint的匿名子类，用于捕获泛型信息，这个子类会一直保存到运行时。
 </div>
 
 <div data-lang="scala" markdown="1">
-In Scala, Flink uses *macros* that runs at compile time and captures all generic type information while it is
-still available.
+在Scala中，Flink使用在编译时运行的*宏*，在宏可供调用时去捕获所有泛型信息。
 {% highlight scala %}
-// important: this import is needed to access the 'createTypeInformation' macro function
+// 重要: 为了能够访问'createTypeInformation' 的宏方法，这个import是必须的
 import org.apache.flink.streaming.api.scala._
 
 val stringInfo: TypeInformation[String] = createTypeInformation[String]
 
 val tupleInfo: TypeInformation[(String, Double)] = createTypeInformation[(String, Double)]
 {% endhighlight %}
-
-You can still use the same method as in Java as a fallback.
+你也可以在Java使用相同的方法作为备选。
 </div>
 </div>
 
-To create a `TypeSerializer`, simply call `typeInfo.createSerializer(config)` on the `TypeInformation` object.
+为了创建一个`序列化器（TypeSerializer）`，只需要在`TypeInformation` 对象上调用`typeInfo.createSerializer(config)`方法。
 
-The `config` parameter is of type `ExecutionConfig` and holds the information about the program's registered
-custom serializers. Where ever possibly, try to pass the programs proper ExecutionConfig. You can usually
-obtain it from `DataStream` or `DataSet` via calling `getExecutionConfig()`. Inside functions (like `MapFunction`), you can
-get it by making the function a [Rich Function]() and calling `getRuntimeContext().getExecutionConfig()`.
+`config`参数的类型是`ExecutionConfig`，它保留了程序的注册的自定义序列化器的相关信息。在可能用到TypeSerializer的地方，尽量传入程序的ExecutionConfig，你可以调用`DataStream` 或 `DataSet`的 `getExecutionConfig()`方法获取ExecutionConfig。一些内部方法（如：`MapFunction`）中，你可以通过将该方法变成一个[Rich Function]()，然后调用`getRuntimeContext().getExecutionConfig()`获取ExecutionConfig.
 
 --------
 --------
 
-## Type Information in the Scala API
+## Scala API中的类型信息
+通过*类型清单(manifests)* and *类标签*功能，Scala对于运行时的类型信息有着非常详细的概念。通常，Scala对象的类型和方法可以访问其泛型参数的类型，因此，Scala程序不会有Java程序那样的类型擦除问题。
 
-Scala has very elaborate concepts for runtime type information though *type manifests* and *class tags*. In
-general, types and methods have access to the types of their generic parameters - thus, Scala programs do
-not suffer from type erasure as Java programs do.
+此外，Scala允许通过Scala的宏在Scala编译器中运行自定义代码，这意味着当你编译针对Flink的Scala API编写的Scala程序时，会执行一些Flink代码。
+在编译期间，我们使用宏来查看所有用户方法的参数类型和返回类型，编译期也是所有类型信息完全可用的时候。在宏中，我们为方法的返回类型（或参数类型）创建一个*TypeInformation*，并将其作为方法的一部分。 
 
-In addition, Scala allows to run custom code in the Scala Compiler through Scala Macros - that means that some Flink
-code gets executed whenever you compile a Scala program written against Flink's Scala API.
+####  无隐式值导致的证据参数（Evidence Parameter）错误
+如果无法创建TypeInformation，程序编译报错：“could not find implicit value for evidence parameter of type TypeInformation”。
 
-We use the Macros to look at the parameter types and return types of all user functions during compilation - that
-is the point in time when certainly all type information is perfectly available. Within the macro, we create
-a *TypeInformation* for the function's return types (or parameter types) and make it part of the operation.
+常见的原因是生成TypeInformation的代码没有被导入，请确保导入了完整的flink.api.scala包。
 
-
-#### No Implicit Value for Evidence Parameter Error
-
-In the case where TypeInformation could not be created, programs fail to compile with an error
-stating *"could not find implicit value for evidence parameter of type TypeInformation"*.
-
-A frequent reason if that the code that generates the TypeInformation has not been imported.
-Make sure to import the entire flink.api.scala package.
 {% highlight scala %}
 import org.apache.flink.api.scala._
 {% endhighlight %}
 
-Another common cause are generic methods, which can be fixed as described in the following section.
+另外一个常见原因是泛型方法，这种情况可以通过下面的方法进行修复。
 
+#### 泛型方法
 
-#### Generic Methods
-
-Consider the following case below:
-
+思考下面这个例子：
 {% highlight scala %}
 def selectFirst[T](input: DataSet[(T, _)]) : DataSet[T] = {
   input.map { v => v._1 }
@@ -206,16 +159,11 @@ val data : DataSet[(String, Long) = ...
 val result = selectFirst(data)
 {% endhighlight %}
 
-For such generic methods, the data types of the function parameters and return type may not be the same
-for every call and are not known at the site where the method is defined. The code above will result
-in an error that not enough implicit evidence is available.
-
-In such cases, the type information has to be generated at the invocation site and passed to the
-method. Scala offers *implicit parameters* for that.
-
-The following code tells Scala to bring a type information for *T* into the function. The type
-information will then be generated at the sites where the method is invoked, rather than where the
-method is defined.
+例子中的这种泛型方法，方法参数和返回类型的数据类型对每次调用可能不一样，并且定义方法的地方也不知道。这就会导致上面的代码产生一个没有足够的隐式证据可用的错误。
+ 
+在这种情况下，类型信息必须在调用的地方生成并传给方法。Scala为此提供了*隐式参数*。
+ 
+下面的代码告诉Scala把*T*的类型信息带入方法，然后类型信息会在方法被调用的地方生成，而不是在方法定义的位置生成。 
 
 {% highlight scala %}
 def selectFirst[T : TypeInformation](input: DataSet[(T, _)]) : DataSet[T] = {
@@ -228,12 +176,8 @@ def selectFirst[T : TypeInformation](input: DataSet[(T, _)]) : DataSet[T] = {
 --------
 
 
-## Type Information in the Java API
-
-In the general case, Java erases generic type information. Flink tries to reconstruct as much type information
-as possible via reflection, using the few bits that Java preserves (mainly function signatures and subclass information).
-This logic also contains some simple type inference for cases where the return type of a function depends on its input type:
-
+## Java API中的类型信息
+一般情况下，Java会擦除泛型的类型信息。Flink会尝试使用Java的保留字节（主要是方法签名和子类信息），通过反射重建尽可能多的类型信息， 这个逻辑还包含了一些简单的类型推断，比如方法的返回类型取决于其输入类型的情况：
 {% highlight java %}
 public class AppendOne<T> extends MapFunction<T, Tuple2<T, Long>> {
 
@@ -243,14 +187,13 @@ public class AppendOne<T> extends MapFunction<T, Tuple2<T, Long>> {
 }
 {% endhighlight %}
 
-There are cases where Flink cannot reconstruct all generic type information. In that case, a user has to help out via *type hints*.
+某些情况下，Flink不能重建所有的类型信息。此时，用户必须通过*type hints*获得帮助。
 
 
-#### Type Hints in the Java API
 
-In cases where Flink cannot reconstruct the erased generic type information, the Java API
-offers so called *type hints*. The type hints tell the system the type of
-the data stream or data set produced by a function:
+#### Java API中的类型提示
+
+为了解决Flink无法重建被清除的泛型信息的情况, Java API提供了所谓的*(类型提示)type hint*. 类型提示告诉系统由方法生成的数据流或数据集的类型，如:
 
 {% highlight java %}
 DataSet<SomeType> result = dataSet
@@ -258,83 +201,68 @@ DataSet<SomeType> result = dataSet
         .returns(SomeType.class);
 {% endhighlight %}
 
-The `returns` statement specifies the produced type, in this case via a class. The hints support
-type definition via
-
-* Classes, for non-parameterized types (no generics)
-* TypeHints in the form of `returns(new TypeHint<Tuple2<Integer, SomeType>>(){})`. The `TypeHint` class
-  can capture generic type information and preserve it for the runtime (via an anonymous subclass).
+由`return`方法指定生成的类型，在本例中是通过一个类。type hint支持以下方式定义类型：
+* 类，针对无参数的类型（非泛型）
+* 以TypeHints的形式返回`returns(new TypeHint<Tuple2<Integer, SomeType>>(){})`。
+ `TypeHint`类可以捕获泛型信息，并将其保留至运行时（通过匿名子类）。
 
 
-#### Type extraction for Java 8 lambdas
 
-Type extraction for Java 8 lambdas works differently than for non-lambdas, because lambdas are not associated
-with an implementing class that extends the function interface.
+#### 针对Java 8 Lambda表达式的类型抽取
+由于Lambda表达式不涉及继承方法接口的实现类，Java 8 Lambda的类型抽取与非lambda表达式的工作方式并不相同。 
 
-Currently, Flink tries to figure out which method implements the lambda and uses Java's generic signatures to
-determine the parameter types and the return type. However, these signatures are not generated for lambdas
-by all compilers (as of writing this document only reliably by the Eclipse JDT compiler from 4.5 onwards).
+当前，Flink正在尝试如何实现Lambda表达式，并使用Java的泛型签名（generic signature）来决定参数类型和返回类型。但是， 并不是所有的编译器都为Lambda 表达式生成了签名（本文写作时只有 Eclipse JDT编译器 4.5 以上版本支持了）
 
 
-#### Serialization of POJO types
+#### POJO类型的序列化
 
-The PojoTypeInformation is creating serializers for all the fields inside the POJO. Standard types such as
-int, long, String etc. are handled by serializers we ship with Flink.
-For all other types, we fall back to Kryo.
+PojoTypeInfomation类用于创建针对POJO对象中所有成员的序列化器。Flink自带了针对诸如int，long，String等标准类型的序列化器，对于所有其他的类型，我们交给Kryo处理。
 
-If Kryo is not able to handle the type, you can ask the PojoTypeInfo to serialize the POJO using Avro.
-To do so, you have to call
+如果Kryo不能处理某种类型，我们可以通过PojoTypeInfo去调用Avro来序列化POJO，为了这样处理，我们必须调用如下接口： 
 
 {% highlight java %}
 final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 env.getConfig().enableForceAvro();
 {% endhighlight %}
 
-Note that Flink is automatically serializing POJOs generated by Avro with the Avro serializer.
+注意：Flink会用Avro序列化器自动序列化由Avro产生POJO对象。
 
-If you want your **entire** POJO Type to be treated by the Kryo serializer, set
+如果你想使得整个POJO类型都交给Kryo序列化器处理，则你需要配置：
 
 {% highlight java %}
 final ExecutionEnvironment env = ExecutionEnvironment.getExecutionEnvironment();
 env.getConfig().enableForceKryo();
 {% endhighlight %}
 
-If Kryo is not able to serialize your POJO, you can add a custom serializer to Kryo, using
+如果Kryo不能序列化该POJO对象，你可以添加一个自定义序列化器到Kryo，使用代码如下：
 {% highlight java %}
 env.getConfig().addDefaultKryoSerializer(Class<?> type, Class<? extends Serializer<?>> serializerClass)
 {% endhighlight %}
 
-There are different variants of these methods available.
+这些方法还有许多不同的重载形式可用
 
 
-## Disabling Kryo Fallback
+## 禁用 Kryo 作为备选
 
-There are cases when programs may want to explicitly avoid using Kryo as a fallback for generic types. The most
-common one is wanting to ensure that all types are efficiently serialized either through Flink's own serializers,
-or via user-defined custom serializers.
-
-The setting below will raise an exception whenever a data type is encountered that would go through Kryo:
+在某些情况下，程序可能希望明确地避免使用Kryo作为泛型类型的备选。 最常见的情况是想确保所有类型都可以通过Flink自己的序列化器或通过用户定义的自定义序列器有效序列化。
+ 
+当遇到需要通过Kryo序列化的数据类型时，以下设置会引发异常:
 {% highlight java %}
 env.getConfig().disableGenericTypes();
 {% endhighlight %}
 
 
-## Defining Type Information using a Factory
+## 使用工厂定义类型信息
+类型信息工厂允许以插件的形式自定义类型信息到 Flink 类型系统中，你需要实现`org.apache.flink.api.common.typeinfo.TypeInfoFactory` 用于返回你自定义类型信息。
+当对应的类型已经注解了` @org.apache.flink.api.common.typeinfo.TypeInfo`，那么在类型提取阶段 Flink 就会调用你实现的工厂。
+ 
+类型信息工厂在Java和Scala API中均可使用。
 
-A type information factory allows for plugging-in user-defined type information into the Flink type system.
-You have to implement `org.apache.flink.api.common.typeinfo.TypeInfoFactory` to return your custom type information. 
-The factory is called during the type extraction phase if the corresponding type has been annotated 
-with the `@org.apache.flink.api.common.typeinfo.TypeInfo` annotation. 
+在类型的层次结构中，在向上层（子类往父类）移动的过程中会选择最近的工厂，但是内置的工厂具有最高的层次。一个工厂可以比Flink的内置类型还有更高的层次，所以你应该知道你在做什么。
 
-Type information factories can be used in both the Java and Scala API.
+下面的例子展示了在Java中如何注解一个自定义类型`MyTuole`，并且通过工厂创建自定义的类型信息对象。
 
-In a hierarchy of types the closest factory 
-will be chosen while traversing upwards, however, a built-in factory has highest precedence. A factory has 
-also higher precendence than Flink's built-in types, therefore you should know what you are doing.
-
-The following example shows how to annotate a custom type `MyTuple` and supply custom type information for it using a factory in Java.
-
-The annotated custom type:
+注解后的自定义类型:
 {% highlight java %}
 @TypeInfo(MyTupleTypeInfoFactory.class)
 public class MyTuple<T0, T1> {
@@ -343,7 +271,7 @@ public class MyTuple<T0, T1> {
 }
 {% endhighlight %}
 
-The factory supplying custom type information:
+利用工厂创建自定义类型信息对象:
 {% highlight java %}
 public class MyTupleTypeInfoFactory extends TypeInfoFactory<MyTuple> {
 
@@ -354,9 +282,7 @@ public class MyTupleTypeInfoFactory extends TypeInfoFactory<MyTuple> {
 }
 {% endhighlight %}
 
-The method `createTypeInfo(Type, Map<String, TypeInformation<?>>)` creates type information for the type the factory is targeted for. 
-The parameters provide additional information about the type itself as well as the type's generic type parameters if available.
+`createTypeInfo(Type, Map<String, TypeInformation<?>>)`方法用于创建该工厂针对类型的类型信息，参数和类型的泛型参数可以提供关于该类型的附加信息（如果有参数）。
 
-If your type contains generic parameters that might need to be derived from the input type of a Flink function, make sure to also 
-implement `org.apache.flink.api.common.typeinfo.TypeInformation#getGenericParameters` for a bidirectional mapping of generic 
-parameters to type information.
+如果你的类型包含的泛型参数可能源自Flink方法的输入类型，请确保你实现了`org.apache.flink.api.common.typeinfo.TypeInformation#getGenericParameters` 
+用于建立从泛型参数到类型信息的双向映射。

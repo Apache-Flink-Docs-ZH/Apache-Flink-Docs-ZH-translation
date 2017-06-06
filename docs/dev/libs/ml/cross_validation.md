@@ -73,7 +73,7 @@ Wiki: <a href="https://en.wikipedia.org/wiki/Cross-validation_(statistics)#k-fol
 
 ## 参数
 
-多种 `Splitter`(分割器) 共有一些参数。
+以上各种 `Splitter`(分割器) 共同拥有一些参数。
 
  <table class="table table-bordered">
   <thead>
