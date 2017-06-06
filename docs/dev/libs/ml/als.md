@@ -28,16 +28,16 @@ under the License.
 
 ## 描述
 
-交替最小二乘法（ALS）算法将一个给定的R矩阵因式分解为$R$和V两个因子，例如$R \approx U^TV$。
+交替最小二乘法（ALS）算法将一个给定的$R$矩阵因式分解为$U$和$V$两个因子，例如$R \approx U^TV$。
 未知的行的维度被用作算法的参数，叫做潜在因子。
-自从矩阵因式分解可以用在推荐系统的场景，$U$和$V$矩阵可以分别称为用户和商品矩阵。
+由于矩阵因式分解可以用在推荐系统的场景，$U$和$V$矩阵可以分别称为用户和商品矩阵。
 用户矩阵的第i列用$u_i$表示，商品矩阵的第i列用$v_i$表示。
-R矩阵可以用$$(R)_{i,j} = r_{i,j}$$称为评价矩阵。
+$R$矩阵可以用$$(R){i,j} = r{i,j}$$$称为评价矩阵。
 为了找到用户和商品矩阵，如下问题得到了解决：
 $$\arg\min_{U,V} \sum_{\{i,j\mid r_{i,j} \not= 0\}} \left(r_{i,j} - u_{i}^Tv_{j}\right)^2 +
 \lambda \left(\sum_{i} n_{u_i} \left\lVert u_i \right\rVert^2 + \sum_{j} n_{v_j} \left\lVert v_j \right\rVert^2 \right)$$
 
-$\lambda$作为因式分解的因子，$$n_{u_i}$$作为用户i评过分的商品数量， $$n_{v_j}$$作为商品$j$被评分的次数。
+$\lambda$作为正则化因子，$$n_{u_i}$$作为用户$i$评过分的商品数量， $$n_{v_j}$$作为商品$j$被评分的次数。
 这个因式分解方案避免了称作加权$\lambda​$因式分解的过拟合。
 细节可以在[Zhou et al.](http://dx.doi.org/10.1007/978-3-540-68880-8_32)的论文中找到。
 通过修复$U$ 和 $V$矩阵，我们获得可以直接解析的二次形式。
@@ -130,7 +130,7 @@ ALS的实现可以通过下面的参数进行控制：
 </table>
 
 ## 例子
-
+{% highlight scala %}
 // 从CSV文件读取输入数据集
 val inputDS: DataSet[(Int, Int, Double)] = env.readCsvFile[(Int, Int, Double)](
   pathToTrainingFile)
