@@ -23,109 +23,71 @@ specific language governing permissions and limitations
 under the License.
 -->
 
-Windows are at the heart of processing infinite streams. Windows split the stream into "buckets" of finite size,
-over which we can apply computations. This document focuses on how windowing is performed in Flink and how the
-programmer can benefit to the maximum from its offered functionality.
+Windows是处理无限流的核心。 Windows将流分隔成有限大小的“桶”，以供我们进行计算。 本文档重点介绍Flink中Windows如何工作，以及程序员如何充分利用其提供的功能。
 
-The general structure of a windowed Flink program is presented below. The first snippet refers to *keyed* streams,
-while the second to *non-keyed* ones. As one can see, the only difference is the `keyBy(...)` call for the keyed streams
-and the `window(...)` which becomes `windowAll(...)` for non-keyed streams. These is also going to serve as a roadmap
-for the rest of the page.
+Flink Window编程的一般结构如下。 第一个片段是*keyed*流，而第二个是*non-keyed*流。可以看出，唯一的区别是在*keyed*流中执行的`keyBy(...)`和`window(...)`在*non-keyed*流中被换成`windowAll(...)`。 这些也将在本页的剩余部分进行说明。
 
 **Keyed Windows**
 
     stream
-           .keyBy(...)          <-  keyed versus non-keyed windows
-           .window(...)         <-  required: "assigner"
-          [.trigger(...)]       <-  optional: "trigger" (else default trigger)
-          [.evictor(...)]       <-  optional: "evictor" (else no evictor)
-          [.allowedLateness()]  <-  optional, else zero
-           .reduce/fold/apply() <-  required: "function"
+           .keyBy(...)          <-  keyed 和 non-keyed windows的区别
+           .window(...)         <-  必选: "assigner"
+          [.trigger(...)]       <-  可选: "trigger" (默认 default trigger)
+          [.evictor(...)]       <-  可选: "evictor" (默认无 evictor)
+          [.allowedLateness()]  <-  可选, 默认值为0
+           .reduce/fold/apply() <-  必选: "function"
 
 **Non-Keyed Windows**
 
     stream
-           .windowAll(...)      <-  required: "assigner"
-          [.trigger(...)]       <-  optional: "trigger" (else default trigger)
-          [.evictor(...)]       <-  optional: "evictor" (else no evictor)
-          [.allowedLateness()]  <-  optional, else zero
-           .reduce/fold/apply() <-  required: "function"
+           .windowAll(...)      <-  必选: "assigner"
+          [.trigger(...)]       <-  可选: "trigger" (默认 default trigger)
+          [.evictor(...)]       <-  可选: "evictor" (默认无 evictor)
+          [.allowedLateness()]  <-  可选, 默认值为0
+           .reduce/fold/apply() <-  必选: "function"
 
-In the above, the commands in square brackets ([...]) are optional. This reveals that Flink allows you to customize your
-windowing logic in many different ways so that it best fits your needs.
+在上面，方括号（[...]）中的命令是可选的。这说明Flink允许你以多种方式自定义你的window逻辑，以满足你的需求。
 
 * This will be replaced by the TOC
 {:toc}
 
-## Window Lifecycle
+## Window 生命周期
 
-In a nutshell, a window is **created** as soon as the first element that should belong to this window arrives, and the
-window is **completely removed** when the time (event or processing time) passes its end timestamp plus the user-specified
-`allowed lateness` (see [Allowed Lateness](#allowed-lateness)). Flink guarantees removal only for time-based
-windows and not for other types, *e.g.* global windows (see [Window Assigners](#window-assigners)). For example, with an
-event-time-based windowing strategy that creates non-overlapping (or tumbling) windows every 5 minutes and has an allowed
-lateness of 1 min, Flink will create a new window for the interval between `12:00` and `12:05` when the first element with
-a timestamp that falls into this interval arrives, and it will remove it when the watermark passes the `12:06`
-timestamp.
+简单的说，一个window在属于此window的第一个元素到达时创建，window完全删除的条件是：时间（事件或处理时间）达到该window的结束时间戳，并加上用户指定的允许的延迟，窗口被完全删除(参见 [Allowed Lateness](#allowed-lateness))。Flink保证仅对基于时间的window进行删除，而不适用于其他类型的窗口，比如全局window(参见 [Window Assigner](#window-assigners))。例如，使用基于事件时间的window策略，每5分钟创建不重叠（或翻滚tumbling）的window，并且允许的延迟时间为1分钟，则Flink会在时间戳落在`12:00`和`12:05`的第一个元素到达时创建一个新window，当watermark通过`12:06`的时间戳时删除该window。
 
-In addition, each window will have a `Trigger` (see [Triggers](#triggers)) and a function (`WindowFunction`, `ReduceFunction` or
-`FoldFunction`) (see [Window Functions](#window-functions)) attached to it. The function will contain the computation to
-be applied to the contents of the window, while the `Trigger` specifies the conditions under which the window is
-considered ready for the function to be applied. A triggering policy might be something like "when the number of elements
-in the window is more than 4", or "when the watermark passes the end of the window". A trigger can also decide to
-purge a window's contents any time between its creation and removal. Purging in this case only refers to the elements
-in the window, and *not* the window metadata. This means that new data can still be added to that window.
+此外，每个window都有一个`Trigger` (参见 [Triggers](#triggers))和一个附着在trigger上的functon(`WindowFunction`，`ReduceFunction` 或者
+`FoldFunction`) (参见 [Window Functions](#window-functions)) 。这个function包含了将要对window里包含的内容的计算逻辑，而`Trigger`指明了window可以用于function计算的条件。trigger的策略可能是“当window中的元素个数大于4时”，或者“当watermark到达window的末尾时”。一个trigger还可以决定在window的生命周期内的任意时刻清除该window的内容。在这种情况下，清除仅指清除window中的元素，而*不是*window元数据。这意味着新数据仍然可以添加到该window。
 
-Apart from the above, you can specify an `Evictor` (see [Evictors](#evictors)) which will be able to remove
-elements from the window after the trigger fires and before and/or after the function is applied.
+除上述之外，你还可以指定一个`Evictor`(参见 [Evictors](#evictors))，它将在trigger触发之后以及在应用function逻辑之前和/或之后从window中移除元素。
 
-In the following we go into more detail for each of the components above. We start with the required parts in the above
-snippet (see [Keyed vs Non-Keyed Windows](#keyed-vs-non-keyed-windows), [Window Assigner](#window-assigner), and
-[Window Function](#window-function)) before moving to the optional ones.
+以下我们将详细介绍上述各个组件。我们从上面的代码片段开始(参见 [Keyed vs Non-Keyed Windows](#keyed-vs-non-keyed-windows)，[Window Assigner](#window-assigner)和[Window Function](#window-function))，然后再介绍可选的部分。
 
 ## Keyed vs Non-Keyed Windows
 
-The first thing to specify is whether your stream should be keyed or not. This has to be done before defining the window.
-Using the `keyBy(...)` will split your infinite stream into logical keyed streams. If `keyBy(...)` is not called, your
-stream is not keyed.
+第一件要指定的事情是你的stream是否需要按key拆分。这必须在定义window之前完成。使用`keyBy(...)`将会把你的无限stream拆分为逻辑上keyed的streams。如果没有调用`keyBy(...)`，你的stream就不是keyed。
 
-In the case of keyed streams, any attribute of your incoming events can be used as a key
-(more details [here]({{ site.baseurl }}/dev/api_concepts.html#specifying-keys)). Having a keyed stream will
-allow your windowed computation to be performed in parallel by multiple tasks, as each logical keyed stream can be processed
-independently from the rest. All elements referring to the same key will be sent to the same parallel task.
+如果是keyed streams，则进入的事件的任意属性都可以用来作为key（更多细节参见 [这里]({{ site.baseurl }}/dev/api_concepts.html#specifying-keys)）。keyed stream也将允许你的window计算并行的在多个task上进行，因为每个逻辑keyed stream和其他keyed stream是完全独立的。所有key相同的元素都会被发送到同一个并行的task。
 
-In case of non-keyed streams, your original stream will not be split into multiple logical streams and all the windowing logic
-will be performed by a single task, *i.e.* with parallelism of 1.
+如果是non-keyed streams，则原始stream将不会被拆分为多个逻辑上的streams，并且所有的windowing计算逻辑都会值被一个task执行，即并行度为1.
 
 ## Window Assigners
 
-After specifying whether your stream is keyed or not, the next step is to define a *window assigner*.
-The window assigner defines how elements are assigned to windows. This is done by specifying the `WindowAssigner`
-of your choice in the `window(...)` (for *keyed* streams) or the `windowAll()` (for *non-keyed* streams) call.
+指定了流是否需要按key拆分后，下一步是定义*window assigner*。window assigner定义元素如何分配给window。对*keyed* streams，通过`window(...)`方法指定`WindowAssigner`。对*non-keyed* streams，通过`windowAll()`方法指定`WindowAssigner`。
 
-A `WindowAssigner` is responsible for assigning each incoming element to one or more windows. Flink comes
-with pre-defined window assigners for the most common use cases, namely *tumbling windows*,
-*sliding windows*, *session windows* and *global windows*. You can also implement a custom window assigner by
-extending the `WindowAssigner` class. All built-in window assigners (except the global
-windows) assign elements to windows based on time, which can either be processing time or event
-time. Please take a look at our section on [event time]({{ site.baseurl }}/dev/event_time.html) to learn
-about the difference between processing time and event time and how timestamps and watermarks are generated.
+一个`WindowAssigner`负责对每个进入的元素分配一个或者多个window。Flink自带了针对用户常见场景的window assigners，分别是*tumbling windows*，
+*sliding windows*，*session windows*和*global windows*。你也可以继承`WindowAssigner`类来实现自定义window assigner。所有内置的window assigners (除了全局windows) 都是基于时间来给窗口分配元素，这里的是回见可以是processing time，也可以是event
+time。请参见[event time]({{ site.baseurl }}/dev/event_time.html) 了解processing time和event time的区别以及时间戳和watermarks如何生成。
 
-In the following, we show how Flink's pre-defined window assigners work and how they are used
-in a DataStream program. The following figures visualize the workings of each assigner. The purple circles
-represent elements of the stream, which are partitioned by some key (in this case *user 1*, *user 2* and *user 3*).
-The x-axis shows the progress of time.
+接下来，我们将展示Flink预定义的window assigners的工作原理以及如何在DataStream程序中使用它们。以下图形可视化每个assigner的运行过程。紫色圆圈表示stream中的元素，它们根据key进行了分区（例子中key是*user 1*，*user 2*和*user 3*）。x轴表示时间进度。
 
 ### Tumbling Windows
 
-A *tumbling windows* assigner assigns each element to a window of a specified *window size*.
-Tumbling windows have a fixed size and do not overlap. For example, if you specify a tumbling
-window with a size of 5 minutes, the current window will be evaluated and a new window will be
-started every five minutes as illustrated by the following figure.
+一个*tumbling windows* assigner分配每个元素到一个具有自定*window size*的window。Tumbling windows有固定size并且不重叠。例如，如果你指定一个tumbling
+window的size为5分钟，则在当前window被计算后，每五分钟将创建一个新window，如下图所示。
 
 <img src="{{ site.baseurl }}/fig/tumbling-windows.svg" class="center" style="width: 100%;" />
 
-The following code snippets show how to use tumbling windows.
+如下代码片段示意了如何使用tumbling windows。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -177,33 +139,21 @@ input
 </div>
 </div>
 
-Time intervals can be specified by using one of `Time.milliseconds(x)`, `Time.seconds(x)`,
-`Time.minutes(x)`, and so on.
+时间间隔可以通过使用`Time.milliseconds(x)`，`Time.seconds(x)`，`Time.minutes(x)`中的任意一个来指定。
 
-As shown in the last example, tumbling window assigners also take an optional `offset`
-parameter that can be used to change the alignment of windows. For example, without offsets
-hourly tumbling windows are aligned with epoch, that is you will get windows such as
-`1:00:00.000 - 1:59:59.999`, `2:00:00.000 - 2:59:59.999` and so on. If you want to change
-that you can give an offset. With an offset of 15 minutes you would, for example, get
-`1:15:00.000 - 2:14:59.999`, `2:15:00.000 - 3:14:59.999` etc.
-An important use case for offsets is to adjust windows to timezones other than UTC-0.
-For example, in China you would have to specify an offset of `Time.hours(-8)`.
+
+如最后一个例子所示，tumbling window assigner还支持可选的`offset`参数，用于设置window的对齐位置。例如，window size为1小时的tumbling windows如果没有设置offset，则默认对齐位置为每个整点小时，那么你将得到像`1:00:00.000 - 1:59:59.999`，`2:00:00.000 - 2:59:59.999`等等这样的window。你可以通过设置offset来改变对齐位置。如果设置offset为15分钟，那么你得到像`1:15:00.000 - 2:14:59.999`, `2:15:00.000 - 3:14:59.999`等等这样的window。设置offset的一个重要场景是对window调整时区（默认时区为UTC-0）。例如，在中国你一般会指定offset为`Time.hours(-8)`。
 
 ### Sliding Windows
 
-The *sliding windows* assigner assigns elements to windows of fixed length. Similar to a tumbling
-windows assigner, the size of the windows is configured by the *window size* parameter.
-An additional *window slide* parameter controls how frequently a sliding window is started. Hence,
-sliding windows can be overlapping if the slide is smaller than the window size. In this case elements
-are assigned to multiple windows.
+*sliding windows* assigner分配元素到具有固定length的window。和tumbling
+windows assigner类似，window的size通过*window size*参数指定，另外通过*window slide*参数控制sliding window的新建频率。因此当slide比window size小的时候多个sliding windows会重叠，此时元素会被分配给多个windows。
 
-For example, you could have windows of size 10 minutes that slides by 5 minutes. With this you get every
-5 minutes a window that contains the events that arrived during the last 10 minutes as depicted by the
-following figure.
+例如，你可以配置size为10分钟slide为5分钟的sliding window。此时，每过5分钟会新建一个包含过去10分钟内到达事件的window，如下图所示。
 
 <img src="{{ site.baseurl }}/fig/sliding-windows.svg" class="center" style="width: 100%;" />
 
-The following code snippets show how to use sliding windows.
+如下代码片段示意了如何使用sliding windows。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -255,30 +205,17 @@ input
 </div>
 </div>
 
-Time intervals can be specified by using one of `Time.milliseconds(x)`, `Time.seconds(x)`,
-`Time.minutes(x)`, and so on.
+时间间隔可以通过使用`Time.milliseconds(x)`，`Time.seconds(x)`，`Time.minutes(x)`中的任意一个来指定。
 
-As shown in the last example, sliding window assigners also take an optional `offset` parameter
-that can be used to change the alignment of windows. For example, without offsets hourly windows
-sliding by 30 minutes are aligned with epoch, that is you will get windows such as
-`1:00:00.000 - 1:59:59.999`, `1:30:00.000 - 2:29:59.999` and so on. If you want to change that
-you can give an offset. With an offset of 15 minutes you would, for example, get
-`1:15:00.000 - 2:14:59.999`, `1:45:00.000 - 2:44:59.999` etc.
-An important use case for offsets is to adjust windows to timezones other than UTC-0.
-For example, in China you would have to specify an offset of `Time.hours(-8)`.
+如最后一个例子所示，sliding window assigner也支持可选的`offset`参数，用于设置window的对齐位置。例如，window size为1小时slide为30分钟的sliding windows如果没有设置offset，则默认对齐位置为每个整点小时，那么你将得到像`1:00:00.000 - 1:59:59.999`, `1:30:00.000 - 2:29:59.999`等等这样的window。你可以通过设置offset来改变对齐位置。如果设置offset为15分钟，那么你得到像`1:15:00.000 - 2:14:59.999`, `1:45:00.000 - 2:44:59.999`等等这样的window。设置offset的一个重要场景是对window调整时区（默认时区为UTC-0）。例如，在中国你一般会指定offset为`Time.hours(-8)`。
 
 ### Session Windows
 
-The *session windows* assigner groups elements by sessions of activity. Session windows do not overlap and
-do not have a fixed start and end time, in contrast to *tumbling windows* and *sliding windows*. Instead a
-session window closes when it does not receive elements for a certain period of time, *i.e.*, when a gap of
-inactivity occurred. A session window assigner is configured with the *session gap* which
-defines how long is the required period of inactivity. When this period expires, the current session closes
-and subsequent elements are assigned to a new session window.
+*session windows* assigner通过session的活跃度分组元素。不同于*tumbling windows*和*sliding windows*，Session windows不重叠并且没有固定的起止时间。一个session window在一段时间内没有接收到元素时，即当出现非活跃间隙时关闭。一个session window assigner通过配置*session gap*来指定非活跃周期的时长。当超过这个时长，当前session关闭，后续元素被分配到新的session window。
 
 <img src="{{ site.baseurl }}/fig/session-windows.svg" class="center" style="width: 100%;" />
 
-The following code snippets show how to use session windows.
+如下代码片段示意了如何使用session windows。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -318,27 +255,18 @@ input
 </div>
 </div>
 
-Time intervals can be specified by using one of `Time.milliseconds(x)`, `Time.seconds(x)`,
-`Time.minutes(x)`, and so on.
+时间间隔可以通过使用`Time.milliseconds(x)`，`Time.seconds(x)`，`Time.minutes(x)`中的任意一个来指定。
 
-<span class="label label-danger">Attention</span> Since session windows do not have a fixed start and end,
-they are  evaluated differently than tumbling and sliding windows. Internally, a session window operator
-creates a new window for each arriving record and merges windows together if their are closer to each other
-than the defined gap.
-In order to be mergeable, a session window operator requires a merging [Trigger](#triggers) and a merging
-[Window Function](#window-functions), such as `ReduceFunction` or `WindowFunction`
-(`FoldFunction` cannot merge.)
+<span class="label label-danger">注意</span> 由于session windows没有固定起止时间，所以它们的处理方式不同于tumbling和sliding windows。在内部，一个session window operator对每个到达的记录创建一个新window，并且当这些windows的距离比定义的间隙更近则合并这些windows。为了可以进行合并，一个session window operator需要一个合并的[Trigger](#triggers)和一个合并的[Window Function](#window-functions)，比如`ReduceFunction`或者`WindowFunction`
+(`FoldFunction`不能合并)
 
 ### Global Windows
 
-A *global windows* assigner assigns all elements with the same key to the same single *global window*.
-This windowing scheme is only useful if you also specify a custom [trigger](#triggers). Otherwise,
-no computation will be performed, as the global window does not have a natural end at
-which we could process the aggregated elements.
+*global windows* assigner把具有相同key的所有元素分配给相同的单个*全局window*。这种window语义仅当你同时制定一个自定义的[trigger](#triggers)的时候才有意义。否则，不会执行计算，因为global window不知道聚合元素何时到结尾。
 
 <img src="{{ site.baseurl }}/fig/non-windowed.svg" class="center" style="width: 100%;" />
 
-The following code snippets show how to use a global window.
+如下代码片段示意了如何使用global window。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -366,29 +294,17 @@ input
 
 ## Window Functions
 
-After defining the window assigner, we need to specify the computation that we want
-to perform on each of these windows. This is the responsibility of the *window function*, which is used to process the
-elements of each (possibly keyed) window once the system determines that a window is ready for processing
-(see [triggers](#triggers) for how Flink determines when a window is ready).
+定义window assigner之后，我们需要在窗口上指定要执行的计算逻辑。*window function*的职责是一旦系统确定window准备就绪（参见 [triggers](#triggers)了解Flink如何确定window是否就绪），就处理每个（可能是根据key拆分的）window的元素。
 
-The window function can be one of `ReduceFunction`, `FoldFunction` or `WindowFunction`. The first
-two can be executed more efficiently (see [State Size](#state size) section) because Flink can incrementally aggregate
-the elements for each window as they arrive. A `WindowFunction` gets an `Iterable` for all the elements contained in a
-window and additional meta information about the window to which the elements belong.
+window function可以是`ReduceFunction`，`FoldFunction`或者`WindowFunction`三者之一。前两个可以更有效地执行（参见 [State Size](#state size)部分），因为Flink可以增量地聚合每个到达window的元素。`WindowFunction`获取包含在window中的所有元素的`Iterable`以及元素所属window的其他元信息。
 
-A windowed transformation with a `WindowFunction` cannot be executed as efficiently as the other
-cases because Flink has to buffer *all* elements for a window internally before invoking the function.
-This can be mitigated by combining a `WindowFunction` with a `ReduceFunction` or `FoldFunction` to
-get both incremental aggregation of window elements and the additional window metadata that the
-`WindowFunction` receives. We will look at examples for each of these variants.
+使用`WindowFunction`的window transformation不如其他情况高效，因为Flink必须在调用函数之前在内部缓冲window中的*所有*元素。这可以通过将`WindowFunction`与`ReduceFunction`或`FoldFunction`相结合来进行缓解，以获得window元素的增量聚合和`WindowFunction`接收到的其他window元数据。我们将看看每个这些示例的变体。
 
 ### ReduceFunction
 
-A `ReduceFunction` specifies how two elements from the input are combined to produce
-an output element of the same type. Flink uses a `ReduceFunction` to incrementally aggregate
-the elements of a window.
+`ReduceFunction`指定输入的两个元素如何组合以产生相同类型的输出元素。Flink使用`ReduceFunction`增量地聚合window的元素。
 
-A `ReduceFunction` can be defined and used like this:
+一个`ReduceFunction`的定义和使用如下：
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -418,15 +334,13 @@ input
 </div>
 </div>
 
-The above example sums up the second fields of the tuples for all elements in a window.
+上述示例计算了window中所有元组类型的元素中第二个字段的总和。
 
 ### FoldFunction
 
-A `FoldFunction` specifies how an input element of the window is combined with an element of
-the output type. The `FoldFunction` is incrementally called for each element that is added
-to the window and the current output value. The first element is combined with a pre-defined initial value of the output type.
+`FoldFunction`指定window的一个输入元素如何与一个同类型的输出元素结合。对于添加到窗口的每个元素和当前输出值，`FoldFunction`被不断地调用。第一个元素与输出类型的预定义初始值组合。
 
-A `FoldFunction` can be defined and used like this:
+一个`FoldFunction`的定义和使用如下：
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -456,18 +370,15 @@ input
 </div>
 </div>
 
-The above example appends all input `Long` values to an initially empty `String`.
+上述示例将所有输入的`Long`值追加到初始值为空的`String`。
 
-<span class="label label-danger">Attention</span> `fold()` cannot be used with session windows or other mergeable windows.
+<span class="label label-danger">注意</span> `fold()`不能用于session windows以及其他可合并的windows。
 
-### WindowFunction - The Generic Case
+### WindowFunction - 通用场景
 
-A `WindowFunction` gets an `Iterable` containing all the elements of the window and provides
-the most flexibility of all window functions. This comes
-at the cost of performance and resource consumption, because elements cannot be incrementally
-aggregated but instead need to be buffered internally until the window is considered ready for processing.
+`WindowFunction`获取包含window所有元素的`Iterable`，并提供最灵活的window functions。不过这是以性能和资源消耗为代价的，因为元素不能增量地聚合，而要在内部缓冲，直到window就绪才能进行处理。
 
-The signature of a `WindowFunction` looks as follows:
+一个`WindowFunction`的签名如下所示：
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -508,7 +419,7 @@ trait WindowFunction[IN, OUT, KEY, W <: Window] extends Function with Serializab
 </div>
 </div>
 
-A `WindowFunction` can be defined and used like this:
+一个`WindowFunction`的定义和使用如下：
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -561,17 +472,15 @@ class MyWindowFunction extends WindowFunction[(String, Long), String, String, Ti
 </div>
 </div>
 
-The example shows a `WindowFunction` to count the elements in a window. In addition, the window function adds information about the window to the output.
+该例子展示了一个用于计数元素个数的`WindowFunction`。此外，这个window function把关于window的信息添加到输出。
 
-<span class="label label-danger">Attention</span> Note that using `WindowFunction` for simple aggregates such as count is quite inefficient. The next section shows how a `ReduceFunction` can be combined with a `WindowFunction` to get both incremental aggregation and the added information of a `WindowFunction`.
+<span class="label label-danger">注意</span> 使用`WindowFunction`来实现简单的聚合（如计数）是非常低效的。下一节将介绍如何将`ReduceFunction`与`WindowFunction`组合以实现增量聚合并获得添加到`WindowFunction`的信息。
 
 ### ProcessWindowFunction
 
-In places where a `WindowFunction` can be used you can also use a `ProcessWindowFunction`. This
-is very similar to `WindowFunction`, except that the interface allows to query more information
-about the context in which the window evaluation happens.
+在`WindowFunction`可以使用的地方，你也可以使用`ProcessWindowFunction`。它与`WindowFunction`十分相似，只是它的接口允许查询更多关于将要进行计算的window的上下文信息。
 
-This is the `ProcessWindowFunction` interface:
+`ProcessWindowFunction`的接口如下：
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -641,7 +550,7 @@ abstract class ProcessWindowFunction[IN, OUT, KEY, W <: Window] extends Function
 </div>
 </div>
 
-It can be used like this:
+用法示意：
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -667,22 +576,15 @@ input
 </div>
 </div>
 
-### WindowFunction with Incremental Aggregation
+### WindowFunction与增量聚合结合
 
-A `WindowFunction` can be combined with either a `ReduceFunction` or a `FoldFunction` to
-incrementally aggregate elements as they arrive in the window.
-When the window is closed, the `WindowFunction` will be provided with the aggregated result.
-This allows to incrementally compute windows while having access to the
-additional window meta information of the `WindowFunction`.
+`WindowFunction`可以与`ReduceFunction`或`FoldFunction`组合，以便在元素到达window时增量地聚合元素。当window关闭时，`WindowFunction`将得到聚合结果。这样就允许在访问`WindowFunction`的其他的window元信息的同时增量对window进行计算。
 
-<span class="label label-info">Note</span> You can also `ProcessWindowFunction` instead of
-`WindowFunction` for incremental window aggregation.
+<span class="label label-info">注意</span> 你也可以使用`ProcessWindowFunction`取代`WindowFunction`来对window进行增量聚合。
 
-#### Incremental Window Aggregation with FoldFunction
+#### 使用FoldFunction对window进行增量聚合
 
-The following example shows how an incremental `FoldFunction` can be combined with
-a `WindowFunction` to extract the number of events in the window and return also
-the key and end time of the window.
+以下示例展示了增量`FoldFunction`如何与`WindowFunction`组合以获取window中的事件数，并返回window的key和结束时间。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -745,11 +647,9 @@ input
 </div>
 </div>
 
-#### Incremental Window Aggregation with ReduceFunction
+#### 使用ReduceFunction对window进行增量聚合
 
-The following example shows how an incremental `ReduceFunction` can be combined with
-a `WindowFunction` to return the smallest event in a window along
-with the start time of the window.
+以下示例展示了增量`ReduceFunction`如何与`WindowFunction`组合以返回window中的最小事件以及window的开始时间。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -810,73 +710,57 @@ input
 
 ## Triggers
 
-A `Trigger` determines when a window (as formed by the *window assigner*) is ready to be
-processed by the *window function*. Each `WindowAssigner` comes with a default `Trigger`.
-If the default trigger does not fit your needs, you can specify a custom trigger using `trigger(...)`.
+`Trigger`定义了window（通过*window assigner*形成的）何时准备好被*window function*处理。每个`WindowAssigner`默认都有一个`Trigger`。如果默认的trigger不符合你的需求，你可以使用`trigger(...)`自定义trigger。
 
-The trigger interface has five methods that allow a `Trigger` to react to different events:
+trigger的接口有5种方法允许`Trigger`对不同事件作出反应：
 
-* The `onElement()` method is called for each element that is added to a window.
-* The `onEventTime()` method is called when  a registered event-time timer fires.
-* The `onProcessingTime()` method is called when a registered processing-time timer fires.
-* The `onMerge()` method is relevant for stateful triggers and merges the states of two triggers when their corresponding windows merge, *e.g.* when using session windows.
-* Finally the `clear()` method performs any action needed upon removal of the corresponding window.
+* `onElement()`方法在每个元素被添加到window的时候被调用。
+* `onEventTime()`方法在注册的event-time的timer触发的时候被调用。
+* `onProcessingTime()`方法在注册的processing-time的timer触发的时候被调用。
+* `onMerge()`方法与有状态的triggers相关，并且在相应的window合并时合并两个trigger的状态，比如再使用session windows的时候。
+* 最后`clear()`方法执行删除相应window所需的任何操作。
 
-Two things to notice about the above methods are:
+以上方法有两件事要注意：
 
-1) The first three decide how to act on their invocation event by returning a `TriggerResult`. The action can be one of the following:
+1) 前3个方法通过返回一个`TriggerResult`来决定如何对当前元素作出反应，可能的反应如下：
 
-* `CONTINUE`: do nothing,
-* `FIRE`: trigger the computation,
-* `PURGE`: clear the elements in the window, and
-* `FIRE_AND_PURGE`: trigger the computation and clear the elements in the window afterwards.
+* `CONTINUE`：什么也不做，
+* `FIRE`：触发计算，
+* `PURGE`：清除window中的元素，
+* `FIRE_AND_PURGE`：触发计算，然后清除window中的元素。
 
-2) Any of these methods can be used to register processing- or event-time timers for future actions.
+2) 以上方法都可以注册processing或者event-time的计时器(timer)以便后续使用。
 
-### Fire and Purge
+### 触发和清除
 
-Once a trigger determines that a window is ready for processing, it fires, *i.e.*, it returns `FIRE` or `FIRE_AND_PURGE`. This is the signal for the window operator
-to emit the result of the current window. Given a window with a `WindowFunction`
-all elements are passed to the `WindowFunction` (possibly after passing them to an evictor).
-Windows with `ReduceFunction` of `FoldFunction` simply emit their eagerly aggregated result.
+一旦trigger确定一个window已准备好进行处理，该trigger将触发，即它返回`FIRE`或`FIRE_AND_PURGE`。这是给window operator的信号以让发出window的计算结果。如果一个window使用`WindowFunction`，则所有的元素都被传递给该WindowFunction（可能在将元素传递给evictor之后）。如果一个window使用`FoldFunction`的`ReduceFunction`，则只会发出他们所需的聚合结果。
 
-When a trigger fires, it can either `FIRE` or `FIRE_AND_PURGE`. While `FIRE` keeps the contents of the window, `FIRE_AND_PURGE` removes its content.
-By default, the pre-implemented triggers simply `FIRE` without purging the window state.
+当一个trigger触发，它可以是`FIRE`或者`FIRE_AND_PURGE`。二者区别是`FIRE`保留window的内容，而`FIRE_AND_PURGE`清空内容。默认情况下，内置预实现的triggers只是`FIRE`而不是清除window的状态。
 
-<span class="label label-danger">Attention</span> Purging will simply remove the contents of the window and will leave any potential meta-information about the window and any trigger state intact.
+<span class="label label-danger">注意</span> Purge将会清除window的内容，并保留关于window的所有潜在相关的元信息和trigger状态。
 
-### Default Triggers of WindowAssigners
+### WindowAssigners的默认Triggers
 
-The default `Trigger` of a `WindowAssigner` is appropriate for many use cases. For example, all the event-time window assigners have an `EventTimeTrigger` as
-default trigger. This trigger simply fires once the watermark passes the end of a window.
+`WindowAssigner`默认的`Trigger`适用于多种场景。例如，所有event-time的window assigners都有一个`EventTimeTrigger`座位默认trigger。该trigger在watermark通过window末尾时触发。
 
-<span class="label label-danger">Attention</span> The default trigger of the `GlobalWindow` is the `NeverTrigger` which does never fire. Consequently, you always have to define a custom trigger when using a `GlobalWindow`.
+<span class="label label-danger">注意</span> `GlobalWindow`默认的trigger是`NeverTrigger`，该trigger从不触发。所以在使用`GlobalWindow`的时候你必须自定义trigger。
 
-<span class="label label-danger">Attention</span> By specifying a trigger using `trigger()` you
-are overwriting the default trigger of a `WindowAssigner`. For example, if you specify a
-`CountTrigger` for `TumblingEventTimeWindows` you will no longer get window firings based on the
-progress of time but only by count. Right now, you have to write your own custom trigger if
-you want to react based on both time and count.
+<span class="label label-danger">注意</span> 通过`trigger()`方法，你可以覆盖`WindowAssigner`的默认trigger。例如，如果你为`TumblingEventTimeWindows`指定了`CountTrigger`，则窗口触发不再根据时间的进度，而是通过计数。当前，如果你想同时基于时间进度和计数触发window，你需要自定义trigger。
 
-### Built-in and Custom Triggers
+### 内置Triggers和自定义Triggers
 
 Flink comes with a few built-in triggers.
 
-* The (already mentioned) `EventTimeTrigger` fires based on the progress of event-time as measured by watermarks.
-* The `ProcessingTimeTrigger` fires based on processing time.
-* The `CountTrigger` fires once the number of elements in a window exceeds the given limit.
-* The `PurgingTrigger` takes as argument another trigger and transforms it into a purging one.
+* `EventTimeTrigger`（上文已提及）基于watermarks推进的event-time进度来触发。
+* `ProcessingTimeTrigger`基于processing time触发。
+* `CountTrigger` 当window中的元素数量超过给定的限制就触发。
+* `PurgingTrigger`把别的trigger作为参数，并将别的trigger转换为purging trigger。
 
-If you need to implement a custom trigger, you should check out the abstract
-{% gh_link /flink-streaming-java/src/main/java/org/apache/flink/streaming/api/windowing/triggers/Trigger.java "Trigger" %} class.
-Please note that the API is still evolving and might change in future versions of Flink.
+如果你需要实现一个自定义trigger，你应该查看抽象类{% gh_link /flink-streaming-java/src/main/java/org/apache/flink/streaming/api/windowing/triggers/Trigger.java "Trigger" %}。请注意，该API仍在演化过程中，在未来的Flink版本中可能发生变化。
 
 ## Evictors
 
-Flink’s windowing model allows specifying an optional `Evictor` in addition to the `WindowAssigner` and the `Trigger`.
-This can be done using the `evictor(...)` method (shown in the beginning of this document). The evictor has the ability
-to remove elements from a window *after* the trigger fires and *before and/or after* the window function is applied.
-To do so, the `Evictor` interface has two methods:
+Flink的window模型允许对`WindowAssigner`和`Trigger`指定可选的`Evictor`。这可以通过`evictor(...)`方法来完成（如本文档首部所示）。 evictor能够在trigger触发*之后*以及应用window function*之前和/或之后*从window中移除元素。为此，`Evictor`接口有2个方法：
 
     /**
      * Optionally evicts elements. Called before windowing function.
@@ -898,51 +782,33 @@ To do so, the `Evictor` interface has two methods:
      */
     void evictAfter(Iterable<TimestampedValue<T>> elements, int size, W window, EvictorContext evictorContext);
 
-The `evictBefore()` contains the eviction logic to be applied before the window function, while the `evictAfter()`
-contains the one to be applied after the window function. Elements evicted before the application of the window
-function will not be processed by it.
+`evictBefore()`包含了应用window function之前的驱逐逻辑，而`evictAfter()`包含了应用window function之后的驱逐逻辑，当然在应用window function之前被逐出的元素将不被`evictAfter()`处理。
 
-Flink comes with three pre-implemented evictors. These are:
+Flink自带了3种预定义的evictors。它们是：
 
-* `CountEvictor`: keeps up to a user-specified number of elements from the window and discards the remaining ones from
-the beginning of the window buffer.
-* `DeltaEvictor`: takes a `DeltaFunction` and a `threshold`, computes the delta between the last element in the
-window buffer and each of the remaining ones, and removes the ones with a delta greater or equal to the threshold.
-* `TimeEvictor`: takes as argument an `interval` in milliseconds and for a given window, it finds the maximum
-timestamp `max_ts` among its elements and removes all the elements with timestamps smaller than `max_ts - interval`.
+* `CountEvictor`：保留window中用户指定数量的元素数量，并从window的头部丢弃剩余的元素。
+* `DeltaEvictor`：通过`DeltaFunction`和一个`threshold`计算window缓冲区中最后一个元素与剩余的最后一个元素之间的差值，并删除差值大于或者等于threshold的元素。
+* `TimeEvictor`：通过毫秒为单位的参数`interval`，对给定的window找到其中元素时间戳的最大值`max_ts`，并删除时间戳小于`max_ts - interval`的元素。
 
-<span class="label label-info">Default</span> By default, all the pre-implemented evictors apply their logic before the
-window function.
+<span class="label label-info">默认</span> 默认情况下，所有内置的evictors都在window function之前应用其逻辑。
 
-<span class="label label-danger">Attention</span> Specifying an evictor prevents any pre-aggregation, as all the
-elements of a window have to be passed to the evictor before applying the computation.
+<span class="label label-danger">注意</span> 指定evictor会阻止一切预聚合，因为window的所有元素都必须在应用计算逻辑前先传给evictor进行处理。
 
-<span class="label label-danger">Attention</span> Flink provides no guarantees about the order of the elements within
-a window. This implies that although an evictor may remove elements from the beginning of the window, these are not
-necessarily the ones that arrive first or last.
+<span class="label label-danger">注意</span> Flink不保证window内元素的顺序。这意味着虽然evictor从window的头部开始驱逐元素，但是并不代表这些头部元素一定是早到或者晚到window的。
 
 
 ## Allowed Lateness
 
-When working with *event-time* windowing, it can happen that elements arrive late, *i.e.* the watermark that Flink uses to
-keep track of the progress of event-time is already past the end timestamp of a window to which an element belongs. See
-[event time](./event_time.html) and especially [late elements](./event_time.html#late-elements) for a more thorough
-discussion of how Flink deals with event time.
+当使用*event-time* window时，可能元素会晚到，即Flink用于跟踪event-time进度的watermark已经达超过了window的结束时间戳。参见[event time](./event_time.html)以及[late elements](./event_time.html#late-elements)了解更多关于Flink如何处理event time。
 
-By default, late elements are dropped when the watermark is past the end of the window. However,
-Flink allows to specify a maximum *allowed lateness* for window operators. Allowed lateness
-specifies by how much time elements can be late before they are dropped, and its default value is 0.
-Elements that arrive after the watermark has passed the end of the window but before it passes the end of
-the window plus the allowed lateness, are still added to the window. Depending on the trigger used,
-a late but not dropped element may cause the window to fire again. This is the case for the `EventTimeTrigger`.
 
-In order to make this work, Flink keeps the state of windows until their allowed lateness expires. Once this happens, Flink removes the window and deletes its state, as
-also described in the [Window Lifecycle](#window-lifecycle) section.
+默认情况下，当watermark超过window的末尾时，晚到的元素会被丢弃。但是Flink也允许为window operator指定最大*allowed lateness*。*allowed lateness*表示在彻底删除元素之前最多可以容忍多长时间晚到的元素，其默认值为0。元素如果在*allowed lateness*通过window末尾之后但在window结束时间加上*allowed lateness*之前到达，仍会被添加到window。在用某些trigger时，晚到但未被丢弃的元素可能会再次触发window。`EventTimeTrigger`就是这种trigger。
 
-<span class="label label-info">Default</span> By default, the allowed lateness is set to
-`0`. That is, elements that arrive behind the watermark will be dropped.
+为了支持该功能，Flink会保持window的状态，直到*allowed lateness*到期。一旦到期，Flink会删除window并删除其状态，如[Window Lifecycle](#window-lifecycle)部分所述。
 
-You can specify an allowed lateness like this:
+<span class="label label-info">默认</span> 默认情况下，*allowed lateness*值为`0`。也就是说晚于watermark到达的元素将被丢弃。
+
+你可以像下面这样设置allowed lateness：
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -970,17 +836,13 @@ input
 </div>
 </div>
 
-<span class="label label-info">Note</span> When using the `GlobalWindows` window assigner no
-data is ever considered late because the end timestamp of the global window is `Long.MAX_VALUE`.
+<span class="label label-info">注意</span> 当使用`GlobalWindows`的window assigner时，不会有元素被认为是晚到的，因为global window的结束时间是`Long.MAX_VALUE`。
 
-### Getting late data as a side output
+### 把晚到元素当做side output
 
-Using Flink's [side output]({{ site.baseurl }}/dev/stream/side_output.html) feature you can get a stream of the data
-that was discarded as late.
+使用Flink的[side output]({{ site.baseurl }}/dev/stream/side_output.html)功能时，你可以获取到因为晚到被丢弃的元素流。
 
-You first need to specify that you want to get late data using `sideOutputLateData(OutputTag)` on
-the windowed stream. Then, you can get the side-output stream on the result of the windowed
-operation:
+首先你需要在windowed流上通过`sideOutputLateData(OutputTag)`指明你想要获取晚到的元素，然后你就能在windowed operation的结果中获取到side-output流：
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -1018,22 +880,18 @@ val lateStream = result.getSideOutput(lateOutputTag)
 </div>
 </div>
 
-### Late elements considerations
+### Late elements的考虑
 
-When specifying an allowed lateness greater than 0, the window along with its content is kept after the watermark passes
-the end of the window. In these cases, when a late but not dropped element arrives, it could trigger another firing for the
-window. These firings are called `late firings`, as they are triggered by late events and in contrast to the `main firing`
-which is the first firing of the window. In case of session windows, late firings can further lead to merging of windows,
-as they may "bridge" the gap between two pre-existing, unmerged windows.
+当指定allowed lateness大于0，在watermark通过window结尾时，window的内容仍需要保留。此时，当一个晚到但不该被丢弃的元素到达时，它可能会导致window的另一次触发。这些触发被称为`late firings`，因为是由晚到的事件所导致的。而`main firing`是指window的第一次触发。在使用session windows时，late firings可能进一步导致windows的合并因为它们可能"弥合"了两个此前已经存在的但是未被合并的window。
 
-<span class="label label-info">Attention</span> You should be aware that the elements emitted by a late firing should be treated as updated results of a previous computation, i.e., your data stream will contain multiple results for the same computation. Depending on your application, you need to take these duplicated results into account or deduplicate them.
+<span class="label label-info">注意</span> 你应该注意到，通过late firing发出的元素应该被当做先前计算的修正，也就是说你的数据流将会包含相同计算的多个结果。根据你应用的需要，你可能需要考虑这些重复计算结果或者对它们进行去重处理。
 
-## Useful state size considerations
+## 有用状态大小的考虑
 
-Windows can be defined over long periods of time (such as days, weeks, or months) and therefore accumulate very large state. There are a couple of rules to keep in mind when estimating the storage requirements of your windowing computation:
+Windows的时间跨度可以被定义得很大（比如数天，数周或者数月），当然这会累积非常大的状态量。估计window的存储需求时要注意如下几个规则：
 
-1. Flink creates one copy of each element per window to which it belongs. Given this, tumbling windows keep one copy of each element (an element belongs to exactly window unless it is dropped late). In contrast, sliding windows create several of each element, as explained in the [Window Assigners](#window-assigners) section. Hence, a sliding window of size 1 day and slide 1 second might not be a good idea.
+1. Flink对元素归于某个window时对元素创建一个副本。所以，tumbling windows持有每个元素的一个副本（一个元素只能属于一个window，除非它后来被删除），而sliding windows会为每个元素创建若干个副本，如[Window Assigners](#window-assigners) 章节中所描述。因此一个size为1天slide为1秒的sliding window of可能不是个好注意。
 
-2. `FoldFunction` and `ReduceFunction` can significantly reduce the storage requirements, as they eagerly aggregate elements and store only one value per window. In contrast, just using a `WindowFunction` requires accumulating all elements.
+2. `FoldFunction`和`ReduceFunction`可以显着降低存储要求，因为它们会聚合元素，并且每个window只存储一个值。相比之下，只有当必须累积全部元素才能计算时才使用`WindowFunction`。
 
-3. Using an `Evictor` prevents any pre-aggregation, as all the elements of a window have to be passed through the evictor before applying the computation (see [Evictors](#evictors)).
+3. 使用`Evictor`可以防止预聚合，因为window的所有元素都必须在应用计算逻辑前先传给evictor进行处理(参见 [Evictors](#evictors))。
