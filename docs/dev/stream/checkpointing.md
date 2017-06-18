@@ -25,52 +25,40 @@ under the License.
 * ToC
 {:toc}
 
-Every function and operator in Flink can be **stateful** (see [working with state](state.html) for details).
-Stateful functions store data across the processing of individual elements/events, making state a critical building block for
-any type of more elaborate operation.
+Flink中的每个function和operator都可以是**有状态的**（有关详细信息请参阅[working with state](state.html)）。有状态的functions通过处理各个元素/事件来存储数据，并把状态作为关键构建以支持任何类型更复杂的操作。
 
-In order to make state fault tolerant, Flink needs to **checkpoint** the state. Checkpoints allow Flink to recover state and positions
-in the streams to give the application the same semantics as a failure-free execution.
+为了使状态能够容错，Flink需要状态的**检查点**。Flink通过检查点恢复流中的状态和位置，进而使得应用程序与无故障执行具有相同的语义。
 
-The [documentation on streaming fault tolerance](../../internals/stream_checkpointing.html) describe in detail the technique behind Flink's streaming fault tolerance mechanism.
+[documentation on streaming fault tolerance](../../internals/stream_checkpointing.html) 详细介绍了Flink流容错机制的技术。
 
 
-## Prerequisites
+## 先决条件
 
-Flink's checkpointing mechanism interacts with durable storage for streams and state. In general, it requires:
+Flink的检查点机制与流和状态的持久化存储交互，一般来说该机制需要：
 
-  - A *persistent* (or *durable*) data source that can replay records for a certain amount of time. Examples for such sources are persistent messages queues (e.g., Apache Kafka, RabbitMQ, Amazon Kinesis, Google PubSub) or file systems (e.g., HDFS, S3, GFS, NFS, Ceph, ...).
-  - A persistent storage for state, typically a distributed filesystem (e.g., HDFS, S3, GFS, NFS, Ceph, ...)
+  - *持久化的*数据source，它可以在一定时间内重放事件。这种数据sources的典型例子是持久化的消息队列（比如Apache Kafka，RabbitMQ，Amazon Kinesis，Google PubSub）或文件系统（比如HDFS，S3，GFS，NFS，Ceph，。。。）。
+  - 用于状态的持久化存储器，通常是分布式文件系统（比如HDFS，S3，GFS，NFS，Ceph，。。。）
 
 
-## Enabling and Configuring Checkpointing
+## 启用和配置检查点
 
-By default, checkpointing is disabled. To enable checkpointing, call `enableCheckpointing(n)` on the `StreamExecutionEnvironment`, where *n* is the checkpoint interval in milliseconds.
+默认情况下，检查点被禁用。要启用检查点，请在`StreamExecutionEnvironment`上调用`enableCheckpointing(n)`方法，其中*n*是以毫秒为单位的检查点间隔。
 
-Other parameters for checkpointing include:
+检查点的其他参数包括：
 
-  - *exactly-once vs. at-least-once*: You can optionally pass a mode to the `enableCheckpointing(n)` method to choose between the two guarantee levels.
-    Exactly-once is preferrable for most applications. At-least-once may be relevant for certain super-low-latency (consistently few milliseconds) applications.
+  - *exactly-once vs. at-least-once*：你可以从这两种模式中选择一种模式传递给`enableCheckpointing(n)`方法。Exactly-once对于大多数应用来说是最合适的。At-least-once可能用在某些延迟超低的应用程序（始终延迟为几毫秒）。
 
-  - *checkpoint timeout*: The time after which a checkpoint-in-progress is aborted, if it did not complete by then.
+  - *检查点超时*：如果检查点构造时间超过该值，则终止正在构建的检查点。
 
-  - *minimum time between checkpoints*: To make sure that the streaming application makes a certain amount of progress between checkpoints,
-    one can define how much time needs to pass between checkpoints. If this value is set for example to *5000*, the next checkpoint will be
-    started no sooner than 5 seconds after the previous checkpoint completed, regardless of the checkpoint duration and the checkpoint interval.
-    Note that this implies that the checkpoint interval will never be smaller than this parameter.
+  - *检查点间的最短时间*：为了确保流应用程序在检查点之间能有一定程度的进展，可以设定检查点之间最短的时间。如果该值设置为*5000*，则下一个检查点将在上一个检查点完成后5秒钟内启动，而不管检查点持续时间和检查点间隔。注意这意味着检查点间隔参数应该永远不小于此参数。
     
-    It is often easier to configure applications by defining the "time between checkpoints" then the checkpoint interval, because the "time between checkpoints"
-    is not susceptible to the fact that checkpoints may sometimes take longer than on average (for example if the target storage system is temporarily slow).
+    通过先定义*检查点间的最短时间*，再定义检查点间隔，可以更容易地配置应用程序，因为“检查点间的最短时间”不容易受到检查点有时耗时比平均更长的事实的影响（例如，如果存放检查点的目标存储系统暂时缓慢）。
 
-    Note that this value also implies that the number of concurrent checkpoints is *one*.
+    注意该值还意味着并发的检查点数为*1*。
 
-  - *number of concurrent checkpoints*: By default, the system will not trigger another checkpoint while one is still in progress.
-    This ensures that the topology does not spend too much time on checkpoints and not make progress with processing the streams.
-    It is possible to allow for multiple overlapping checkpoints, which is interesting for pipelines that have a certain processing delay
-    (for example because the functions call external services that need some time to respond) but that still want to do very frequent checkpoints
-    (100s of milliseconds) to re-process very little upon failures.
+  - *并发的检查点数*：默认情况下，系统不会在进行一个检查点时再触发另一个检查点。这能确保拓扑不会因为在检查点上耗时过多以致流处理进展缓慢。有些情况允许多个重叠的检查点是有意义的：对于有固定处理延时的pipelines（比如因为函数调用外部服务而需要一些响应时间），但仍需要做非常频繁的检查点（100毫秒）以减轻遇到错误时重新处理的代价。
 
-    This option cannot be used when a minimum time between checkpoints is defined.
+    当定义了“检查点间的最短时间”，就不能使用此选项。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -122,31 +110,27 @@ env.getCheckpointConfig.setMaxConcurrentCheckpoints(1)
 {% top %}
 
 
-## Selecting a State Backend
+## 选择状态的后端存储（State Backend）
 
-The checkpointing mechanism stores the progress in the data sources and data sinks, the state of windows, as well as the [user-defined state](state.html) consistently to
-provide *exactly once* processing semantics. Where the checkpoints are stored (e.g., JobManager memory, file system, database) depends on the configured
-**State Backend**. 
+检查点机制将数据source和数据sink的进度，window的状态以及[用户定义状态](state.html)一致地存储起来以提供*exactly once*语义。存储检查点的位置（例如，JobManager的内存，文件系统，数据库）取决于配置的**State Backend**。
 
-By default state will be kept in memory, and checkpoints will be stored in-memory at the master node (the JobManager). For proper persistence of large state,
-Flink supports various forms of storing and checkpointing state in so called **State Backends**, which can be set via `StreamExecutionEnvironment.setStateBackend(…)`.
+默认情况下，状态将保存在内存中，检查点将存储在主节点（JobManager）的内存中。 为了正确地保留大状态，Flink支持各种形式的存储和检查点状态，可以通过`StreamExecutionEnvironment.setStateBackend(…)`进行设置。
 
-See [state backends](../../ops/state_backends.html) for more details on the available state backends and options for job-wide and cluster-wide configuration.
+参阅 [state backends](../../ops/state_backends.html) 了解更多关于支持的state backends以及作业端和集群端的详细配置。
 
 
-## State Checkpoints in Iterative Jobs
+## 迭代式作业中的状态检查点（State Checkpoints in Iterative Jobs）
 
-Flink currently only provides processing guarantees for jobs without iterations. Enabling checkpointing on an iterative job causes an exception. In order to force checkpointing on an iterative program the user needs to set a special flag when enabling checkpointing: `env.enableCheckpointing(interval, force = true)`.
+Flink目前只为非迭代式作业提供处理保证。在迭代式作业上启用检查点会抛出异常。要想在迭代式作业上强启检查点，你需要在启用检查点时设置特殊标识：`env.enableCheckpointing(interval, force = true)`。
 
-Please note that records in flight in the loop edges (and the state changes associated with them) will be lost during failure.
+请注意在故障期间正在循环迭代（loop edges）中的记录（以及与之相关的状态更改）将会丢失。
 
 {% top %}
 
 
-## Restart Strategies
+## 重启策略（Restart Strategies）
 
-Flink supports different restart strategies which control how the jobs are restarted in case of a failure. For more 
-information, see [Restart Strategies]({{ site.baseurl }}/dev/restart_strategies.html).
+Flink支持不同的重启策略，以在故障发生时控制作业如何重启。更多详情请参阅 [Restart Strategies]({{ site.baseurl }}/dev/restart_strategies.html)。
 
 {% top %}
 
