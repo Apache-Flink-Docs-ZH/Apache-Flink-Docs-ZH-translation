@@ -28,7 +28,7 @@ under the License.
 
 本页介绍了使用Flink的异步I/O API与外部数据存储交互。对于不熟悉异步或事件驱动编程的用户，有关Futures和事件驱动编程的文章可能很有用。
 
-注意：有关异步I/O的设计和实现的详细信息，请参阅提案和设计文件[FLIP-12: Asynchronous I/O Design and Implementation](https://cwiki.apache.org/confluence/pages/viewpage.action?pageId=65870673)。
+注意：有关异步I/O的设计和实现的详细信息，请参阅提案和设计文件[FLIP-12: 异步I/O的设计和实现](https://cwiki.apache.org/confluence/pages/viewpage.action?pageId=65870673)。
 
 
 ## 异步I/O的需求
@@ -55,7 +55,7 @@ under the License.
 
 Flink的异步I/O API允许用户使用数据流的异步请求客户端。API处理与数据流的集成，以及处理顺序，event time，容错等。
 
-假设有一个目标数据库有一个异步客户端，则需要三个部分配合来实现基于数据库异步I/O的stream transformation：
+假设有一个目标数据库有一个异步客户端，则需要三个部分配合来实现基于数据库异步I/O的流 transformation：
 
   - `AsyncFunction`的实现以分派请求
   - 一个*callback*，用于取得operation的结果并交给`AsyncCollector`
@@ -66,15 +66,14 @@ Flink的异步I/O API允许用户使用数据流的异步请求客户端。API�
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
 {% highlight java %}
-// This example implements the asynchronous request and callback with Futures that have the
-// interface of Java 8's futures (which is the same one followed by Flink's Future)
+// 本例子采用了Java 8的Future功能（这和Flink的Future一样）来实现异步请求和回调
 
 /**
- * An implementation of the 'AsyncFunction' that sends requests and sets the callback.
+ * 实现发送请求并设置回调的'AsyncFunction'。
  */
 class AsyncDatabaseRequest extends RichAsyncFunction<String, Tuple2<String, String>> {
 
-    /** The database specific client that can issue concurrent requests with callbacks */
+    /** 数据库的可以发出并发请求与回调的特定的客户端 */
     private transient DatabaseClient client;
 
     @Override
@@ -90,11 +89,11 @@ class AsyncDatabaseRequest extends RichAsyncFunction<String, Tuple2<String, Stri
     @Override
     public void asyncInvoke(final String str, final AsyncCollector<Tuple2<String, String>> asyncCollector) throws Exception {
 
-        // issue the asynchronous request, receive a future for result
+        // 发出异步请求，接收异步结果
         Future<String> resultFuture = client.query(str);
 
-        // set the callback to be executed once the request by the client is complete
-        // the callback simply forwards the result to the collector
+        // 一旦客户端的请求完成就设置回调
+        // 回调简单地将结果转发给收集器
         resultFuture.thenAccept( (String result) -> {
 
             asyncCollector.collect(Collections.singleton(new Tuple2<>(str, result)));
@@ -103,10 +102,10 @@ class AsyncDatabaseRequest extends RichAsyncFunction<String, Tuple2<String, Stri
     }
 }
 
-// create the original stream
+// 创建原始流
 DataStream<String> stream = ...;
 
-// apply the async I/O transformation
+// 应用异步I/O transformation
 DataStream<Tuple2<String, String>> resultStream =
     AsyncDataStream.unorderedWait(stream, new AsyncDatabaseRequest(), 1000, TimeUnit.MILLISECONDS, 100);
 
@@ -115,11 +114,11 @@ DataStream<Tuple2<String, String>> resultStream =
 <div data-lang="scala" markdown="1">
 {% highlight scala %}
 /**
- * An implementation of the 'AsyncFunction' that sends requests and sets the callback.
+ * 实现发送请求并设置回调的'AsyncFunction'。
  */
 class AsyncDatabaseRequest extends AsyncFunction[String, (String, String)] {
 
-    /** The database specific client that can issue concurrent requests with callbacks */
+    /** 数据库的可以发出并发请求与回调的特定的客户端 */
     lazy val client: DatabaseClient = new DatabaseClient(host, post, credentials)
 
     /** The context used for the future callbacks */
@@ -128,21 +127,21 @@ class AsyncDatabaseRequest extends AsyncFunction[String, (String, String)] {
 
     override def asyncInvoke(str: String, asyncCollector: AsyncCollector[(String, String)]): Unit = {
 
-        // issue the asynchronous request, receive a future for the result
+        // 发出异步请求，接收异步结果
         val resultFuture: Future[String] = client.query(str)
 
-        // set the callback to be executed once the request by the client is complete
-        // the callback simply forwards the result to the collector
+        // 一旦客户端的请求完成就设置回调
+        // 回调简单地将结果转发给收集器
         resultFuture.onSuccess {
             case result: String => asyncCollector.collect(Iterable((str, result)));
         }
     }
 }
 
-// create the original stream
+// 创建原始流
 val stream: DataStream[String] = ...
 
-// apply the async I/O transformation
+// 应用异步I/O transformation
 val resultStream: DataStream[(String, String)] =
     AsyncDataStream.unorderedWait(stream, new AsyncDatabaseRequest(), 1000, TimeUnit.MILLISECONDS, 100)
 

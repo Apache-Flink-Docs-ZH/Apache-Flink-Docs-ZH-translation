@@ -25,11 +25,11 @@ under the License.
 * ToC
 {:toc}
 
-Flink中的每个function和operator都可以是**有状态的**（有关详细信息请参阅[working with state](state.html)）。有状态的functions通过处理各个元素/事件来存储数据，并把状态作为关键构建以支持任何类型更复杂的操作。
+Flink中的每个function和operator都可以是**有状态的**（有关详细信息请参阅[有状态的运行](state.html)）。有状态的functions通过处理各个元素/事件来存储数据，并把状态作为关键构建以支持任何类型更复杂的操作。
 
 为了使状态能够容错，Flink需要状态的**检查点**。Flink通过检查点恢复流中的状态和位置，进而使得应用程序与无故障执行具有相同的语义。
 
-[documentation on streaming fault tolerance](../../internals/stream_checkpointing.html) 详细介绍了Flink流容错机制的技术。
+[关于流容错的文档](../../internals/stream_checkpointing.html) 详细介绍了Flink流容错机制的技术。
 
 
 ## 先决条件
@@ -65,21 +65,21 @@ Flink的检查点机制与流和状态的持久化存储交互，一般来说该
 {% highlight java %}
 StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
-// start a checkpoint every 1000 ms
+// 每隔1000 ms进行启动一个检查点
 env.enableCheckpointing(1000);
 
-// advanced options:
+// 高级选项：
 
-// set mode to exactly-once (this is the default)
+// 设置模式为exactly-once （这是默认值）
 env.getCheckpointConfig().setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE);
 
-// make sure 500 ms of progress happen between checkpoints
+// 确保检查点之间有进行500 ms的进度
 env.getCheckpointConfig().setMinPauseBetweenCheckpoints(500);
 
-// checkpoints have to complete within one minute, or are discarded
+// 检查点必须在一分钟内完成，或者被丢弃
 env.getCheckpointConfig().setCheckpointTimeout(60000);
 
-// allow only one checkpoint to be in progress at the same time
+// 同一时间只允许进行一个检查点
 env.getCheckpointConfig().setMaxConcurrentCheckpoints(1);
 {% endhighlight %}
 </div>
@@ -87,21 +87,21 @@ env.getCheckpointConfig().setMaxConcurrentCheckpoints(1);
 {% highlight scala %}
 val env = StreamExecutionEnvironment.getExecutionEnvironment()
 
-// start a checkpoint every 1000 ms
+// 每隔1000 ms进行启动一个检查点
 env.enableCheckpointing(1000)
 
-// advanced options:
+// 高级选项：
 
-// set mode to exactly-once (this is the default)
+// 设置模式为exactly-once （这是默认值）
 env.getCheckpointConfig.setCheckpointingMode(CheckpointingMode.EXACTLY_ONCE)
 
-// make sure 500 ms of progress happen between checkpoints
+// 确保检查点之间有进行500 ms的进度
 env.getCheckpointConfig.setMinPauseBetweenCheckpoints(500)
 
-// checkpoints have to complete within one minute, or are discarded
+// 检查点必须在一分钟内完成，或者被丢弃
 env.getCheckpointConfig.setCheckpointTimeout(60000)
 
-// allow only one checkpoint to be in progress at the same time
+// 同一时间只允许进行一个检查点
 env.getCheckpointConfig.setMaxConcurrentCheckpoints(1)
 {% endhighlight %}
 </div>
@@ -112,11 +112,11 @@ env.getCheckpointConfig.setMaxConcurrentCheckpoints(1)
 
 ## 选择状态的后端存储（State Backend）
 
-检查点机制将数据source和数据sink的进度，window的状态以及[用户定义状态](state.html)一致地存储起来以提供*exactly once*语义。存储检查点的位置（例如，JobManager的内存，文件系统，数据库）取决于配置的**State Backend**。
+检查点机制将数据source和数据sink的进度，window的状态以及[用户定义状态](state.html)一致地存储起来以提供*exactly once*语义。存储检查点的位置（例如，JobManager的内存，文件系统，数据库）取决于配置的**状态后端**。
 
 默认情况下，状态将保存在内存中，检查点将存储在主节点（JobManager）的内存中。 为了正确地保留大状态，Flink支持各种形式的存储和检查点状态，可以通过`StreamExecutionEnvironment.setStateBackend(…)`进行设置。
 
-参阅 [state backends](../../ops/state_backends.html) 了解更多关于支持的state backends以及作业端和集群端的详细配置。
+参阅 [state backends](../../ops/state_backends.html) 了解更多关于支持的状态后端（state backends）以及作业端和集群端的详细配置。
 
 
 ## 迭代式作业中的状态检查点（State Checkpoints in Iterative Jobs）
@@ -130,7 +130,7 @@ Flink目前只为非迭代式作业提供处理保证。在迭代式作业上启
 
 ## 重启策略（Restart Strategies）
 
-Flink支持不同的重启策略，以在故障发生时控制作业如何重启。更多详情请参阅 [Restart Strategies]({{ site.baseurl }}/dev/restart_strategies.html)。
+Flink支持不同的重启策略，以在故障发生时控制作业如何重启。更多详情请参阅 [重启策略]({{ site.baseurl }}/dev/restart_strategies.html)。
 
 {% top %}
 
