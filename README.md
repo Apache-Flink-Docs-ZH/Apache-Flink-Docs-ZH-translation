@@ -40,19 +40,23 @@ Apache Flink官网：[http://flink.apache.org](http://flink.apache.org/index.htm
 
 
 
-## 参与翻译及校对
+## 角色认领
 
 欢迎爱好者加入，需要翻译（若干）、审校（若干）及项目经理一名。为了保证贡献给学习者一份高质量的文档，需要审校同学做好翻译校对，项目经理同学及时跟进大家翻译进度，防止成为烂尾项目。
 
-点击前往认领翻译页面：[https://github.com/Apache-Flink-Docs-ZH/Apache-Flink-Docs-ZH-translation/wiki](https://github.com/Apache-Flink-Docs-ZH/Apache-Flink-Docs-ZH-translation/wiki) ，编辑wiki页面即可。
+志愿角色认领：
 
-## 参与人员记录
+- *翻译* [认领](https://github.com/Apache-Flink-Docs-ZH/Apache-Flink-Docs-ZH-translation/wiki)：大家在认领任务时，请标注翻译完成时间
+- *审校* [点我认领](https://github.com/Apache-Flink-Docs-ZH/Apache-Flink-Docs-ZH-translation/wiki)
+- *项目经理* [认领](https://github.com/Apache-Flink-Docs-ZH/Apache-Flink-Docs-ZH-translation/issues/1)
 
-凡参与本项目翻译、审校的同学，请自行将个人信息填写到下面。
+## 贡献者名单
 
-*翻译* [认领](https://github.com/Apache-Flink-Docs-ZH/Apache-Flink-Docs-ZH-translation/wiki)
+凡参与本项目翻译、审校的志愿者，请自行将个人信息填写到下面。
 
-已合并翻译成果名单(更新到 2017-05-26)：
+
+
+已合并翻译成果志愿者名单(更新到 2017-05-26)：
 
  - [tuhaihe](https://github.com/tuahihe)
  - [vinsyuan7788](https://github.com/vinsyuan7788)
@@ -80,22 +84,18 @@ Apache Flink官网：[http://flink.apache.org](http://flink.apache.org/index.htm
  - [397090770](https://github.com/397090770)
  - [coder-zjh](https://github.com/coder-zjh)
  
-
----
-
-*审校* [点我认领](https://github.com/Apache-Flink-Docs-ZH/Apache-Flink-Docs-ZH-translation/wiki)
+*翻译* 
+*审校* 
+ *项目经理* 
  - [tuhaihe](https://github.com/tuahihe) 
  - [lviiii](https://github.com/lviiii)
  
- 
+
+**项目贡献排名：点击[此处](https://github.com/Apache-Flink-Docs-ZH/Apache-Flink-Docs-ZH-translation/graphs/contributors)，可以看到各自贡献排名,加油~**
+
 
  ---
  
- *项目经理* [认领](https://github.com/Apache-Flink-Docs-ZH/Apache-Flink-Docs-ZH-translation/issues/1)
-- [lviiii](https://github.com/lviiii)
- 
-
-
 ## 支持社区
 
 感谢下面技术社区对本翻译项目的支持（排名不分先后）：
