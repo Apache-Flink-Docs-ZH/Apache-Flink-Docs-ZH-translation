@@ -26,15 +26,13 @@ under the License.
 * This will be replaced by the TOC
 {:toc}
 
+该连接器为 [Apache Kafka](https://kafka.apache.org/) 服务的事件流提供接入。
 This connector provides access to event streams served by [Apache Kafka](https://kafka.apache.org/).
 
-Flink provides special Kafka Connectors for reading and writing data from/to Kafka topics.
-The Flink Kafka Consumer integrates with Flink's checkpointing mechanism to provide
-exactly-once processing semantics. To achieve that, Flink does not purely rely on Kafka's consumer group
-offset tracking, but tracks and checkpoints these offsets internally as well.
+Flink 提供特别的 Kafka 连接器来读 / 写数据从 / 到 Kafka 主题。 Flink 的 Kafka 消费者整合 Flink 的检查点 (checkpointing) 机制来提供正好一次处理语义 (exactly-once processing semantics)。 为了将其实现， Flink 不仅依靠 Kafka 的消费者组偏移追踪 (group offset tracking)， 还在内部追踪并记录 (checkpoint) 这些偏移。
 
-Please pick a package (maven artifact id) and class name for your use-case and environment.
-For most users, the `FlinkKafkaConsumer08` (part of `flink-connector-kafka`) is appropriate.
+请为你的使用情况和环境选择一个包 (maven arteifact id) 和类名。
+对于大多数用户， `FlinkKafkaConsumer08` (`flink-connector-kafka` 的一部分) 是合适可用的。
 
 <table class="table table-bordered">
   <thead>
@@ -75,7 +73,7 @@ For most users, the `FlinkKafkaConsumer08` (part of `flink-connector-kafka`) is 
   </tbody>
 </table>
 
-Then, import the connector in your maven project:
+接着， 导入连接器到你的 maven 项目中：
 
 {% highlight xml %}
 <dependency>
@@ -85,14 +83,14 @@ Then, import the connector in your maven project:
 </dependency>
 {% endhighlight %}
 
-Note that the streaming connectors are currently not part of the binary distribution. See how to link with them for cluster execution [here]({{ site.baseurl}}/dev/linking.html).
+注意到流连连接器 (streaming connectors) 目前为不属于 binary distribution 的一部分。 点击 [这里]({{ site.baseurl}}/dev/linking.html) 查看如何将它们与云端执行链接。
 
-## Installing Apache Kafka
+## 安装 Apache Kafka
 
 * Follow the instructions from [Kafka's quickstart](https://kafka.apache.org/documentation.html#quickstart) to download the code and launch a server (launching a Zookeeper and a Kafka server is required every time before starting the application).
 * If the Kafka and Zookeeper servers are running on a remote machine, then the `advertised.host.name` setting in the `config/server.properties` file must be set to the machine's IP address.
 
-## Kafka Consumer
+## Kafka 消费者 (Consumer)
 
 Flink's Kafka consumer is called `FlinkKafkaConsumer08` (or `09` for Kafka 0.9.0.x versions, etc.). It provides access to one or more Kafka topics.
 
@@ -140,7 +138,7 @@ for querying the list of topics and partitions.
 For this to work, the consumer needs to be able to access the consumers from the machine submitting the job to the Flink cluster.
 If you experience any issues with the Kafka consumer on the client side, the client log might contain information about failed requests, etc.
 
-### The `DeserializationSchema`
+### `DeserializationSchema`
 
 The Flink Kafka Consumer needs to know how to turn the binary data in Kafka into Java/Scala objects. The
 `DeserializationSchema` allows users to specify such a schema. The `T deserialize(byte[] message)`
@@ -375,7 +373,7 @@ the `Watermark getCurrentWatermark()` (for periodic) or the
 if a new watermark should be emitted and with which timestamp.
 
 
-## Kafka Producer
+## Kafka 生产者 (Producer)
 
 Flink’s Kafka Producer is called `FlinkKafkaProducer08` (or `09` for Kafka 0.9.0.x versions, etc.).
 It allows writing a stream of records to one or more Kafka topics.
