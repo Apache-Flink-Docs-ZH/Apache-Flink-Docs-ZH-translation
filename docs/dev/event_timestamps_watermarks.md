@@ -55,12 +55,12 @@ env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime)
   1. 直接在数据流的源中
   2. 通过一个时间戳分配器 / 水位产生器 (timestamp assigner / watermark generator): 在 Flink时间戳分配器中还可以定义水位发射给 Flink
 
-<span class="label label-danger">注意</span> 时间戳和水位均以微妙为单位指定，因为 Java 的起始时间为 1970-01-01T00:00:00Z 。
+<span class="label label-danger">注意</span> 时间戳和水位均以微秒为单位指定，因为 Java 的起始时间为 1970-01-01T00:00:00Z 。
 
 ### 带时间戳和水位的源函数
 
 数据流的源也能直接分配时间戳给产生的元素， 并且也可以发射水位。 当这些都被做完之后， 就不需要时间戳分配器了。
-注意， 如果使用了一个时间戳分配器， 任何通过源提供的时间戳和水位会被覆盖。
+注意， 如果使用了一个时间戳分配器， 任何通过源提供的时间戳和水位均会被覆盖。
 
 为了给源里的一个元素直接分配一个时间戳， 源必须使用在 `SourceContext` 上的 `collectWithTimestamp(...)` 方法。 为了产生水位， 源必须调用 `emitWatermark(Watermark)` 函数。
 
