@@ -27,7 +27,6 @@ under the License.
 {:toc}
 
 该连接器为 [Apache Kafka](https://kafka.apache.org/) 服务的事件流提供接入。
-This connector provides access to event streams served by [Apache Kafka](https://kafka.apache.org/).
 
 Flink 提供特别的 Kafka 连接器来读 / 写数据从 / 到 Kafka 主题。 Flink 的 Kafka 消费者整合 Flink 的检查点 (checkpointing) 机制来提供正好一次处理语义 (exactly-once processing semantics)。 为了将其实现， Flink 不仅依靠 Kafka 的消费者组偏移追踪 (group offset tracking)， 还在内部追踪并记录 (checkpoint) 这些偏移。
 
