@@ -25,11 +25,9 @@ under the License.
 * toc
 {:toc}
 
-本章节与运行在 **event time** 的程序相关。
-This section is relevant for programs running on **event time**. For an introduction to *event time*,
-*processing time*, and *ingestion time*, please refer to the [introduction to event time]({{ site.baseurl }}/dev/event_time.html).
+本章节与运行在 **事件时间 (event time)** 的程序相关。想要了解关于 *事件时间 (event time)* , *处理时间 (processing time)*, 和 *摄入时间 (ingestion time)*, 请参阅 [事件时间介绍]({{ site.baseurl }}/dev/event_time.html) 。
 
-To work with *event time*, streaming programs need to set the *time characteristic* accordingly.
+如果需要使用 *事件时间*, 流程序需要设置对应的 *time characteristic* 。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -46,7 +44,7 @@ env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime)
 </div>
 </div>
 
-## Assigning Timestamps
+## 分配时间戳 (Timestamps)
 
 In order to work with *event time*, Flink needs to know the events' *timestamps*, meaning each element in the
 stream needs to have its event timestamp *assigned*. This is usually done by accessing/extracting the
