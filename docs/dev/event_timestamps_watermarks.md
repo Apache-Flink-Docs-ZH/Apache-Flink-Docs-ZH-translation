@@ -46,22 +46,18 @@ env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime)
 
 ## 分配时间戳 (Timestamps)
 
-In order to work with *event time*, Flink needs to know the events' *timestamps*, meaning each element in the
-stream needs to have its event timestamp *assigned*. This is usually done by accessing/extracting the
-timestamp from some field in the element.
+如果要用 *事件时间* 工作， Flink 需要知道事件的 *时间戳*， 这意味着流中的每一个元素需要 *分配* 到自己的时间时间戳。 这实际上通过从元素的某个字段抽取/访问得到。
 
-Timestamp assignment goes hand-in-hand with generating watermarks, which tell the system about
-progress in event time.
+伴随着时间戳的分配水位 (watermarks) 会不断产生， 这能告知系统事件时间的进度。
 
-There are two ways to assign timestamps and generate watermarks:
+有两个方式可以分配时间戳和产生水位：
 
-  1. Directly in the data stream source
-  2. Via a timestamp assigner / watermark generator: in Flink timestamp assigners also define the watermarks to be emitted
+  1. 直接在数据流的源中
+  2. 通过一个时间戳分配器 / 水位产生器 (timestamp assigner / watermark generator): 在 Flink时间戳分配器中还可以定义水位发射给 Flink
 
-<span class="label label-danger">Attention</span> Both timestamps and watermarks are specified as
-millliseconds since the Java epoch of 1970-01-01T00:00:00Z.
+<span class="label label-danger">注意</span> 时间戳和水位均以微妙为单位指定，因为 Java 的起始时间为 1970-01-01T00:00:00Z 。
 
-### Source Functions with Timestamps and Watermarks
+### 带时间戳和水位的原函数
 
 Stream sources can also directly assign timestamps to the elements they produce, and they can also emit watermarks.
 When this is done, no timestamp assigner is needed.
