@@ -296,9 +296,6 @@ class PunctuatedAssigner extends AssignerWithPunctuatedWatermarks[MyEvent] {
 ## 每个Kafka分区的时间戳
 
 当使用 [Apache Kafka](connectors/kafka.html) 作为数据源， 每个 Kafka 分区可能会有一个简单的事件时间模式 (上升时间戳或有界无序)。 然而， 当从 Kafka 消费流时， 经常会并行消费多个分区， 从分区中交叉事件并摧毁每个分区的模式 (这是 Kafka 的消费者客户端工作机理中固有的)。
-When using [Apache Kafka](connectors/kafka.html) as a data source, each Kafka partition may have a simple event time pattern (ascending
-timestamps or bounded out-of-orderness). However, when consuming streams from Kafka, multiple partitions often get consumed in parallel,
-interleaving the events from the partitions and destroying the per-partition patterns (this is inherent in how Kafka's consumer clients work).
 
 在这种情况下， 你可以使用 Flink 的 Kafka-partition-aware 水位产生。 使用这个特性， 水位会在 Kafka 消费者内的每个 Kafka 分区产生， 并且每个分区水位会以与水位在流洗牌 (strema shuffles) 时合并的相同方式合并。
 
