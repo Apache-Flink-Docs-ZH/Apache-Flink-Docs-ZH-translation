@@ -25,7 +25,7 @@ under the License.
 * toc
 {:toc}
 
-
+本章节与运行在 **event time** 的程序相关。
 This section is relevant for programs running on **event time**. For an introduction to *event time*,
 *processing time*, and *ingestion time*, please refer to the [introduction to event time]({{ site.baseurl }}/dev/event_time.html).
 
