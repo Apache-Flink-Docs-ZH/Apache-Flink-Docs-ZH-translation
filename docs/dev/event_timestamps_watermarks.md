@@ -64,7 +64,7 @@ env.setStreamTimeCharacteristic(TimeCharacteristic.EventTime)
 
 为了给源里的一个元素直接分配一个时间戳， 源必须使用在 `SourceContext` 上的 `collectWithTimestamp(...)` 方法。 为了产生水位， 源必须调用 `emitWatermark(Watermark)` 函数。
 
-以下是一个分配时间抽和产生水位的 *非检查点(non-checkpointed)* 源的简单例子：
+以下是一个分配时间戳和产生水位的 *非检查点(non-checkpointed)* 源的简单例子：
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -153,7 +153,7 @@ withTimestampsAndWatermarks
 
 #### **使用周期水位 (Periodic Watermarks)**
 
-`AssignerWithPeriodicWatermarks` 分配时间抽并周期性产生水位 (可能根据流中的数据， 或纯粹根据处理时间 (processing time))。
+`AssignerWithPeriodicWatermarks` 分配时间戳并周期性产生水位 (可能根据流中的数据， 或纯粹根据处理时间 (processing time))。
 
 水位产生的间隔 (每 *n* 毫秒) 通过 `ExecutionConfig.setAutoWatermarkInterval(...)` 定义。 分配器的 `getCurrentWatermark()` 方法每次间隔后都会被调用， 如果新返回的水位是非空并且大于之前的水位， 该水位会被发射给 Flink。
 
@@ -188,7 +188,7 @@ public class BoundedOutOfOrdernessGenerator extends AssignerWithPeriodicWatermar
 
 /**
  * 该生成器产生滞后于处理时间一个固定间隔的水位。
- * 该生成器假设元素在一个有限的延迟之后到达 Flink 中。
+ * 该生成器假设元素在一个有界的延迟之后到达 Flink 中。
  */
 public class TimeLagWatermarkGenerator extends AssignerWithPeriodicWatermarks<MyEvent> {
 
@@ -233,7 +233,7 @@ class BoundedOutOfOrdernessGenerator extends AssignerWithPeriodicWatermarks[MyEv
 
 /**
  * 该生成器产生滞后于处理时间一个固定间隔的水位。
- * 该生成器假设元素在一个有限的延迟之后到达 Flink 中。
+ * 该生成器假设元素在一个有界的延迟之后到达 Flink 中。
  */
 class TimeLagWatermarkGenerator extends AssignerWithPeriodicWatermarks[MyEvent] {
 
@@ -254,9 +254,9 @@ class TimeLagWatermarkGenerator extends AssignerWithPeriodicWatermarks[MyEvent] 
 
 #### **使用点断水位 (Punctuated Watermarks)**
 
-为了在一个暗示可能会产生一个新的水位的事件发生时产生水位， 使用 `AssignerWithPunctuatedWatermarks`。 对于这个类， Flink会先调用 `extractTimestamp(...)` 方法给元素分批恶一个时间抽， 接着立即在该元素上调用 `checkAndGetNextWatermark(...)` 方法。
+为了在一个暗示可能会产生一个新的水位的事件发生时产生水位， 使用 `AssignerWithPunctuatedWatermarks`。 对于这个类， Flink会先调用 `extractTimestamp(...)` 方法给元素分配一个时间戳， 接着立即在该元素上调用 `checkAndGetNextWatermark(...)` 方法。
 
-该 `checkAndGetNextWatermark(...)` 方法会传入在 `extractTimestamp(...)` 方法中分配的时间戳， 并决定该时间抽是否产生一个水位。 当 `checkAndGetNextWatermark(...)` 方法返回一个非空水位， 并且水位比先前最近的水位大， 这个新水位会被发射给 Flink。
+该 `checkAndGetNextWatermark(...)` 方法会传入在 `extractTimestamp(...)` 方法中分配的时间戳， 并决定该时间戳是否产生一个水位。 当 `checkAndGetNextWatermark(...)` 方法返回一个非空水位， 并且水位比先前最近的水位大， 这个新水位会被发射给 Flink。
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -291,24 +291,20 @@ class PunctuatedAssigner extends AssignerWithPunctuatedWatermarks[MyEvent] {
 </div>
 </div>
 
-*Note:* It is possible to generate a watermark on every single event. However, because each watermark causes some
-computation downstream, an excessive number of watermarks degrades performance.
+*注意:* 在每个事件上产生一个水位是有可能的。 然而由于每个水位会引起对下流 (downstream) 的计算， 过量的水位会降低系统性能。
 
+## 每个Kafka分区的时间戳
 
-## Timestamps per Kafka Partition
-
+当使用 [Apache Kafka](connectors/kafka.html) 作为数据源， 每个 Kafka 分区可能会有一个简单的事件时间模式 (上升时间戳或有界无序)。 然而， 当从 Kafka 消费流时， 经常会并行消费多个分区， 从分区中交叉事件并摧毁每个分区的模式 (这是 Kafka 的消费者客户端工作机理中固有的)。
 When using [Apache Kafka](connectors/kafka.html) as a data source, each Kafka partition may have a simple event time pattern (ascending
 timestamps or bounded out-of-orderness). However, when consuming streams from Kafka, multiple partitions often get consumed in parallel,
 interleaving the events from the partitions and destroying the per-partition patterns (this is inherent in how Kafka's consumer clients work).
 
-In that case, you can use Flink's Kafka-partition-aware watermark generation. Using that feature, watermarks are generated inside the
-Kafka consumer, per Kafka partition, and the per-partition watermarks are merged in the same way as watermarks are merged on stream shuffles.
+在这种情况下， 你可以使用 Flink 的 Kafka-partition-aware 水位产生。 使用这个特性， 水位会在 Kafka 消费者内的每个 Kafka 分区产生， 并且每个分区水位会以与水位在流洗牌 (strema shuffles) 时合并的相同方式合并。
 
-For example, if event timestamps are strictly ascending per Kafka partition, generating per-partition watermarks with the
-[ascending timestamps watermark generator](event_timestamp_extractors.html#assigners-with-ascending-timestamps) will result in perfect overall watermarks.
+比如， 如果事件时间戳是根据每个分区严格上升的， 用 [ascending timestamps watermark generator](event_timestamp_extractors.html#assigners-with-ascending-timestamps) 产生每个分区水位会带来完美的总体水位。
 
-The illustrations below show how to use ther per-Kafka-partition watermark generation, and how watermarks propagate through the
-streaming dataflow in that case.
+下列的说明展示如何使用每个Kafka分区 (per-Kafka-partition) 水位产生， 并且在这种情况下水位是如何在数据流中传播。
 
 
 <div class="codetabs" markdown="1">
