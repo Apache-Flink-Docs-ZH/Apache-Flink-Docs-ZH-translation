@@ -301,7 +301,7 @@ class PunctuatedAssigner extends AssignerWithPunctuatedWatermarks[MyEvent] {
 
 比如， 如果事件时间戳是根据每个分区严格上升的， 用 [ascending timestamps watermark generator](event_timestamp_extractors.html#assigners-with-ascending-timestamps) 产生每个分区水位会带来完美的总体水位。
 
-下列的说明展示如何使用每个Kafka分区 (per-Kafka-partition) 水位产生， 并且在这种情况下水位是如何在数据流中传播。
+下面例子展示如何使用每个Kafka分区 (per-Kafka-partition) 水位产生， 并且在这种情况下水位是如何在数据流中传播。
 
 
 <div class="codetabs" markdown="1">
