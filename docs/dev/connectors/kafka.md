@@ -28,7 +28,7 @@ under the License.
 
 该连接器为 [Apache Kafka](https://kafka.apache.org/) 服务的事件流提供接入。
 
-Flink 提供特别的 Kafka 连接器来从 Kafka 主题读数据或写数据到 Kafka 主题。 Flink 的 Kafka 消费者整合 Flink 的记录点 (checkpointing) 机制来提供正好一次处理语义 (exactly-once processing semantics)。 为了将其实现， Flink 不仅依靠 Kafka 的消费者组偏移追踪 (group offset tracking)， 还在内部追踪并记录 (checkpoint) 这些偏移。
+Flink 提供特别的 Kafka 连接器来从 Kafka 主题 (topic) 读数据或写数据到 Kafka 主题。 Flink 的 Kafka 消费者整合 Flink 的记录点 (checkpointing) 机制来提供正好一次处理语义 (exactly-once processing semantics)。 为了将其实现， Flink 不仅依靠 Kafka 的消费者组偏移追踪 (group offset tracking)， 还在内部追踪并记录 (checkpoint) 这些偏移 (offset)。
 
 请为你的使用情况和环境选择一个包 (maven arteifact id) 和类名。
 对于大多数用户， `FlinkKafkaConsumer08` (`flink-connector-kafka` 的一部分) 是合适可用的。
@@ -131,7 +131,7 @@ stream = env
 </div>
 </div>
 
-当前 FlinkKafkaConsumer 的实现会建立一个来自客户端的连接 (当调用构造器时) 来查询主题列表和分区。
+当前 FlinkKafkaConsumer 的实现会建立一个来自客户端的连接 (当调用构造器时) 来查询主题列表和分区 (partition)。
 
 要让该例子工作，该消费者需要能从提交作业到 Flink 集群的及其访问消费者。
 如果你在 Kafka 消费者的客户端遇到任何问题， 客户端日记可以包含关于失败请求等问题的信息。
@@ -255,33 +255,20 @@ env.enableCheckpointing(5000) // checkpoint every 5000 msecs
 
 ### Kafka 消费者偏移量提交行为配置
 
-The Flink Kafka Consumer allows configuring the behaviour of how offsets
-are committed back to Kafka brokers (or Zookeeper in 0.8). Note that the
-Flink Kafka Consumer does not rely on the committed offsets for fault
-tolerance guarantees. The committed offsets are only a means to expose
-the consumer's progress for monitoring purposes.
+Flink Kafka 消费者允许配置偏移量提交到 Kafka 中间者 (或 ZooKeeper 在 0.8 版本) 的行为。 注意到 Flink Kafka 消费者不依赖提交的偏移量来保证容错。 提交的偏移量只是一种出于监控 (monitoring) 目的揭露消费者进度的方法。
 
-The way to configure offset commit behaviour is different, depending on
-whether or not checkpointing is enabled for the job.
+配置偏移量提交行为的方式根据记录点是否启动而有所不同。
 
- - *Checkpointing disabled:* if checkpointing is disabled, the Flink Kafka
- Consumer relies on the automatic periodic offset committing capability
- of the internally used Kafka clients. Therefore, to disable or enable offset
- committing, simply set the `enable.auto.commit` (or `auto.commit.enable`
- for Kafka 0.8) / `auto.commit.interval.ms` keys to appropriate values
- in the provided `Properties` configuration.
+ - *记录点不启动 (checkpointing disabled):* 如果记录点没有启动， Flink Kafka 消费者依赖内部使用的 Kafka 客户端的周期性偏移量自动提交功能。 因
+ 此， 如果要关闭或启动偏移量提交， 只需简单地在提供的 `Properties` 配置中为 `enable.auto.commit` (或 `auto.commit.enable` 在 Kafka 0.8 中) 
+ / `auto.commit.interval.ms` 设置合适的值即可。
  
- - *Checkpointing enabled:* if checkpointing is enabled, the Flink Kafka
- Consumer will commit the offsets stored in the checkpointed states when
- the checkpoints are completed. This ensures that the committed offsets
- in Kafka brokers is consistent with the offsets in the checkpointed states.
- Users can choose to disable or enable offset committing by calling the
- `setCommitOffsetsOnCheckpoints(boolean)` method on the consumer (by default,
- the behaviour is `true`).
- Note that in this scenario, the automatic periodic offset committing
- settings in `Properties` is completely ignored.
+ - *记录点启动 (Checkpointing enabled):* 如果记录点启动， Flink Kafka 消费者会在记录完成时把偏移量提交到记录的状态中保存。 这确保了在 Kafka 中
+ 间者提交的偏移量与记录状态中的偏移量是一致的。 用户能选择通过调用消费者上的 `setCommitOffsetsOnCheckpoints(boolean)` 方法关闭或启用偏移量提交
+ (默认情况下 该行为为 `true`)。
+ 需要注意的是在这种情况下， `Properties` 中的周期性偏移量自动提交设定会被完全忽略。
 
-### Kafka Consumers and Timestamp Extraction/Watermark Emission
+### Kafka 消费者和时间戳抽取/水位发射
 
 In many scenarios, the timestamp of a record is embedded (explicitly or implicitly) in the record itself.
 In addition, the user may want to emit watermarks either periodically, or in an irregular fashion, e.g. based on
@@ -425,7 +412,7 @@ are other constructor variants that allow providing the following:
  which allows serializing the key and value separately. It also allows to override the target topic,
  so that one producer instance can send data to multiple topics.
  
-### Kafka Producers and Fault Tolerance
+### Kafka 生产者和容错机制
 
 With Flink's checkpointing enabled, the Flink Kafka Producer can provide
 at-least-once delivery guarantees.
@@ -451,7 +438,7 @@ we recommend setting the number of retries to a higher value.
 **Note**: There is currently no transactional producer for Kafka, so Flink can not guarantee exactly-once delivery
 into a Kafka topic.
 
-## Using Kafka timestamps and Flink event time in Kafka 0.10
+## 使用 Kafka 时间戳和 Flink 事件时间 (在 Kafka 0.10 中)
 
 Since Apache Kafka 0.10+, Kafka's messages can carry [timestamps](https://cwiki.apache.org/confluence/display/KAFKA/KIP-32+-+Add+timestamps+to+Kafka+message), indicating
 the time the event has occurred (see ["event time" in Apache Flink](../event_time.html)) or the time when the message
@@ -484,7 +471,7 @@ config.setWriteTimestampToKafka(true);
 
 
 
-## Kafka Connector metrics
+## Kafka 连接器度量单位 (metrics)
 
 Flink's Kafka connectors provide some metrics through Flink's [metrics system]({{ site.baseurl }}/monitoring/metrics.html) to analyze
 the behavior of the connector.
@@ -507,7 +494,7 @@ the committed offset and the most recent offset in each partition is called the 
 the data slower from the topic than new data is added, the lag will increase and the consumer will fall behind.
 For large production deployments we recommend monitoring that metric to avoid increasing latency.
 
-## Enabling Kerberos Authentication (for versions 0.9+ and above only)
+## 启动 Kerberos 认证 (仅在 0.9 及以上版本)
 
 Flink provides first-class support through the Kafka connector to authenticate to a Kafka installation
 configured for Kerberos. Simply configure Flink in `flink-conf.yaml` to enable Kerberos authentication for Kafka like so:
