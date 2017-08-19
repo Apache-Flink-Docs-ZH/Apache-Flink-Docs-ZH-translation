@@ -28,7 +28,7 @@ under the License.
 
 该连接器为 [Apache Kafka](https://kafka.apache.org/) 服务的事件流提供接入。
 
-Flink 提供特别的 Kafka 连接器来从 Kafak 主题读数据或写数据到 Kafka 主题。 Flink 的 Kafka 消费者整合 Flink 的记录点 (checkpointing) 机制来提供正好一次处理语义 (exactly-once processing semantics)。 为了将其实现， Flink 不仅依靠 Kafka 的消费者组偏移追踪 (group offset tracking)， 还在内部追踪并记录 (checkpoint) 这些偏移。
+Flink 提供特别的 Kafka 连接器来从 Kafka 主题读数据或写数据到 Kafka 主题。 Flink 的 Kafka 消费者整合 Flink 的记录点 (checkpointing) 机制来提供正好一次处理语义 (exactly-once processing semantics)。 为了将其实现， Flink 不仅依靠 Kafka 的消费者组偏移追踪 (group offset tracking)， 还在内部追踪并记录 (checkpoint) 这些偏移。
 
 请为你的使用情况和环境选择一个包 (maven arteifact id) 和类名。
 对于大多数用户， `FlinkKafkaConsumer08` (`flink-connector-kafka` 的一部分) 是合适可用的。
@@ -99,7 +99,7 @@ Flink 的 Kafka 消费者为 `FlinkKafkaConsumer08` (或对于 Kafka 0.9.0.x 版
 2. 一个 DeserializationSchema / KeyedDeserializationSchema 来反序列化来自 Kafka 的数据
 3. Kafka 消费者的属性
   以下属性是必须的：
-  - "bootstrap.servers" (若有多个 Kafka brokers， 用逗号隔开)
+  - "bootstrap.servers" (若有多个 Kafka 中间者 (broker)， 用逗号隔开)
   - "zookeeper.connect" (若有多个 Zookeeper 服务器， 用逗号隔开) (**仅在 Kafka 0.8 中是必须的**)
   - "group.id" 消费者群体 (Consumer Group) 的 ID
 
@@ -193,11 +193,11 @@ val stream = env.addSource(myConsumer)
 
 所有版本的 Kafka 消费者都有上述配置方法来设置起始位置。
 
- * `setStartFromGroupOffsets` (默认行为): 从 Kafka broker 中 (如果是Kafka 0.8 则为 ZooKeeper) 消费者群体提交的偏移量 (消费者属性中设置的 `group.id` ) 开始读分区。 如果不能找到一个分区的偏移量， 属性中的 `auto.offset.reset` 会被使用。
+ * `setStartFromGroupOffsets` (默认行为): 从 Kafka 中间者中 (如果是Kafka 0.8 则为 ZooKeeper) 消费者群体提交的偏移量 (消费者属性中设置的 `group.id` ) 开始读分区。 如果不能找到一个分区的偏移量， 属性中的 `auto.offset.reset` 会被使用。
  * `setStartFromEarliest()` / `setStartFromLatest()`: 从最早 / 最近的记录开始。 如果使用该方法 Kafka 中提交的偏移量会被忽略， 并且不会作为
  起始位置被使用。 
  
-You can also specify the exact offsets the consumer should start from for each partition:
+你也能为每个分区直接指定起始的偏移量：
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -222,31 +222,17 @@ myConsumer.setStartFromSpecificOffsets(specificStartOffsets)
 </div>
 </div>
 
-The above example configures the consumer to start from the specified offsets for
-partitions 0, 1, and 2 of topic `myTopic`. The offset values should be the
-next record that the consumer should read for each partition. Note that
-if the consumer needs to read a partition which does not have a specified
-offset within the provided offsets map, it will fallback to the default
-group offsets behaviour (i.e. `setStartFromGroupOffsets()`) for that
-particular partition.
+上述例子为 `myTopic` 主题的0号， 1号， 2号分区指定起始偏移量。 该偏移量是消费者在每个分区要读的下一条记录。 注意到如果消费者需要读一个在提供的偏移量映射中没有指定偏移量的分区， 它会对这个特别的分区使用默认的群体偏移量行为 (即 `setStartFromGroupOffsets()`)
 
-Note that these start position configuration methods do not affect the start position when the job is
-automatically restored from a failure or manually restored using a savepoint.
-On restore, the start position of each Kafka partition is determined by the
-offsets stored in the savepoint or checkpoint
-(please see the next section for information about checkpointing to enable
-fault tolerance for the consumer).
+需要注意的是这些起始位置配置方法在作业从失败中自动恢复或使用保存点认为恢复时不会影响起始位置。 在恢复时， 每个 Kafka 分区的起始位置有保存在保存点或记录点的偏移量决定 (请参阅下一章节了解关于通过记录点启动消费者容错机制的信息)。
 
-### Kafka Consumers and Fault Tolerance
+### Kafka 消费者和容错机制
 
-With Flink's checkpointing enabled, the Flink Kafka Consumer will consume records from a topic and periodically checkpoint all
-its Kafka offsets, together with the state of other operations, in a consistent manner. In case of a job failure, Flink will restore
-the streaming program to the state of the latest checkpoint and re-consume the records from Kafka, starting from the offsets that were
-stored in the checkpoint.
+当 Flink 的启用记录点时， Flink Kafka 消费者会从一个主题中消费记录，并用一致的方式周期性记录所有 Kafka 偏移量和其它算子的状态。 当作业失败时， Flink会将流程序恢复到最忌的记录点并重新从Kafka消化数据， 重新消化时会从保存在记录点的偏移量开始消化。
 
-The interval of drawing checkpoints therefore defines how much the program may have to go back at most, in case of a failure.
+记录点的间隔定义了程序在作业失败时最多从多远的时间点恢复。
 
-To use fault tolerant Kafka Consumers, checkpointing of the topology needs to be enabled at the execution environment:
+如果要使用能容错的 Kafka 消费者， 拓扑图的记录点功能需要在治病环境中启用：
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -263,13 +249,11 @@ env.enableCheckpointing(5000) // checkpoint every 5000 msecs
 </div>
 </div>
 
-Also note that Flink can only restart the topology if enough processing slots are available to restart the topology.
-So if the topology fails due to loss of a TaskManager, there must still be enough slots available afterwards.
-Flink on YARN supports automatic restart of lost YARN containers.
+需要注意的是， Flink 只会在有足够的处理分片 (processing slot) 时才会重启拓扑图。 所以如果拓扑图在因为 TaskManager 的丢失而失败时， 依旧需要保证有足够的分片来进行重启。 运行在 YARN 上的 Flink 支持自动重启丢失的 YARN 容器。
 
-If checkpointing is not enabled, the Kafka consumer will periodically commit the offsets to Zookeeper.
+如果记录点没有启用， Kafka 消费者会周期性向 ZooKeeper 提交偏移量。
 
-### Kafka Consumers Offset Committing Behaviour Configuration
+### Kafka 消费者偏移量提交行为配置
 
 The Flink Kafka Consumer allows configuring the behaviour of how offsets
 are committed back to Kafka brokers (or Zookeeper in 0.8). Note that the
