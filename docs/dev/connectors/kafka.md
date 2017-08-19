@@ -91,12 +91,12 @@ Flink 提供特别的 Kafka 连接器来从 Kafka 主题 (topic) 读数据或写
 
 ## Kafka 消费者 (Consumer)
 
-Flink 的 Kafka 消费者为 `FlinkKafkaConsumer08` (或对于 Kafka 0.9.0.x 版本是 `09` 等)。 它提供了对一个或多个 Kafka 主题的接入。
+Flink 的 Kafka 消费者为 `FlinkKafkaConsumer08` (或 `09` 对于 Kafka 0.9.0.x 版本等)。 它提供了对一个或多个 Kafka 主题的接入。
 
 其构造器接收一下参数：
 
 1. 主题名 / 主题名列表
-2. 一个 DeserializationSchema / KeyedDeserializationSchema 来反序列化来自 Kafka 的数据
+2. 一个反序列化模式 (DeserializationSchema) / 含键反序列化模式 (KeyedDeserializationSchema) 来反序列化来自 Kafka 的数据
 3. Kafka 消费者的属性
   以下属性是必须的：
   - "bootstrap.servers" (若有多个 Kafka 中间者 (broker)， 用逗号隔开)
@@ -136,7 +136,7 @@ stream = env
 要让该例子工作，该消费者需要能从提交作业到 Flink 集群的及其访问消费者。
 如果你在 Kafka 消费者的客户端遇到任何问题， 可以在客户端日志中查看关于失败请求等问题的信息。
 
-### `DeserializationSchema`
+### `DeserializationSchema` (反序列化模式)
 
 Flink 的 Kafka 消费者需要知道如何把 Kafka 内的二元数据变成 Java/Scala 对象。 `DeserializationSchema` 允许用户指定这样一个 schema。 
 Flink 会为每条消息调用 `T deserialize(byte[] message)` 方法， 将来自 Kafka 的消息传进去。
@@ -315,10 +315,10 @@ stream = env
 
 ## Kafka 生产者 (Producer)
 
-Flink’s Kafka Producer is called `FlinkKafkaProducer08` (or `09` for Kafka 0.9.0.x versions, etc.).
-It allows writing a stream of records to one or more Kafka topics.
+Flink 的 Kafka 生产者是 `FlinkKafkaProducer08` (或 `09` 对于 Kafka 0.9.0.x 版本等)。 
+它允许向一个或多个 Kafka 主题写入流数据。
 
-Example:
+比如：
 
 <div class="codetabs" markdown="1">
 <div data-lang="java, Kafka 0.8+" markdown="1">
@@ -385,48 +385,33 @@ myProducerConfig.setFlushOnCheckpoint(true)  // "false" by default
 </div>
 </div>
 
-The above examples demonstrate the basic usage of creating a Flink Kafka Producer
-to write streams to a single Kafka target topic. For more advanced usages, there
-are other constructor variants that allow providing the following:
+上述例子展示创建 Flink Kafka 生产者来把流写入到一个 Kafka 目标主题的基本使用方式。 
+对于更多高级的使用方式， 有其它提供下列内容的构造器变体：
 
- * *Providing custom properties*:
- The producer allows providing a custom properties configuration for the internal `KafkaProducer`.
- Please refer to the [Apache Kafka documentation](https://kafka.apache.org/documentation.html) for
- details on how to configure Kafka Producers.
- * *Custom partitioner*: To assign records to specific
- partitions, you can provide an implementation of a `KafkaPartitioner` to the
- constructor. This partitioner will be called for each record in the stream
- to determine which exact partition the record will be sent to.
- * *Advanced serialization schema*: Similar to the consumer,
- the producer also allows using an advanced serialization schema called `KeyedSerializationSchema`,
- which allows serializing the key and value separately. It also allows to override the target topic,
- so that one producer instance can send data to multiple topics.
+ * *提供自定义的属性 (custom properties)*:
+ 生产者允许为内部 `KafkaProducer` 提供一个自定义的属性配置。 
+ 请参阅 [Apache Kafka 文档](https://kafka.apache.org/documentation.html) 获取关于如何配置 Kafka 生产者的细节
+ * *自定义分区器 (custom partitioner)*: 用于把记录分配到特定的分区， 
+ 你可以提供一个 `KafkaPartitioner` 的实现给构造器。 
+ 这个分区器会在流中被调用来决定记录会被分配到具体哪个分区。
+ * *高级序列化模式 (serialization schema)*: 与消费者类似， 
+ 生产者同样允许使用高级的序列化模式 `KeyedSerializationSchema`， 该模式允许吧键和值分开序列化。 
+ 该模式还允许复写目标主题， 因此一个生产者实例可以向多个主题发送数据。
  
 ### Kafka 生产者和容错机制
 
-With Flink's checkpointing enabled, the Flink Kafka Producer can provide
-at-least-once delivery guarantees.
+当 Flink 的 记录点功能开启时， Flink Kafka 生产者能保证提供至少一次传递 (at-least-once delivery)。
 
-Besides enabling Flink's checkpointing, you should also configure the setter
-methods `setLogFailuresOnly(boolean)` and `setFlushOnCheckpoint(boolean)` appropriately,
-as shown in the above examples in the previous section:
+除了开启 Flink 的记录点功能， 你还要恰当地配置设置方法 (setter method) `setLogFailuresOnly(boolean)` 和 `setFlushOnCheckpoint(boolean)`， 如之前章节的例子所示。
 
- * `setLogFailuresOnly(boolean)`: enabling this will let the producer log failures only
- instead of catching and rethrowing them. This essentially accounts the record
- to have succeeded, even if it was never written to the target Kafka topic. This
- must be disabled for at-least-once.
- * `setFlushOnCheckpoint(boolean)`: with this enabled, Flink's checkpoints will wait for any
- on-the-fly records at the time of the checkpoint to be acknowledged by Kafka before
- succeeding the checkpoint. This ensures that all records before the checkpoint have
- been written to Kafka. This must be enabled for at-least-once.
+ * `setLogFailuresOnly(boolean)`: 启用该选项会让生产者只把错误记录到日志中， 而不是捕获并抛出它们。 它会认为所有写记录都是成功， 即使它们从来
+ 都没写到目标主题。 如果要保证至少一次机制， 该选项必须被禁用。
+ * `setFlushOnCheckpoint(boolean)`: 启用该选项 Flink 的记录点会在需要记录的时候等待正在处理的数据， 直到 Flink 应答该记录点才会进行一次
+ 成功的记录。 该选项确保了每条数据在记录之前都成功写入到 Kafka。 如果要保证至少一次机制， 该选项必须被启用。
 
-**Note**: By default, the number of retries is set to "0". This means that when `setLogFailuresOnly` is set to `false`,
-the producer fails immediately on errors, including leader changes. The value is set to "0" by default to avoid
-duplicate messages in the target topic that are caused by retries. For most production environments with frequent broker changes,
-we recommend setting the number of retries to a higher value.
+**注意**: 默认情况下， 重试次数为0. 这表示当 `setLogFailuresOnly` 设置为 `false` 时， 生产者在遇到错误时， 包括主机 (leader) 切换， 会立即失败。 该值默认设为 "0" 来避免因为重试而在目标主题内产生重复的消息。 对于大多数经常发生中间者切换的生产环境， 我们推荐把重试的次数设到一个比较高的值。
 
-**Note**: There is currently no transactional producer for Kafka, so Flink can not guarantee exactly-once delivery
-into a Kafka topic.
+**Note**: 目前 Kafka 还没有事务性生产者 (transactional producer)， 因此 Flink 不能保证消息传递到 Kafka 主题时是正好一次 (exactly-once delivery)。
 
 ## 使用 Kafka 时间戳和 Flink 事件时间 (在 Kafka 0.10 中)
 
