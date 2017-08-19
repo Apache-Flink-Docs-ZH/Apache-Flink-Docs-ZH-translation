@@ -441,28 +441,16 @@ config.setWriteTimestampToKafka(true);
 
 
 
-## Kafka 连接器度量单位 (metrics)
+## Kafka 连接器衡量方式 (metrics)
 
-Flink's Kafka connectors provide some metrics through Flink's [metrics system]({{ site.baseurl }}/monitoring/metrics.html) to analyze
-the behavior of the connector.
-The producers export Kafka's internal metrics through Flink's metric system for all supported versions. The consumers export 
-all metrics starting from Kafka version 0.9. The Kafka documentation lists all exported metrics 
-in its [documentation](http://kafka.apache.org/documentation/#selector_monitoring).
+Flink 的 Kafka 连接器通过 Flink 的 [衡量系统 (metrics system)]({{ site.baseurl }}/monitoring/metrics.html) 提供一些衡量方式来分析连接器的行为。
+在所有支持的版本中， 生产者会从 Flink 的衡量系统导出内部衡量方式。 从 Kafka 0.9 版本开始， 消费者会导出所有衡量方式。 Kafka 在 [官方文档](http://kafka.apache.org/documentation/#selector_monitoring) 中列出了所有导出的衡量方式。
 
-In addition to these metrics, all consumers expose the `current-offsets` and `committed-offsets` for each topic partition.
-The `current-offsets` refers to the current offset in the partition. This refers to the offset of the last element that
-we retrieved and emitted successfully. The `committed-offsets` is the last committed offset.
+此外， 所有消费者会曝露每一个主题分区的 `current-offsets` 和 `committed-offsets`。 `current-offsets` 是分区当前的偏移量， 即上一个获取并成功发射的元素的偏移量。 `committed-offsets` 是上一个提交的偏移量。
 
-The Kafka Consumers in Flink commit the offsets back to Zookeeper (Kafka 0.8) or the Kafka brokers (Kafka 0.9+). If checkpointing
-is disabled, offsets are committed periodically.
-With checkpointing, the commit happens once all operators in the streaming topology have confirmed that they've created a checkpoint of their state. 
-This provides users with at-least-once semantics for the offsets committed to Zookeer or the broker. For offsets checkpointed to Flink, the system 
-provides exactly once guarantees.
+在 Flink 中 Kafka 消费者提交偏移量到 ZooKeeper (Kafka 0.8) 或 Kafka 中间者 (Kafka 0.9+)。 如果记录点功能没有启动， 偏移量会周期性地提交。 如果启动了记录点功能， 则在流图谱图中的所有算子创建状态记录点时提交。 这为提交到 ZooKeeper 或中间者的偏移量提供了至少一次语义 (at-least-once semantics)。 对于记录到 Flink 的偏移量， 系统为其保证正好一次 (exactly-once)
 
-The offsets committed to ZK or the broker can also be used to track the read progress of the Kafka consumer. The difference between
-the committed offset and the most recent offset in each partition is called the *consumer lag*. If the Flink topology is consuming
-the data slower from the topic than new data is added, the lag will increase and the consumer will fall behind.
-For large production deployments we recommend monitoring that metric to avoid increasing latency.
+提交到 ZK 或中间者的偏移量还能用于追踪 Kafka 消费者的读取进度。 提交的偏移量和每个分区内的最近偏移量的不同被称为 *消费者滞后 （consumer lag）* 如果 Flink 的拓扑图从主体消费的数据比添加进来的新数据要慢， 改制后会增加， 并且消费者会落后。 对于大规模的生产部署， 我们推荐监控该衡量单位来避免延迟的增长。
 
 ## 启动 Kerberos 认证 (仅在 0.9 及以上版本)
 
