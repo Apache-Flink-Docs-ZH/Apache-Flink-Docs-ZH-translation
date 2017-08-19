@@ -28,7 +28,7 @@ under the License.
 
 该连接器为 [Apache Kafka](https://kafka.apache.org/) 服务的事件流提供接入。
 
-Flink 提供特别的 Kafka 连接器来从 Kafka 主题 (topic) 读数据或写数据到 Kafka 主题。 Flink 的 Kafka 消费者整合 Flink 的记录点 (checkpointing) 机制来提供正好一次处理语义 (exactly-once processing semantics)。 为了将其实现， Flink 不仅依靠 Kafka 的消费者组偏移追踪 (group offset tracking)， 还在内部追踪并记录 (checkpoint) 这些偏移 (offset)。
+Flink 提供特别的 Kafka 连接器来从 Kafka 主题 (topic) 读数据或写数据到 Kafka 主题。 Flink 的 Kafka 消费者整合 Flink 的记录点 (checkpointing) 机制来提供正好一次处理语义 (exactly-once processing semantics)。 为了将其实现， Flink 不仅依靠 Kafka 的消费者群体偏移追踪 (group offset tracking)， 还在内部追踪并记录 (checkpoint) 这些偏移 (offset)。
 
 请为你的使用情况和环境选择一个包 (maven arteifact id) 和类名。
 对于大多数用户， `FlinkKafkaConsumer08` (`flink-connector-kafka` 的一部分) 是合适可用的。
@@ -72,7 +72,7 @@ Flink 提供特别的 Kafka 连接器来从 Kafka 主题 (topic) 读数据或写
   </tbody>
 </table>
 
-接着， 导入连接器到你的 maven 项目中：
+接着， 把连接器导入到你的 maven 项目中：
 
 {% highlight xml %}
 <dependency>
@@ -82,11 +82,11 @@ Flink 提供特别的 Kafka 连接器来从 Kafka 主题 (topic) 读数据或写
 </dependency>
 {% endhighlight %}
 
-注意到流连连接器 (streaming connectors) 目前为不属于 binary distribution 的一部分。 点击 [这里]({{ site.baseurl}}/dev/linking.html) 查看如何将它们与云端执行链接。
+注意到流连接器 (streaming connectors) 目前为不属于 binary distribution 的一部分。 点击 [这里]({{ site.baseurl}}/dev/linking.html) 查看如何将它们与云端链接执行。
 
 ## 安装 Apache Kafka
 
-* 遵循 [Kafka's 快速开始](https://kafka.apache.org/documentation.html#quickstart) 的指导来下载代码并启动服务器 (必须在开始一个应用之前启动 ZooKeeper 和 Kafka 服务器)。
+* 遵循 [Kafka's 快速入门](https://kafka.apache.org/documentation.html#quickstart) 的指导来下载代码并启动服务器 (必须在开始一个应用之前启动 ZooKeeper 和 Kafka 服务器)。
 * 如果 Kafka 和 ZooKeeper 服务器在远程机器上运行， 则 `config/server.properties` 文件中的 `advertised.host.name` 配置必须设为该机器的 IP 地址。
 
 ## Kafka 消费者 (Consumer)
@@ -134,7 +134,7 @@ stream = env
 当前 FlinkKafkaConsumer 的实现会建立一个来自客户端的连接 (当调用构造器时) 来查询主题列表和分区 (partition)。
 
 要让该例子工作，该消费者需要能从提交作业到 Flink 集群的及其访问消费者。
-如果你在 Kafka 消费者的客户端遇到任何问题， 客户端日记可以包含关于失败请求等问题的信息。
+如果你在 Kafka 消费者的客户端遇到任何问题， 可以在客户端日志中查看关于失败请求等问题的信息。
 
 ### `DeserializationSchema`
 
@@ -154,7 +154,7 @@ Flink 会为每条消息调用 `T deserialize(byte[] message)` 方法， 将来�
     用 objectNode.get("field").as(Int/String/...)() 方法访问字段。 键值对形式的 objectNode 包含一个 "键" 和 "值" 字段， 它们包含了所有的
     字段和暴露消息的偏移/分区/主题的可选的 "元数据" 字段。 
 
-当遇到任何理由引起的无法被反序列化的坏消息， 有两种处理方法 - 可以选择从 `deserialize(...)` 方法抛出异常， 这样会引起作业失败和重启， 或者选择返回 `null` 来允许 Flink Kafka 消费者静谧地跳过坏消息。 注意到由于消费者的容错机制 (可参见以下章节获取更详细的信息)， 作业在坏消息上的失败会让消费者再次尝试反序列化消息。 因此 如果反序列化仍然失败， 消费者会一直重启并陷入反序列化坏消息的循环。
+当遇到任何理由引起的无法被反序列化的坏消息， 有两种处理方法 - 可以选择从 `deserialize(...)` 方法抛出异常， 这样会引起作业失败和重启， 或者选择返回 `null` 来允许 Flink Kafka 消费者安静地跳过坏消息。 注意到由于消费者的容错机制 (可参见以下章节获取更详细的信息)， 作业在坏消息上的失败会让消费者再次尝试反序列化消息。 因此 如果反序列化仍然失败， 消费者会一直重启并陷入反序列化坏消息的循环。
 
 ### Kafka 消费者起始位置配置
 
