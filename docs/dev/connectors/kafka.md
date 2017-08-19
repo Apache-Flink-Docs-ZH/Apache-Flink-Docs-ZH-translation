@@ -100,7 +100,7 @@ Flink 的 Kafka 消费者为 `FlinkKafkaConsumer08` (或 `09` 对于 Kafka 0.9.0
 3. Kafka 消费者的属性
   以下属性是必须的：
   - "bootstrap.servers" (若有多个 Kafka 中间者 (broker)， 用逗号隔开)
-  - "zookeeper.connect" (若有多个 Zookeeper 服务器， 用逗号隔开) (**仅在 Kafka 0.8 中是必须的**)
+  - "zookeeper.connect" (若有多个 Zookeeper 服务器， 用逗号隔开) (**仅在 Kafka 0.8 中**)
   - "group.id" 消费者群体 (Consumer Group) 的 ID
 
 比如:
@@ -415,20 +415,15 @@ myProducerConfig.setFlushOnCheckpoint(true)  // "false" by default
 
 ## 使用 Kafka 时间戳和 Flink 事件时间 (在 Kafka 0.10 中)
 
-Since Apache Kafka 0.10+, Kafka's messages can carry [timestamps](https://cwiki.apache.org/confluence/display/KAFKA/KIP-32+-+Add+timestamps+to+Kafka+message), indicating
-the time the event has occurred (see ["event time" in Apache Flink](../event_time.html)) or the time when the message
-has been written to the Kafka broker.
+从 Apache Kafka 0.10 开始， Kafka 的消息能够携带 [时间戳](https://cwiki.apache.org/confluence/display/KAFKA/KIP-32+-+Add+timestamps+to+Kafka+message)， 表示事件实际发生的时间 (参阅[Apache Flink 中的"事件时间"](../event_time.html)) 或者消息写入 Kafka 中间者的时间。
 
-The `FlinkKafkaConsumer010` will emit records with the timestamp attached, if the time characteristic in Flink is 
-set to `TimeCharacteristic.EventTime` (`StreamExecutionEnvironment.setStreamTimeCharacteristic(TimeCharacteristic.EventTime)`).
+如果 Flink 中的时间特征 (time characteristic) 设置为 `TimeCharacteristic.EventTime` (`StreamExecutionEnvironment.setStreamTimeCharacteristic(TimeCharacteristic.EventTime)`)， `FlinkKafkaConsumer010` 会发射带有时间戳的数据。
 
-The Kafka consumer does not emit watermarks. To emit watermarks, the same mechanisms as described above in 
-"Kafka Consumers and Timestamp Extraction/Watermark Emission"  using the `assignTimestampsAndWatermarks` method are applicable.
+Kafka 消费者不发送水位。 如果要发送水位， 使用之前章节 "Kafka 消费者和时间戳抽取/水位发射" 提到的 `assignTimestampsAndWatermarks` 方法即可。
 
-There is no need to define a timestamp extractor when using the timestamps from Kafka. The `previousElementTimestamp` argument of 
-the `extractTimestamp()` method contains the timestamp carried by the Kafka message.
+当从 Kafka 使用时间戳时， 不需要定义时间戳抽取器。  `extractTimestamp()` 方法的 `previousElementTimestamp` 参数会包含 Kafka 消息中携带的时间戳。
 
-A timestamp extractor for a Kafka consumer would look like this:
+一个用于 Kafka 消费者的时间戳提取器如下所示：
 {% highlight java %}
 public long extractTimestamp(Long element, long previousElementTimestamp) {
     return previousElementTimestamp;
@@ -437,7 +432,7 @@ public long extractTimestamp(Long element, long previousElementTimestamp) {
 
 
 
-The `FlinkKafkaProducer010` only emits the record timestamp, if `setWriteTimestampToKafka(true)` is set.
+如果设置 `setWriteTimestampToKafka(true)`， `FlinkKafkaProducer010` 值会发送记录时间戳 (record timestamp)。
 
 {% highlight java %}
 FlinkKafkaProducer010.FlinkKafkaProducer010Configuration config = FlinkKafkaProducer010.writeToKafkaWithTimestamps(streamWithTimestamps, topic, new SimpleStringSchema(), standardProps);
