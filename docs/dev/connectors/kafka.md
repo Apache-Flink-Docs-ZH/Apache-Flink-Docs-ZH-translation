@@ -86,24 +86,24 @@ Flink 提供特别的 Kafka 连接器来读 / 写数据从 / 到 Kafka 主题。
 
 ## 安装 Apache Kafka
 
-* Follow the instructions from [Kafka's quickstart](https://kafka.apache.org/documentation.html#quickstart) to download the code and launch a server (launching a Zookeeper and a Kafka server is required every time before starting the application).
-* If the Kafka and Zookeeper servers are running on a remote machine, then the `advertised.host.name` setting in the `config/server.properties` file must be set to the machine's IP address.
+* 遵循 [Kafka's 快速开始](https://kafka.apache.org/documentation.html#quickstart) 的指导来下载代码并启动服务器 (必须在开始一个应用之前启动 ZooKeeper 和 Kafka 服务器)。
+* 如果 Kafka 和 ZooKeeper 服务器在远程机器上运行， 则 `config/server.properties` 文件中的 `advertised.host.name` 配置必须设为该机器的 IP 地址。
 
 ## Kafka 消费者 (Consumer)
 
-Flink's Kafka consumer is called `FlinkKafkaConsumer08` (or `09` for Kafka 0.9.0.x versions, etc.). It provides access to one or more Kafka topics.
+Flink 的 Kafka 消费者为 `FlinkKafkaConsumer08` (或对于 Kafka 0.9.0.x 版本是 `09` 等)。 它提供了对一个或多个 Kafka 主题的接入。
 
-The constructor accepts the following arguments:
+其构造器接收一下参数：
 
-1. The topic name / list of topic names
-2. A DeserializationSchema / KeyedDeserializationSchema for deserializing the data from Kafka
-3. Properties for the Kafka consumer.
-  The following properties are required:
-  - "bootstrap.servers" (comma separated list of Kafka brokers)
-  - "zookeeper.connect" (comma separated list of Zookeeper servers) (**only required for Kafka 0.8**)
-  - "group.id" the id of the consumer group
+1. 主题名 / 主题名列表
+2. 一个 DeserializationSchema / KeyedDeserializationSchema 来反序列化来自 Kafka 的数据
+3. Kafka 消费者的属性
+  以下属性是必须的：
+  - "bootstrap.servers" (若有多个 Kafka brokers， 用逗号隔开)
+  - "zookeeper.connect" (若有多个 Zookeeper 服务器， 用逗号隔开) (**仅在 Kafka 0.8 中是必须的**)
+  - "group.id" 消费者群体 (Consumer Group) 的 ID
 
-Example:
+比如:
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -131,11 +131,12 @@ stream = env
 </div>
 </div>
 
+当前 FlinkKafkaConsumer 的实现会建立一个来自客户端的连接 (当调用构造器时) 来查询主题列表和分区。
 The current FlinkKafkaConsumer implementation will establish a connection from the client (when calling the constructor)
 for querying the list of topics and partitions.
 
-For this to work, the consumer needs to be able to access the consumers from the machine submitting the job to the Flink cluster.
-If you experience any issues with the Kafka consumer on the client side, the client log might contain information about failed requests, etc.
+要让该例子工作，该消费者需要能从提交作业到 Flink 集群的及其访问消费者。
+如果你在 Kafka 消费者的客户端遇到任何问题， 客户端日记可以包含关于失败请求等问题的信息。
 
 ### `DeserializationSchema`
 
