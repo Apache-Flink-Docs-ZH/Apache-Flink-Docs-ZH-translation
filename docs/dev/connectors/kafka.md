@@ -36,12 +36,12 @@ Flink 提供特别的 Kafka 连接器来从 Kafka 主题 (topic) 读数据或写
 <table class="table table-bordered">
   <thead>
     <tr>
-      <th class="text-left">Maven Dependency</th>
-      <th class="text-left">Supported since</th>
-      <th class="text-left">Consumer and <br>
-      Producer Class name</th>
-      <th class="text-left">Kafka version</th>
-      <th class="text-left">Notes</th>
+      <th class="text-left">Maven 依赖</th>
+      <th class="text-left">开始支持版本</th>
+      <th class="text-left">消费者和<br>
+      生产者类名</th>
+      <th class="text-left">Kafka 版本</th>
+      <th class="text-left">注释</th>
     </tr>
   </thead>
   <tbody>
@@ -51,7 +51,7 @@ Flink 提供特别的 Kafka 连接器来从 Kafka 主题 (topic) 读数据或写
         <td>FlinkKafkaConsumer08<br>
         FlinkKafkaProducer08</td>
         <td>0.8.x</td>
-        <td>Uses the <a href="https://cwiki.apache.org/confluence/display/KAFKA/0.8.0+SimpleConsumer+Example">SimpleConsumer</a> API of Kafka internally. Offsets are committed to ZK by Flink.</td>
+        <td>内部使用 Kafka 的<a href="https://cwiki.apache.org/confluence/display/KAFKA/0.8.0+SimpleConsumer+Example">SimpleConsumer</a> API. 偏移量由 Flink 提交到 ZooKeeper.</td>
     </tr>
     <tr>
         <td>flink-connector-kafka-0.9{{ site.scala_version_suffix }}</td>
@@ -59,7 +59,7 @@ Flink 提供特别的 Kafka 连接器来从 Kafka 主题 (topic) 读数据或写
         <td>FlinkKafkaConsumer09<br>
         FlinkKafkaProducer09</td>
         <td>0.9.x</td>
-        <td>Uses the new <a href="http://kafka.apache.org/documentation.html#newconsumerapi">Consumer API</a> Kafka.</td>
+        <td>使用新的 <a href="http://kafka.apache.org/documentation.html#newconsumerapi">消费者接口 (Consumer API)</a> Kafka.</td>
     </tr>
     <tr>
         <td>flink-connector-kafka-0.10{{ site.scala_version_suffix }}</td>
@@ -67,7 +67,7 @@ Flink 提供特别的 Kafka 连接器来从 Kafka 主题 (topic) 读数据或写
         <td>FlinkKafkaConsumer010<br>
         FlinkKafkaProducer010</td>
         <td>0.10.x</td>
-        <td>This connector supports <a href="https://cwiki.apache.org/confluence/display/KAFKA/KIP-32+-+Add+timestamps+to+Kafka+message">Kafka messages with timestamps</a> both for producing and consuming.</td>
+        <td>该连接器支持生产和消费的 <a href="https://cwiki.apache.org/confluence/display/KAFKA/KIP-32+-+Add+timestamps+to+Kafka+message">带时间戳的 Kafka 信息</a>.</td>
     </tr>
   </tbody>
 </table>
@@ -421,7 +421,7 @@ myProducerConfig.setFlushOnCheckpoint(true)  // "false" by default
 
 Kafka 消费者不发送水位。 如果要发送水位， 使用之前章节 "Kafka 消费者和时间戳抽取/水位发射" 提到的 `assignTimestampsAndWatermarks` 方法即可。
 
-当从 Kafka 使用时间戳时， 不需要定义时间戳抽取器。  `extractTimestamp()` 方法的 `previousElementTimestamp` 参数会包含 Kafka 消息中携带的时间戳。
+当从 Kafka 使用时间戳时， 不需要定义时间戳抽取器。 `extractTimestamp()` 方法的 `previousElementTimestamp` 参数会包含 Kafka 消息中携带的时间戳。
 
 一个用于 Kafka 消费者的时间戳提取器如下所示：
 {% highlight java %}
@@ -454,8 +454,7 @@ Flink 的 Kafka 连接器通过 Flink 的 [衡量系统 (metrics system)]({{ sit
 
 ## 启动 Kerberos 认证 (仅在 0.9 及以上版本)
 
-Flink provides first-class support through the Kafka connector to authenticate to a Kafka installation
-configured for Kerberos. Simply configure Flink in `flink-conf.yaml` to enable Kerberos authentication for Kafka like so:
+Flink 通过 Kafka 连接器提供最好的支持来认证 Kafka 配置到 Kerberos 的安装。 为 Kafka 启动 Kerberos 认证， 只需简单地在 `flink-conf.yaml` 配置 Flink 即可。 如下所示：
 
 1. Configure Kerberos credentials by setting the following -
  - `security.kerberos.login.use-ticket-cache`: By default, this is `true` and Flink will attempt to use Kerberos credentials in ticket caches managed by `kinit`. 
@@ -464,11 +463,10 @@ configured for Kerberos. Simply configure Flink in `flink-conf.yaml` to enable K
  
 2. Append `KafkaClient` to `security.kerberos.login.contexts`: This tells Flink to provide the configured Kerberos credentials to the Kafka login context to be used for Kafka authentication.
 
-Once Kerberos-based Flink security is enabled, you can authenticate to Kafka with either the Flink Kafka Consumer or Producer by simply including the following two settings in the provided properties configuration that is passed to the internal Kafka client:
+一旦启动基于 Kerberos 的 Flink 安全功能， 你能通过把下列两个设置添加到提供的属性配置文件内来用 Flink 的 Kafka 消费者或生产者向 Kafka 认证， 该属性配置会传到内部的 Kafka 客户端： 
 
 - Set `security.protocol` to `SASL_PLAINTEXT` (default `NONE`): The protocol used to communicate to Kafka brokers.
 When using standalone Flink deployment, you can also use `SASL_SSL`; please see how to configure the Kafka client for SSL [here](https://kafka.apache.org/documentation/#security_configclients). 
 - Set `sasl.kerberos.service.name` to `kafka` (default `kafka`): The value for this should match the `sasl.kerberos.service.name` used for Kafka broker configurations. A mismatch in service name between client and server configuration will cause the authentication to fail.
 
-For more information on Flink configuration for Kerberos security, please see [here]({{ site.baseurl}}/setup/config.html).
-You can also find [here]({{ site.baseurl}}/ops/security-kerberos.html) further details on how Flink internally setups Kerberos-based security.
+更多关于 Flink 的 Kerberos 安全配置信息 请参阅 [这里]({{ site.baseurl}}/setup/config.html)。 你也能在 [这里]({{ site.baseurl}}/ops/security-kerberos.html) 找到更多关于 Flink 内部如何搭建基于 Kerberos 安全功能的信息。
