@@ -28,7 +28,7 @@ under the License.
 
 该连接器为 [Apache Kafka](https://kafka.apache.org/) 服务的事件流提供接入。
 
-Flink 提供特别的 Kafka 连接器来从 Kafka 主题 (topic) 读数据或写数据到 Kafka 主题。 Flink 的 Kafka 消费者整合 Flink 的记录点 (checkpointing) 机制来提供正好一次处理语义 (exactly-once processing semantics)。 为了将其实现， Flink 不仅依靠 Kafka 的消费者群体偏移追踪 (group offset tracking)， 还在内部追踪并记录 (checkpoint) 这些偏移 (offset)。
+Flink 提供特别的 Kafka 连接器来从 Kafka 主题 (topic) 读数据或写数据到 Kafka 主题。 Flink 的 Kafka 消费者 (consumer) 整合 Flink 的记录点 (checkpointing) 机制来提供正好一次处理语义 (exactly-once processing semantics)。 为了将其实现， Flink 不仅依靠 Kafka 的消费者群体偏移追踪 (group offset tracking)， 还在内部追踪并记录 (checkpoint) 这些偏移 (offset)。
 
 请为你的使用情况和环境选择一个包 (maven arteifact id) 和类名。
 对于大多数用户， `FlinkKafkaConsumer08` (`flink-connector-kafka` 的一部分) 是合适可用的。
@@ -138,7 +138,7 @@ stream = env
 
 ### `DeserializationSchema`
 
-Flink 的 Kafka 消费者需要直到如何把 Kafka 内的二元数据变成 Java/Scala 对象。 `DeserializationSchema` 允许用户指定这样一个 schema。 
+Flink 的 Kafka 消费者需要知道如何把 Kafka 内的二元数据变成 Java/Scala 对象。 `DeserializationSchema` 允许用户指定这样一个 schema。 
 Flink 会为每条消息调用 `T deserialize(byte[] message)` 方法， 将来自 Kafka 的消息传进去。
 
 一般情况下从 `AbstractDeserializationSchema` 开始是比较有助的， 该类负责为 Flink 的类型系统描述所产生的 Java/Scala 类型。 实现标准的 `DeserializationSchema` 的用户需要实现 `getProducedType(...)` 方法。
@@ -154,7 +154,7 @@ Flink 会为每条消息调用 `T deserialize(byte[] message)` 方法， 将来�
     用 objectNode.get("field").as(Int/String/...)() 方法访问字段。 键值对形式的 objectNode 包含一个 "键" 和 "值" 字段， 它们包含了所有的
     字段和暴露消息的偏移/分区/主题的可选的 "元数据" 字段。 
 
-当遇到任何理由引起的无法被反序列化的坏消息， 有两种处理方法 - 可以选择从 `deserialize(...)` 方法抛出异常， 这样会引起作业失败和重启， 或者选择返回 `null` 来允许 Flink Kafka 消费者安静地跳过坏消息。 注意到由于消费者的容错机制 (可参见以下章节获取更详细的信息)， 作业在坏消息上的失败会让消费者再次尝试反序列化消息。 因此 如果反序列化仍然失败， 消费者会一直重启并陷入反序列化坏消息的循环。
+当遇到由任何理由引起的无法被反序列化的坏消息， 有两种处理方法 - 可以选择从 `deserialize(...)` 方法抛出异常， 这样会引起作业失败和重启， 或者选择返回 `null` 来允许 Flink Kafka 消费者安静地跳过坏消息。 注意到由于消费者的容错机制 (可参见以下章节获取更详细的信息)， 作业在坏消息上的失败会让消费者再次尝试反序列化消息。 因此如果反序列化仍然失败， 消费者会一直循环重启并反序列化坏消息。
 
 ### Kafka 消费者起始位置配置
 
@@ -224,7 +224,7 @@ myConsumer.setStartFromSpecificOffsets(specificStartOffsets)
 
 上述例子为 `myTopic` 主题的0号， 1号， 2号分区指定起始偏移量。 该偏移量是消费者在每个分区要读的下一条记录。 注意到如果消费者需要读一个在提供的偏移量映射中没有指定偏移量的分区， 它会对这个特别的分区使用默认的群体偏移量行为 (即 `setStartFromGroupOffsets()`)
 
-需要注意的是这些起始位置配置方法在作业从失败中自动恢复或使用保存点认为恢复时不会影响起始位置。 在恢复时， 每个 Kafka 分区的起始位置有保存在保存点或记录点的偏移量决定 (请参阅下一章节了解关于通过记录点启动消费者容错机制的信息)。
+需要注意的是这些起始位置配置方法在作业从失败中自动恢复或使用保存点人为恢复时不会影响起始位置。 在恢复时， 每个 Kafka 分区的起始位置由保存在保存点 (savepoint) 或记录点 (checkpoint) 的偏移量决定 (请参阅下一章节了解关于通过记录点启动消费者容错机制的信息)。
 
 ### Kafka 消费者和容错机制
 
@@ -249,7 +249,7 @@ env.enableCheckpointing(5000) // checkpoint every 5000 msecs
 </div>
 </div>
 
-需要注意的是， Flink 只会在有足够的处理分片 (processing slot) 时才会重启拓扑图。 所以如果拓扑图在因为 TaskManager 的丢失而失败时， 依旧需要保证有足够的分片来进行重启。 运行在 YARN 上的 Flink 支持自动重启丢失的 YARN 容器。
+需要注意的是， Flink 仅在有足够数量的处理分片 (processing slot) 时才会重启拓扑图。 所以如果拓扑图在因为 TaskManager 的丢失而失败时， 依旧需要保证有足够的分片来进行重启。 运行在 YARN 上的 Flink 支持自动重启丢失的 YARN 容器。
 
 如果记录点没有启用， Kafka 消费者会周期性向 ZooKeeper 提交偏移量。
 
@@ -259,26 +259,20 @@ Flink Kafka 消费者允许配置偏移量提交到 Kafka 中间者 (或 ZooKeep
 
 配置偏移量提交行为的方式根据记录点是否启动而有所不同。
 
- - *记录点不启动 (checkpointing disabled):* 如果记录点没有启动， Flink Kafka 消费者依赖内部使用的 Kafka 客户端的周期性偏移量自动提交功能。 因
- 此， 如果要关闭或启动偏移量提交， 只需简单地在提供的 `Properties` 配置中为 `enable.auto.commit` (或 `auto.commit.enable` 在 Kafka 0.8 中) 
- / `auto.commit.interval.ms` 设置合适的值即可。
+ - *记录点功能不启动 (checkpointing disabled):* 如果记录点功能没有启动， Flink Kafka 消费者会依赖内部使用的 Kafka 客户端的周期性偏移量自动提
+ 交功能。 因此， 如果要关闭或启动偏移量提交， 只需在提供的 `Properties` 配置中简单为 `enable.auto.commit` (或 `auto.commit.enable` 在 Kafka 
+ 0.8中) / `auto.commit.interval.ms` 设置合适的值即可。
  
- - *记录点启动 (Checkpointing enabled):* 如果记录点启动， Flink Kafka 消费者会在记录完成时把偏移量提交到记录的状态中保存。 这确保了在 Kafka 中
- 间者提交的偏移量与记录状态中的偏移量是一致的。 用户能选择通过调用消费者上的 `setCommitOffsetsOnCheckpoints(boolean)` 方法关闭或启用偏移量提交
- (默认情况下 该行为为 `true`)。
+ - *记录点功能启动 (Checkpointing enabled):* 如果记录点功能启动， Flink Kafka 消费者会在记录完成时把偏移量提交到记录的状态中保存。 这确保了在 
+ Kafka 中间者提交的偏移量与记录状态中的偏移量是一致的。 用户能通过调用消费者上的 `setCommitOffsetsOnCheckpoints(boolean)` 方法关闭或启用偏移量
+ 提交 (默认情况下 该行为为 `true`)。
  需要注意的是在这种情况下， `Properties` 中的周期性偏移量自动提交设定会被完全忽略。
 
 ### Kafka 消费者和时间戳抽取/水位发射
 
-In many scenarios, the timestamp of a record is embedded (explicitly or implicitly) in the record itself.
-In addition, the user may want to emit watermarks either periodically, or in an irregular fashion, e.g. based on
-special records in the Kafka stream that contain the current event-time watermark. For these cases, the Flink Kafka
-Consumer allows the specification of an `AssignerWithPeriodicWatermarks` or an `AssignerWithPunctuatedWatermarks`.
+在许多场景中， 一个记录的时间戳是 (显式或隐式) 嵌套在该记录中。 此外， 用户可能会周期性或通过非常规的模式发射水位， 比如根据包含当前事件时间水位的 Kafka 流中的某个特别的记录发射水位。 对于这些情况， Flink Kafka 消费者允许用户使用 `AssignerWithPeriodicWatermarks` 或 `AssignerWithPunctuatedWatermarks` 方法来发射水位。
 
-You can specify your custom timestamp extractor/watermark emitter as described
-[here]({{ site.baseurl }}/apis/streaming/event_timestamps_watermarks.html), or use one from the
-[predefined ones]({{ site.baseurl }}/apis/streaming/event_timestamp_extractors.html). After doing so, you
-can pass it to your consumer in the following way:
+你也能指定自定义的时间戳抽取器 / 水位发射器， 如 [这里]({{ site.baseurl }}/apis/streaming/event_timestamps_watermarks.html) 所示， 或使用其中一个 [预定义的时间戳抽取器]({{ site.baseurl }}/apis/streaming/event_timestamp_extractors.html)。 通过这么做， 你可以用下面的方式将流传给消费者：
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -315,12 +309,8 @@ stream = env
 </div>
 </div>
 
-Internally, an instance of the assigner is executed per Kafka partition.
-When such an assigner is specified, for each record read from Kafka, the
-`extractTimestamp(T element, long previousElementTimestamp)` is called to assign a timestamp to the record and
-the `Watermark getCurrentWatermark()` (for periodic) or the
-`Watermark checkAndGetNextWatermark(T lastElement, long extractedTimestamp)` (for punctuated) is called to determine
-if a new watermark should be emitted and with which timestamp.
+在 Flink 内部， 每个 Kafka 分区都会使用一个分配器 (assigner) 实例。 
+当指定分配器时 对每条从 Kafka 读取的记录， 调用 `extractTimestamp(T element, long previousElementTimestamp)` 方法给每条记录分配一个时间戳， 并且调用 `Watermark getCurrentWatermark()` (对于周期性发射水位) 方法或 `Watermark checkAndGetNextWatermark(T lastElement, long extractedTimestamp)` (对于点断发射水位) 方法发射新水位。
 
 
 ## Kafka 生产者 (Producer)
