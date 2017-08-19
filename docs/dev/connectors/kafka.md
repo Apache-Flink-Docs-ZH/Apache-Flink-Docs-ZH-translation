@@ -28,7 +28,7 @@ under the License.
 
 该连接器为 [Apache Kafka](https://kafka.apache.org/) 服务的事件流提供接入。
 
-Flink 提供特别的 Kafka 连接器来读 / 写数据从 / 到 Kafka 主题。 Flink 的 Kafka 消费者整合 Flink 的检查点 (checkpointing) 机制来提供正好一次处理语义 (exactly-once processing semantics)。 为了将其实现， Flink 不仅依靠 Kafka 的消费者组偏移追踪 (group offset tracking)， 还在内部追踪并记录 (checkpoint) 这些偏移。
+Flink 提供特别的 Kafka 连接器来从 Kafak 主题读数据或写数据到 Kafka 主题。 Flink 的 Kafka 消费者整合 Flink 的记录点 (checkpointing) 机制来提供正好一次处理语义 (exactly-once processing semantics)。 为了将其实现， Flink 不仅依靠 Kafka 的消费者组偏移追踪 (group offset tracking)， 还在内部追踪并记录 (checkpoint) 这些偏移。
 
 请为你的使用情况和环境选择一个包 (maven arteifact id) 和类名。
 对于大多数用户， `FlinkKafkaConsumer08` (`flink-connector-kafka` 的一部分) 是合适可用的。
@@ -132,52 +132,35 @@ stream = env
 </div>
 
 当前 FlinkKafkaConsumer 的实现会建立一个来自客户端的连接 (当调用构造器时) 来查询主题列表和分区。
-The current FlinkKafkaConsumer implementation will establish a connection from the client (when calling the constructor)
-for querying the list of topics and partitions.
 
 要让该例子工作，该消费者需要能从提交作业到 Flink 集群的及其访问消费者。
 如果你在 Kafka 消费者的客户端遇到任何问题， 客户端日记可以包含关于失败请求等问题的信息。
 
 ### `DeserializationSchema`
 
-The Flink Kafka Consumer needs to know how to turn the binary data in Kafka into Java/Scala objects. The
-`DeserializationSchema` allows users to specify such a schema. The `T deserialize(byte[] message)`
-method gets called for each Kafka message, passing the value from Kafka.
+Flink 的 Kafka 消费者需要直到如何把 Kafka 内的二元数据变成 Java/Scala 对象。 `DeserializationSchema` 允许用户指定这样一个 schema。 
+Flink 会为每条消息调用 `T deserialize(byte[] message)` 方法， 将来自 Kafka 的消息传进去。
 
-It is usually helpful to start from the `AbstractDeserializationSchema`, which takes care of describing the
-produced Java/Scala type to Flink's type system. Users that implement a vanilla `DeserializationSchema` need
-to implement the `getProducedType(...)` method themselves.
+一般情况下从 `AbstractDeserializationSchema` 开始是比较有助的， 该类负责为 Flink 的类型系统描述所产生的 Java/Scala 类型。 实现标准的 `DeserializationSchema` 的用户需要实现 `getProducedType(...)` 方法。
 
-For accessing both the key and value of the Kafka message, the `KeyedDeserializationSchema` has
-the following deserialize method ` T deserialize(byte[] messageKey, byte[] message, String topic, int partition, long offset)`.
+为了访问 Kafka 信息的键和值， `KeyedDeserializationSchema` 有一个反序列化方法 ` T deserialize(byte[] messageKey, byte[] message, String topic, int partition, long offset)`。
 
-For convenience, Flink provides the following schemas:
+为了方便用户， Flink提供下列 schemas：
 
-1. `TypeInformationSerializationSchema` (and `TypeInformationKeyValueSerializationSchema`) which creates
-    a schema based on a Flink's `TypeInformation`. This is useful if the data is both written and read by Flink.
-    This schema is a performant Flink-specific alternative to other generic serialization approaches.
-
-2. `JsonDeserializationSchema` (and `JSONKeyValueDeserializationSchema`) which turns the serialized JSON
-    into an ObjectNode object, from which fields can be accessed using objectNode.get("field").as(Int/String/...)().
-    The KeyValue objectNode contains a "key" and "value" field which contain all fields, as well as
-    an optional "metadata" field that exposes the offset/partition/topic for this message.
+1. `TypeInformationSerializationSchema` (和 `TypeInformationKeyValueSerializationSchema`)， 该类根据 Flink 的 `TypeInformation` 
+    创建一个 schema， 如果数据是由 Flink 的读写的， 该类非常有用。 这个 schema 是 Flink 专属的泛型序列化方法。
     
-When encountering a corrupted message that cannot be deserialized for any reason, there
-are two options - either throwing an exception from the `deserialize(...)` method
-which will cause the job to fail and be restarted, or returning `null` to allow
-the Flink Kafka consumer to silently skip the corrupted message. Note that
-due to the consumer's fault tolerance (see below sections for more details),
-failing the job on the corrupted message will let the consumer attempt
-to deserialize the message again. Therefore, if deserialization still fails, the
-consumer will fall into a non-stop restart and fail loop on that corrupted
-message.
+2. `JsonDeserializationSchema` (and `JSONKeyValueDeserializationSchema`)， 该类能将 JSON 序列化成一个 ObjectNode 对象， 通过该类可使
+    用 objectNode.get("field").as(Int/String/...)() 方法访问字段。 键值对形式的 objectNode 包含一个 "键" 和 "值" 字段， 它们包含了所有的
+    字段和暴露消息的偏移/分区/主题的可选的 "元数据" 字段。 
 
-### Kafka Consumers Start Position Configuration
+当遇到任何理由引起的无法被反序列化的坏消息， 有两种处理方法 - 可以选择从 `deserialize(...)` 方法抛出异常， 这样会引起作业失败和重启， 或者选择返回 `null` 来允许 Flink Kafka 消费者静谧地跳过坏消息。 注意到由于消费者的容错机制 (可参见以下章节获取更详细的信息)， 作业在坏消息上的失败会让消费者再次尝试反序列化消息。 因此 如果反序列化仍然失败， 消费者会一直重启并陷入反序列化坏消息的循环。
 
-The Flink Kafka Consumer allows configuring how the start position for Kafka
-partitions are determined.
+### Kafka 消费者起始位置配置
 
-Example:
+Flink Kafka 消费者允许用户通过配置决定 Kafka 分区的起始位置。
+
+比如:
 
 <div class="codetabs" markdown="1">
 <div data-lang="java" markdown="1">
@@ -208,15 +191,11 @@ val stream = env.addSource(myConsumer)
 </div>
 </div>
 
-All versions of the Flink Kafka Consumer have the above explicit configuration methods for start position.
+所有版本的 Kafka 消费者都有上述配置方法来设置起始位置。
 
- * `setStartFromGroupOffsets` (default behaviour): Start reading partitions from
- the consumer group's (`group.id` setting in the consumer properties) committed
- offsets in Kafka brokers (or Zookeeper for Kafka 0.8). If offsets could not be
- found for a partition, the `auto.offset.reset` setting in the properties will be used.
- * `setStartFromEarliest()` / `setStartFromLatest()`: Start from the earliest / latest
- record. Under these modes, committed offsets in Kafka will be ignored and
- not used as starting positions.
+ * `setStartFromGroupOffsets` (默认行为): 从 Kafka broker 中 (如果是Kafka 0.8 则为 ZooKeeper) 消费者群体提交的偏移量 (消费者属性中设置的 `group.id` ) 开始读分区。 如果不能找到一个分区的偏移量， 属性中的 `auto.offset.reset` 会被使用。
+ * `setStartFromEarliest()` / `setStartFromLatest()`: 从最早 / 最近的记录开始。 如果使用该方法 Kafka 中提交的偏移量会被忽略， 并且不会作为
+ 起始位置被使用。 
  
 You can also specify the exact offsets the consumer should start from for each partition:
 
