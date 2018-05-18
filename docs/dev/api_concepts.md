@@ -1,5 +1,5 @@
 ---
-title: "Basic API Concepts"
+title: "基础的API概念"
 nav-parent_id: dev
 nav-pos: 1
 nav-show_overview: true
@@ -32,6 +32,8 @@ collections). Results are returned via sinks, which may for example write the da
 Flink programs run in a variety of contexts, standalone, or embedded in other programs.
 The execution can happen in a local JVM, or on clusters of many machines.
 
+Flink是实现分布式数据集合转换的通用程序(例如过滤、映射、更新状态、连结、分组、定义窗口、聚合等)。数据集合最先是从源（例如文件、kafka主题或者本地内存数据集合）创建。经过接收器之后得到结果，例如可以把数据写入到(分布式)文件中，或者执行标准输出（例如，命令行终端）。Flink程序支持各种运行方式，可以独立运行，也可以嵌入到其他程序中。可以在本地JVM或设备集群上执行。
+
 Depending on the type of data sources, i.e. bounded or unbounded sources, you would either
 write a batch program or a streaming program where the DataSet API is used for batch
 and the DataStream API is used for streaming. This guide will introduce the basic concepts
@@ -39,6 +41,9 @@ that are common to both APIs but please see our
 [Streaming Guide]({{ site.baseurl }}/dev/datastream_api.html) and
 [Batch Guide]({{ site.baseurl }}/dev/batch/index.html) for concrete information about
 writing programs with each API.
+
+根据数据源的类型，即有界或无界的数据源，你可以使用DataSet API编写批处理程序或者DataStream API编写流处理程序。本篇将会介绍这两种API共同拥有的基本概念，关于每一种编写程序的具体信息请参阅我们的[Streaming Guide]({{ site.baseurl }}/dev/datastream_api.html) and
+[Batch Guide]({{ site.baseurl }}/dev/batch/index.html)。
 
 **NOTE:** When showing actual examples of how the APIs can be used  we will use
 `StreamingExecutionEnvironment` and the `DataStream` API. The concepts are exactly the same
@@ -707,9 +712,9 @@ public class WordWithCount {
 
     public String word;
     public int count;
-
+    
     public WordWithCount() {}
-
+    
     public WordWithCount(String word, int count) {
         this.word = word;
         this.count = count;
