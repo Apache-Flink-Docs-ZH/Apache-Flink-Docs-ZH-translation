@@ -83,19 +83,19 @@ Apache Flink官网：[http://flink.apache.org](http://flink.apache.org/index.htm
  - [gaving2016](https://github.com/gaving2016)
  - [397090770](https://github.com/397090770)
  - [coder-zjh](https://github.com/coder-zjh)
- 
+ - [LinZhaoguan](https://github.com/LinZhaoguan)
+
 *翻译* 
 *审校* 
  *项目经理* 
  - [tuhaihe](https://github.com/tuahihe) 
  - [lviiii](https://github.com/lviiii)
- 
+
 
 **项目贡献排名：点击[此处](https://github.com/Apache-Flink-Docs-ZH/Apache-Flink-Docs-ZH-translation/graphs/contributors)，可以看到各自贡献排名,加油~**
 
+---
 
- ---
- 
 ## 支持社区
 
 感谢下面技术社区对本翻译项目的支持（排名不分先后）：
