@@ -39,7 +39,7 @@ GEM
       sass (~> 3.4)
     jekyll-watch (1.5.0)
       listen (~> 3.0, < 3.1)
-    json (1.8.3)
+    json (2.3.0)
     kramdown (1.10.0)
     libv8 (3.16.14.17)
     liquid (2.6.3)
